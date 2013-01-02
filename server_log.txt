@@ -1,0 +1,31 @@
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3e-R2, (C)2005-2012 SA-MP Team
+
+[20:31:00] filterscripts = ""  (string)
+[20:31:00] 
+[20:31:00] Server Plugins
+[20:31:00] --------------
+[20:31:00]  Loaded 0 plugins.
+
+[20:31:00] 
+[20:31:00] Filterscripts
+[20:31:00] ---------------
+[20:31:00]   Loaded 0 filterscripts.
+
+[20:31:00] 
+---------------------------------
+
+[20:31:00]  Nogov v0.0.1
+
+[20:31:00]  	Coded by PureunBa
+[20:31:00]  	pureunba.tistory.com
+
+[20:31:00] ---------------------------------
+
+[20:31:00] Number of vehicle models: 0
