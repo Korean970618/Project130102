@@ -28,15 +28,21 @@
 
 
 
+//-----< Pre-Defines
+#define SCRIPT_NAME             "Nogov"
+#define SCRIPT_VERSION          "0.0.1"
+#define SERVER_HOSTNAME			"[NOGOV] pureunba.tistory.com"
+
+
 //-----< Includes
 #include <a_samp>
 #include <Nogov>
+//-----< Modules >--------------------------------------------------------------
+#include "Modules/Cores/InitExit.pwn"
 
 
 
 //-----< Defines
-#define SCRIPT_NAME             "Nogov"
-#define SCRIPT_VERSION          "0.0.1"
 //-----< Handlers >-------------------------------------------------------------
 #define GameModeInitHandler         		1
 #define GameModeExitHandler         		2
@@ -110,10 +116,8 @@ main()
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
-	new str[64];
-	format(str,sizeof(str),"%s %s",SCRIPT_NAME,SCRIPT_VERSION);
-	SetGameModeText(str);
-	
+    AddHandler("InitExit",		GameModeInitHandler,GameModeExitHandler);
+
 	new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
 		if(CallbacksList[i][CBIndex][GameModeInitHandler])
