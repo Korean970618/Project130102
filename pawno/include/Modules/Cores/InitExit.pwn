@@ -12,10 +12,19 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/02
+ *		Update:		2013/01/04
  *
  *
  */
+/*
+
+  < Modules >
+	gInitHandler_InitExit()
+	gExitHandler_InitExit()
+
+  < Functions >
+
+*/
 
 
 
@@ -28,10 +37,10 @@
 
 
 //-----< Callbacks
-forward GameModeInitHandler_InitExit();
-forward GameModeExitHandler_InitExit();
-//-----< OnGameModeInit >-------------------------------------------------------
-public GameModeInitHandler_InitExit()
+forward gInitHandler_InitExit();
+forward gExitHandler_InitExit();
+//-----< gInitHandler_InitExit >------------------------------------------------
+public gInitHandler_InitExit()
 {
     new str[64];
     
@@ -55,8 +64,8 @@ public GameModeInitHandler_InitExit()
 	SendClientMessageToAll(COLOR_WHITE,"게임모드를 로딩중입니다.");
 	return 1;
 }
-//-----< OnGameModeExit >-------------------------------------------------------
-public GameModeExitHandler_InitExit()
+//-----< gExitHandler_InitExit >------------------------------------------------
+public gExitHandler_InitExit()
 {
     for(new i; i<GetMaxPlayers(); i++)
 	{

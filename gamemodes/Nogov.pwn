@@ -39,52 +39,53 @@
 #include <Nogov>
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/InitExit.pwn"
+#include "Modules/Cores/Variables.pwn"
 
 
 
 //-----< Defines
 //-----< Handlers >-------------------------------------------------------------
-#define GameModeInitHandler         		1
-#define GameModeExitHandler         		2
-#define PlayerRequestClassHandler   		3
-#define PlayerConnectHandler            	4
-#define PlayerDisconnectHandler         	5
-#define PlayerSpawnHandler              	6
-#define PlayerDeathHandler              	7
-#define VehicleSpawnHandler             	8
-#define VehicleDeathHandler             	9
-#define PlayerTextHandler               	10
-#define PlayerCommandTextHandler			11
-#define PlayerEnterVehicleHandler			12
-#define PlayerExitVehicleHandler			13
-#define PlayerStateChangeHandler        	14
-#define PlayerEnterCheckpointHandler        15
-#define PlayerLeaveCheckpointHandler        16
-#define PlayerEnterRaceCheckpointHandler    17
-#define PlayerLeaveRaceCheckpointHandler    18
-#define RconCommandHandler                  19
-#define PlayerRequestSpawnHandler       	20
-#define ObjectMovedHandler                  21
-#define PlayerObjectMovedHandler            22
-#define PlayerPickUpPickupHandler           23
-#define VehicleModHandler                   24
-#define VehiclePaintjobHandler              25
-#define VehicleResprayHandler               26
-#define PlayerSelectedMenuRowHandler        27
-#define PlayerExitedMenuHandler             28
-#define PlayerInteriorChangeHandler         29
-#define PlayerKeyStateChangeHandler         30
-#define RconLoginAttempHandler              31
-#define PlayerUpdateHandler                 32
-#define PlayerStreamInHandler               33
-#define PlayerStreamOutHandler              34
-#define VehicleStreamInHandler              35
-#define VehicleStreamOutHandler             36
-#define DialogResponseHandler               37
-#define PlayerClickPlayerHandler            38
+#define gInitHandler         			1
+#define gExitHandler         			2
+#define pRequestClassHandler   			3
+#define pConnectHandler            		4
+#define pDisconnectHandler         		5
+#define pSpawnHandler              		6
+#define pDeathHandler              		7
+#define vSpawnHandler             		8
+#define vDeathHandler             		9
+#define pTextHandler               		10
+#define pCommandTextHandler				11
+#define pEnterVehicleHandler			12
+#define pExitVehicleHandler				13
+#define pStateChangeHandler        		14
+#define pEnterCheckpointHandler			15
+#define pLeaveCheckpointHandler			16
+#define pEnterRaceCheckpointHandler		17
+#define pLeaveRaceCheckpointHandler		18
+#define RconCommandHandler				19
+#define pRequestSpawnHandler			20
+#define ObjectMovedHandler				21
+#define pObjectMovedHandler				22
+#define pPickUpPickupHandler			23
+#define vModHandler						24
+#define vPaintjobHandler				25
+#define vResprayHandler					26
+#define pSelectedMenuRowHandler			27
+#define pExitedMenuHandler				28
+#define pInteriorChangeHandler			29
+#define pKeyStateChangeHandler			30
+#define RconLoginAttempHandler			31
+#define pUpdateHandler					32
+#define pStreamInHandler				33
+#define pStreamOutHandler				34
+#define vStreamInHandler				35
+#define vStreamOutHandler				36
+#define DialogResponseHandler			37
+#define pClickPlayerHandler				38
 
-#define MAX_CALLBACKS						38
-#define CALL_HANDLER(%0,%1)					for(new i=0; i<=CallbacksIndex; i++) if(CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr,64,"%s_%s",%1,CallbacksList[i][CBName]);
+#define MAX_CALLBACKS					38
+#define CALL_HANDLER(%0,%1)				for(new i=0; i<=CallbacksIndex; i++) if(CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr,64,"%s_%s",%1,CallbacksList[i][CBName]);
 
 
 
@@ -116,13 +117,13 @@ main()
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
-    AddHandler("InitExit",		GameModeInitHandler,GameModeExitHandler);
+    AddHandler("InitExit",			gInitHandler,gExitHandler);
 
 	new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][GameModeInitHandler])
+		if(CallbacksList[i][CBIndex][gInitHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","GameModeInitHandler",CallbacksList[i][CBName]);
+			format(funcstr,sizeof(funcstr),"%s_%s","gInitHandler",CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr,"");
 		}
 	return 1;
@@ -132,9 +133,9 @@ public OnGameModeExit()
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][GameModeExitHandler])
+		if(CallbacksList[i][CBIndex][gExitHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","GameModeExitHandler",CallbacksList[i][CBName]);
+			format(funcstr,sizeof(funcstr),"%s_%s","gExitHandler",CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr,"");
 		}
 	return 1;
@@ -142,24 +143,25 @@ public OnGameModeExit()
 //-----< OnPlayerRequestClass >-------------------------------------------------
 public OnPlayerRequestClass(playerid,classid)
 {
-    new funcstr[64];
+    new funcstr[64]
+		,returns;
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			returns = CallLocalFunction(funcstr,"dd",playerid,classid);
 		}
-	return 1;
+	return returns;
 }
 //-----< OnPlayerConnect >------------------------------------------------------
 public OnPlayerConnect(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerConnectHandler])
+		if(CallbacksList[i][CBIndex][pConnectHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerConnectHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pConnectHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -168,10 +170,10 @@ public OnPlayerDisconnect(playerid,reason)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerDisconnectHandler])
+		if(CallbacksList[i][CBIndex][pDisconnectHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerDisconnectHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pDisconnectHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,reason);
 		}
 	return 1;
 }
@@ -180,10 +182,10 @@ public OnPlayerSpawn(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerSpawnHandler])
+		if(CallbacksList[i][CBIndex][pSpawnHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerSpawnHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pSpawnHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -192,10 +194,10 @@ public OnPlayerDeath(playerid,killerid,reason)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerDeathHandler])
+		if(CallbacksList[i][CBIndex][pDeathHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerDeathHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pDeathHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,killerid,reason);
 		}
 	return 1;
 }
@@ -204,10 +206,10 @@ public OnVehicleSpawn(vehicleid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][VehicleSpawnHandler])
+		if(CallbacksList[i][CBIndex][vSpawnHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","VehicleSpawnHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","vSpawnHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",vehicleid);
 		}
 	return 1;
 }
@@ -216,10 +218,10 @@ public OnVehicleDeath(vehicleid,killerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][VehicleDeathHandler])
+		if(CallbacksList[i][CBIndex][vDeathHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","VehicleDeathHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","vDeathHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",vehicleid,killerid);
 		}
 	return 1;
 }
@@ -228,34 +230,37 @@ public OnPlayerText(playerid,text[])
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerTextHandler])
+		if(CallbacksList[i][CBIndex][pTextHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerTextHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pTextHandler",CallbacksList[i][CBName]);
+			if(!CallLocalFunction(funcstr,"ds",playerid,text)) return 0;
 		}
 	return 1;
 }
 //-----< OnPlayerCommandText >--------------------------------------------------
 public OnPlayerCommandText(playerid,cmdtext[])
 {
-    new funcstr[64];
+    new funcstr[64],
+		bool:returns;
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerCommandTextHandler])
+		if(CallbacksList[i][CBIndex][pCommandTextHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerCommandTextHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pCommandTextHandler",CallbacksList[i][CBName]);
+			if(!CallLocalFunction(funcstr,"ds")) returns = true;
 		}
-	return 0;
+	if(!returns)
+	    SendClientMessage(playerid,COLOR_WHITE,"[SERVER] 존재하지 않는 명령어입니다.");
+	return 1;
 }
 //-----< OnPlayerEnterVehicle >-------------------------------------------------
 public OnPlayerEnterVehicle(playerid,vehicleid,ispassenger)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerEnterVehicleHandler])
+		if(CallbacksList[i][CBIndex][pEnterVehicleHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerEnterVehicleHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pEnterVehicleHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,vehicleid,ispassenger);
 		}
 	return 1;
 }
@@ -264,10 +269,10 @@ public OnPlayerExitVehicle(playerid,vehicleid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerExitVehicleHandler])
+		if(CallbacksList[i][CBIndex][pExitVehicleHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerExitVehicleHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pExitVehicleHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,vehicleid);
 		}
 	return 1;
 }
@@ -276,10 +281,10 @@ public OnPlayerStateChange(playerid,newstate,oldstate)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerStateChangeHandler])
+		if(CallbacksList[i][CBIndex][pStateChangeHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerStateChangeHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pStateChangeHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,newstate,oldstate);
 		}
 	return 1;
 }
@@ -288,10 +293,10 @@ public OnPlayerEnterCheckpoint(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerEnterCheckpointHandler])
+		if(CallbacksList[i][CBIndex][pEnterCheckpointHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerEnterCheckpointHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pEnterCheckpointHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -300,10 +305,10 @@ public OnPlayerLeaveCheckpoint(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerLeaveCheckpointHandler])
+		if(CallbacksList[i][CBIndex][pLeaveCheckpointHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerLeaveCheckpointHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pLeaveCheckpointHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -312,10 +317,10 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerEnterRaceCheckpointHandler])
+		if(CallbacksList[i][CBIndex][pEnterRaceCheckpointHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerEnterRaceCheckpointHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pEnterRaceCheckpointHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -324,10 +329,10 @@ public OnPlayerLeaveRaceCheckpoint(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerLeaveRaceCheckpointHandler])
+		if(CallbacksList[i][CBIndex][pLeaveRaceCheckpointHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerLeaveRaceCheckpointHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pLeaveRaceCheckpointHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -339,7 +344,7 @@ public OnRconCommand(cmd[])
 		if(CallbacksList[i][CBIndex][RconCommandHandler])
 		{
 			format(funcstr,sizeof(funcstr),"%s_%s","RconCommandHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			CallLocalFunction(funcstr,"s",cmd);
 		}
 	return 1;
 }
@@ -348,10 +353,10 @@ public OnPlayerRequestSpawn(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -360,10 +365,10 @@ public OnObjectMoved(objectid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",objectid);
 		}
 	return 1;
 }
@@ -372,10 +377,10 @@ public OnPlayerObjectMoved(playerid,objectid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,objectid);
 		}
 	return 1;
 }
@@ -384,10 +389,10 @@ public OnPlayerPickUpPickup(playerid,pickupid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,pickupid);
 		}
 	return 1;
 }
@@ -396,10 +401,10 @@ public OnVehicleMod(playerid,vehicleid,componentid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][VehicleModHandler])
+		if(CallbacksList[i][CBIndex][vModHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","VehicleModHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","vModHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,vehicleid,componentid);
 		}
 	return 1;
 }
@@ -408,10 +413,10 @@ public OnVehiclePaintjob(playerid,vehicleid,paintjobid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][VehiclePaintjobHandler])
+		if(CallbacksList[i][CBIndex][vPaintjobHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","VehiclePaintjobHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","vPaintjobHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,vehicleid,paintjobid);
 		}
 	return 1;
 }
@@ -420,10 +425,10 @@ public OnVehicleRespray(playerid,vehicleid,color1,color2)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][VehicleResprayHandler])
+		if(CallbacksList[i][CBIndex][vResprayHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","VehicleResprayHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","vResprayHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dddd",playerid,vehicleid,color1,color2);
 		}
 	return 1;
 }
@@ -432,10 +437,10 @@ public OnPlayerSelectedMenuRow(playerid,row)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerSelectedMenuRowHandler])
+		if(CallbacksList[i][CBIndex][pSelectedMenuRowHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerSelectedMenuRowHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pSelectedMenuRowHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,row);
 		}
 	return 1;
 }
@@ -444,10 +449,10 @@ public OnPlayerExitedMenu(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerExitedMenuHandler])
+		if(CallbacksList[i][CBIndex][pExitedMenuHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerExitedMenuHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pExitedMenuHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -456,10 +461,10 @@ public OnPlayerInteriorChange(playerid,newinteriorid,oldinteriorid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,newinteriorid,oldinteriorid);
 		}
 	return 1;
 }
@@ -468,10 +473,10 @@ public OnPlayerKeyStateChange(playerid,newkeys,oldkeys)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,newkeys,oldkeys);
 		}
 	return 1;
 }
@@ -480,10 +485,10 @@ public OnRconLoginAttempt(ip[],password[],success)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ssd",ip,password,success);
 		}
 	return 1;
 }
@@ -492,10 +497,10 @@ public OnPlayerUpdate(playerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"d",playerid);
 		}
 	return 1;
 }
@@ -504,10 +509,10 @@ public OnPlayerStreamIn(playerid,forplayerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,forplayerid);
 		}
 	return 1;
 }
@@ -516,10 +521,10 @@ public OnPlayerStreamOut(playerid,forplayerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",playerid,forplayerid);
 		}
 	return 1;
 }
@@ -528,10 +533,10 @@ public OnVehicleStreamIn(vehicleid,forplayerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",vehicleid,forplayerid);
 		}
 	return 1;
 }
@@ -540,10 +545,10 @@ public OnVehicleStreamOut(vehicleid,forplayerid)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerRequestClassHandler])
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerRequestClassHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pRequestClassHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"dd",vehicleid,forplayerid);
 		}
 	return 1;
 }
@@ -555,7 +560,7 @@ public OnDialogResponse(playerid,dialogid,response,listitem,inputtext[])
 		if(CallbacksList[i][CBIndex][DialogResponseHandler])
 		{
 			format(funcstr,sizeof(funcstr),"%s_%s","DialogResponseHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			CallLocalFunction(funcstr,"dddds",playerid,dialogid,response,listitem,inputtext);
 		}
 	return 1;
 }
@@ -564,10 +569,10 @@ public OnPlayerClickPlayer(playerid,clickedplayerid,source)
 {
     new funcstr[64];
 	for(new i=0; i<=CallbacksIndex; i++)
-		if(CallbacksList[i][CBIndex][PlayerClickPlayerHandler])
+		if(CallbacksList[i][CBIndex][pClickPlayerHandler])
 		{
-			format(funcstr,sizeof(funcstr),"%s_%s","PlayerClickPlayerHandler",CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr,"");
+			format(funcstr,sizeof(funcstr),"%s_%s","pClickPlayerHandler",CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr,"ddd",playerid,clickedplayerid,source);
 		}
 	return 1;
 }

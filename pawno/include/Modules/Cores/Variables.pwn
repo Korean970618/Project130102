@@ -69,23 +69,27 @@ new ServerInfo[eServerInfo],
 
 
 //-----< Callbacks
+forward gInitHandler_Variables();
+forward pConnectHandler_Variables(playerid);
+forward pDisconnectHandler_Variables(playerid,reason);
+forward InitializePlayerVariables(playerid);
 //-----< GameModeInitHandler_Variables >----------------------------------------
-public GameModeInitHandler_Variables()
+public gInitHandler_Variables()
 {
-	sTogOOC = false;
-	sTogOOW = true;
-	sTogQA = true;
-	sTogNews = true;
+	ServerInfo[sTogOOC] = false;
+	ServerInfo[sTogOOW] = true;
+	ServerInfo[sTogQA] = true;
+	ServerInfo[sTogNews] = true;
 	return 1;
 }
 //-----< PlayerConnectHandler_Variables >---------------------------------------
-public PlayerConnectHandler_Variables(playerid)
+public pConnectHandler_Variables(playerid)
 {
 	InitializePlayerVariables(playerid);
 	return 1;
 }
 //-----< PlayerDisconnectHandler_Variables >------------------------------------
-public PlayerDisconnectHandler_Variables(playerid,reason)
+public pDisconnectHandler_Variables(playerid,reason)
 {
 	#pragma unused reason
     InitializePlayerVariables(playerid);
