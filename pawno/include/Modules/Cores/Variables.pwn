@@ -19,8 +19,10 @@
 /*
 
   < Callbacks >
-	GameModeInitHandler_Variables()
-	ConnectHandler_Variables(playerid)
+	gInitHandler_Variables()
+	pConnectHandler_Variables(playerid)
+	pDisconnectHandler_Variables(playerid,reason)
+	InitializePlayerVariables(playerid)
 	
   < Functions >
 
