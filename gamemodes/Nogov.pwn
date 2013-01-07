@@ -12,8 +12,8 @@
  *			< pureunba.tistory.com >
  *
  *
- *		Release:	2013/01/12
- *		Update:		2013/01/12
+ *		Release:	2013/01/02
+ *		Update:		2013/01/07
  *
  *
  */
@@ -40,6 +40,7 @@
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/InitExit.pwn"
 #include "Modules/Cores/Variables.pwn"
+#include "Modules/Commands/Admin.pwn"
 
 
 
@@ -117,6 +118,7 @@ main()
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
+	AddHandler("Admin",				pCommandTextHandler);
     AddHandler("InitExit",			gInitHandler, gExitHandler);
 
 	new funcstr[64];
