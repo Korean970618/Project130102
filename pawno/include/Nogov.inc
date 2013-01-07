@@ -24,6 +24,7 @@ native AntiDeAMX();
 native strtok(const string[], &index, seperator=' ');
 native stringslice(const string[], stringindex, separator=' ');
 native stringslice_c(const string[], stringindex, separator=' ');
+native ReturnUser(text[]);
  */
 
 
@@ -183,5 +184,48 @@ stock stringslice_c(const string[], stringindex, separator=' ')
 	}
 	strmid(result, string, stringstart, strlen(string));
 	return result;
+}
+//-----< ReturnUser >-----------------------------------------------------------
+stock ReturnUser(text[])
+{
+	new pos = 0;
+	while (text[pos] < 0x21)
+	{
+		if (text[pos] == 0)
+			return INVALID_PLAYER_ID;
+		pos++;
+	}
+	new userid = INVALID_PLAYER_ID;
+	if (IsNumeric(text[pos]))
+	{
+		userid = strval(text[pos]);
+		if (userid >= 0 && userid < GetMaxPlayers())
+		{
+			if (!IsPlayerConnected(userid))
+				userid = INVALID_PLAYER_ID;
+			else
+				return userid;
+		}
+	}
+	new len = strlen(text[pos]);
+	new count = 0;
+	new name[MAX_PLAYER_NAME];
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+		if (IsPlayerConnected(i))
+		{
+			GetPlayerName(i, name, sizeof(name));
+			if (strcmp(name, text[pos] ,true, len) == 0)
+			{
+				if (len == strlen(name))
+					return i;
+				else {
+					count++;
+					userid = i;
+				}
+			}
+		}
+	if (count != 1)
+		userid = INVALID_PLAYER_ID;
+	return userid;
 }
 //-----<  >---------------------------------------------------------------------
