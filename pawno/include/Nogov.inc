@@ -13,14 +13,17 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/04
+ *		Update:		2013/01/07
  *
  *
  */
 /*
-native strcpy(dest[],src[]);
+native strcpy(dest[], src[]);
 native FixBlankString(input[]);
 native AntiDeAMX();
+native strtok(const string[], &index, seperator=' ');
+native stringslice(const string[], stringindex, separator=' ');
+native stringslice_c(const string[], stringindex, separator=' ');
  */
 
 
@@ -97,25 +100,88 @@ native AntiDeAMX();
 
 //-----< Functions
 //-----< strcpy >---------------------------------------------------------------
-stock strcpy(dest[],src[])
+stock strcpy(dest[], src[])
 {
 	new i = 0;
-	while((dest[i] = src[i]))
+	while ((dest[i] = src[i]))
 		i++;
 }
 //-----< AntiDeAMX >------------------------------------------------------------
 stock AntiDeAMX()
 {
-	new a[][] =	{"Pureun","Ba"};
+	new a[][] =	{"Pureun", "Ba"};
 	#pragma unused a
 }
 //-----< FixBlankString >-------------------------------------------------------
 stock FixBlankString(input[])
 {
 	new string[1024];
-	strcpy(string,"/Empty/");
-	if(strlen(input))
-		strcpy(string,input);
+	strcpy(string, "/Empty/");
+	if (strlen(input))
+		strcpy(string, input);
 	return string;
+}
+//-----< strtok >---------------------------------------------------------------
+stock strtok(const string[], &index, seperator=' ')
+{
+	new length = strlen(string);
+	new offset = index;
+	new result[256];
+	while ((index < length) && (string[index] != seperator) && ((index - offset) < (sizeof(result) - 1)))
+	{
+		result[index - offset] = string[index];
+		index++;
+	}
+	result[index - offset] = EOS;
+	if ((index < length) && (string[index] == seperator))
+		index++;
+	return result;
+}
+//-----< stringslice >----------------------------------------------------------
+stock stringslice(const string[], stringindex, separator=' ')
+{
+	new
+		stringstart,
+		stringnum,
+		stringlength,
+		result[25]
+	;
+	for (stringnum = 0; stringnum <= stringindex && stringlength <= strlen(string); ++stringnum)
+	{
+		if (stringnum>0)
+			stringlength++;
+		stringstart = stringlength;
+		while (stringlength <= strlen(string) && string[stringlength] != separator && string[stringlength] != EOS)
+			stringlength++;
+	}
+	stringnum = 0;
+	stringlength = stringlength-stringstart;
+	while (stringnum <= stringlength && stringnum <= sizeof(result))
+	{
+		result[stringnum] = string[stringnum+stringstart];
+		stringnum++;
+	}
+	result[stringlength] = EOS;
+	return result;
+}
+//-----< stringslice_c >--------------------------------------------------------
+stock stringslice_c(const string[], stringindex, separator=' ')
+{
+	new
+		stringstart,
+		stringnum,
+		stringlength,
+		result[512]
+	;
+	for (stringnum = 0; stringnum <= stringindex && stringlength <= strlen(string); stringnum++)
+	{
+		if (stringnum > 0)
+			stringlength++;
+		stringstart = stringlength;
+		while (stringlength <= strlen(string) && string[stringlength] != separator && string[stringlength] != EOS)
+			stringlength++;
+	}
+	strmid(result, string, stringstart, strlen(string));
+	return result;
 }
 //-----<  >---------------------------------------------------------------------
