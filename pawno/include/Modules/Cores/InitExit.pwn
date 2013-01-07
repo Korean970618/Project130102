@@ -46,7 +46,7 @@ public gInitHandler_InitExit()
     
     AntiDeAMX();
     
-	format(str,sizeof(str),"%s %s",SCRIPT_NAME,SCRIPT_VERSION);
+	format(str, sizeof(str), "%s %s", SCRIPT_NAME, SCRIPT_VERSION);
 	SetGameModeText(str);
 	SendRconCommand("hostname "SERVER_HOSTNAME"");
 	SetWorldTime(12);
@@ -59,24 +59,24 @@ public gInitHandler_InitExit()
 	EnableStuntBonusForAll(false);
 	DisableInteriorEnterExits();
 	
-	for(new i; i<20; i++)
-	    SendClientMessageToAll(COLOR_WHITE," ");
-	SendClientMessageToAll(COLOR_WHITE,"게임모드를 로딩중입니다.");
+	for (new i; i < 20; i++)
+	    SendClientMessageToAll(COLOR_WHITE, " ");
+	SendClientMessageToAll(COLOR_WHITE, "게임모드를 로딩중입니다.");
 	return 1;
 }
 //-----< gExitHandler_InitExit >------------------------------------------------
 public gExitHandler_InitExit()
 {
-    for(new i; i<GetMaxPlayers(); i++)
+    for (new i; i < GetMaxPlayers(); i++)
 	{
-		if(IsPlayerNPC(i))
+		if (IsPlayerNPC(i))
 			Kick(i);
-		ShowPlayerDialog(i,0,DIALOG_STYLE_MSGBOX,"clear","clear","clear","clear");
-        for(new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
-			RemovePlayerAttachedObject(i,j);
+		ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "clear", "clear", "clear", "clear");
+        for (new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
+			RemovePlayerAttachedObject(i, j);
 	}
-	for(new i; i<20; i++)
-		SendClientMessageToAll(COLOR_WHITE," ");
+	for (new i; i < 20; i++)
+		SendClientMessageToAll(COLOR_WHITE, " ");
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	printf("[mode] Mode has been unloaded.");
