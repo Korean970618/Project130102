@@ -36,92 +36,92 @@
 
 //-----< Callbacks
 //-----< OnGameModeInit >-------------------------------------------------------
-public GameModeInitHandler_()
+public gInitHandler_()
 {
 	return 1;
 }
 //-----< OnGameModeExit >-------------------------------------------------------
-public GameModeExitHandler_()
+public gExitHandler_()
 {
 	return 1;
 }
 //-----< OnPlayerRequestClass >-------------------------------------------------
-public PlayerRequestClassHandler_(playerid,classid)
+public pRequestClassHandler_(playerid,classid)
 {
 	return 1;
 }
 //-----< OnPlayerConnect >------------------------------------------------------
-public PlayerConnectHandler_(playerid)
+public pConnectHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerDisconnect >---------------------------------------------------
-public PlayerDisconnectHandler_(playerid,reason)
+public pDisconnectHandler_(playerid,reason)
 {
 	return 1;
 }
 //-----< OnPlayerSpawn >--------------------------------------------------------
-public PlayerSpawnHandler_(playerid)
+public pSpawnHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerDeath >--------------------------------------------------------
-public PlayerDeathHandler_(playerid,killerid,reason)
+public pDeathHandler_(playerid,killerid,reason)
 {
 	return 1;
 }
 //-----< OnVehicleSpawn >-------------------------------------------------------
-public VehicleSpawnHandler_(vehicleid)
+public vSpawnHandler_(vehicleid)
 {
 	return 1;
 }
 //-----< OnVehicleDeath >-------------------------------------------------------
-public VehicleDeathHandler_(vehicleid,killerid)
+public vDeathHandler_(vehicleid,killerid)
 {
 	return 1;
 }
 //-----< OnPlayerText >---------------------------------------------------------
-public PlayerTextHandler_(playerid,text[])
+public pTextHandler_(playerid,text[])
 {
 	return 1;
 }
 //-----< OnPlayerCommandText >--------------------------------------------------
-public PlayerCommandTextHandler_(playerid,cmdtext[])
+public pCommandTextHandler_(playerid,cmdtext[])
 {
 	return 0;
 }
 //-----< OnPlayerEnterVehicle >-------------------------------------------------
-public PlayerEnterVehicleHandler_(playerid,vehicleid,ispassenger)
+public pEnterVehicleHandler_(playerid,vehicleid,ispassenger)
 {
 	return 1;
 }
 //-----< OnPlayerExitVehicle >--------------------------------------------------
-public PlayerExitVehicleHandler_(playerid,vehicleid)
+public pExitVehicleHandler_(playerid,vehicleid)
 {
 	return 1;
 }
 //-----< OnPlayerStateChange >--------------------------------------------------
-public PlayerStateChangeHandler_(playerid,newstate,oldstate)
+public pStateChangeHandler_(playerid,newstate,oldstate)
 {
 	return 1;
 }
 //-----< OnPlayerEnterCheckpoint >----------------------------------------------
-public PlayerEnterCheckpointHandler_(playerid)
+public pEnterCheckpointHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerLeaveCheckpoint >----------------------------------------------
-public PlayerLeaveCheckpointHandler_(playerid)
+public pLeaveCheckpointHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerEnterRaceCheckpoint >------------------------------------------
-public PlayerEnterRaceCheckpointHandler_(playerid)
+public pEnterRaceCheckpointHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerLeaveRaceCheckpoint >------------------------------------------
-public PlayerLeaveRaceCheckpointHandler_(playerid)
+public pLeaveRaceCheckpointHandler_(playerid)
 {
 	return 1;
 }
@@ -131,7 +131,7 @@ public RconCommandHandler_(cmd[])
 	return 1;
 }
 //-----< OnPlayerRequestSpawn >-------------------------------------------------
-public PlayerRequestSpawnHandler_(playerid)
+public pRequestSpawnHandler_(playerid)
 {
 	return 1;
 }
@@ -141,47 +141,47 @@ public ObjectMovedHandler_(objectid)
 	return 1;
 }
 //-----< OnPlayerObjectMoved >--------------------------------------------------
-public PlayerObjectMovedHandler_(playerid,objectid)
+public pObjectMovedHandler_(playerid,objectid)
 {
 	return 1;
 }
 //-----< OnPlayerPickUpPickup >-------------------------------------------------
-public PlayerPickUpPickupHandler_(playerid,pickupid)
+public pPickUpPickupHandler_(playerid,pickupid)
 {
 	return 1;
 }
 //-----< OnVehicleMod >---------------------------------------------------------
-public VehicleModHandler_(playerid,vehicleid,componentid)
+public vModHandler_(playerid,vehicleid,componentid)
 {
 	return 1;
 }
 //-----< OnVehiclePaintjob >----------------------------------------------------
-public VehiclePaintjobHandler_(playerid,vehicleid,paintjobid)
+public vPaintjobHandler_(playerid,vehicleid,paintjobid)
 {
 	return 1;
 }
 //-----< OnVehicleRespray >-----------------------------------------------------
-public VehicleResprayHandler_(playerid,vehicleid,color1,color2)
+public vResprayHandler_(playerid,vehicleid,color1,color2)
 {
 	return 1;
 }
 //-----< OnPlayerSelectedMenuRow >----------------------------------------------
-public PlayerSelectedMenuRowHandler_(playerid,row)
+public pSelectedMenuRowHandler_(playerid,row)
 {
 	return 1;
 }
 //-----< OnPlayerExitedMenu >---------------------------------------------------
-public PlayerExitedMenuHandler_(playerid)
+public pExitedMenuHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerInteriorChange >-----------------------------------------------
-public PlayerInteriorChangeHandler_(playerid,newinteriorid,oldinteriorid)
+public pInteriorChangeHandler_(playerid,newinteriorid,oldinteriorid)
 {
 	return 1;
 }
 //-----< OnPlayerKeyStateChange >-----------------------------------------------
-public PlayerKeyStateChangeHandler_(playerid,newkeys,oldkeys)
+public pKeyStateChangeHandler_(playerid,newkeys,oldkeys)
 {
 	return 1;
 }
@@ -191,27 +191,27 @@ public RconLoginAttemptHandler_(ip[],password[],success)
 	return 1;
 }
 //-----< OnPlayerUpdate >-------------------------------------------------------
-public PlayerUpdateHandler_(playerid)
+public pUpdateHandler_(playerid)
 {
 	return 1;
 }
 //-----< OnPlayerStreamIn >-----------------------------------------------------
-public PlayerStreamInHandler_(playerid,forplayerid)
+public pStreamInHandler_(playerid,forplayerid)
 {
 	return 1;
 }
 //-----< OnPlayerStreamOut >----------------------------------------------------
-public PlayerStreamOutHandler_(playerid,forplayerid)
+public pStreamOutHandler_(playerid,forplayerid)
 {
 	return 1;
 }
 //-----< OnVehicleStreamIn >----------------------------------------------------
-public VehicleStreamInHandler_(vehicleid,forplayerid)
+public vStreamInHandler_(vehicleid,forplayerid)
 {
 	return 1;
 }
 //-----< OnVehicleStreamOut >---------------------------------------------------
-public VehicleStreamOutHandler_(vehicleid,forplayerid)
+public vStreamOutHandler_(vehicleid,forplayerid)
 {
 	return 1;
 }
@@ -221,7 +221,7 @@ public DialogResponseHandler_(playerid,dialogid,response,listitem,inputtext[])
 	return 1;
 }
 //-----< OnPlayerClickPlayer >--------------------------------------------------
-public PlayerClickPlayerHandler_(playerid,clickedplayerid,source)
+public pClickPlayerHandler_(playerid,clickedplayerid,source)
 {
 	return 1;
 }
