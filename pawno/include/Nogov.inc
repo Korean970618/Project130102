@@ -25,6 +25,12 @@ native strtok(const string[], &index, seperator=' ');
 native stringslice(const string[], stringindex, separator=' ');
 native stringslice_c(const string[], stringindex, separator=' ');
 native ReturnUser(text[]);
+native IsNumeric(const string[]);
+native split(const strsrc[], strdest[][], delimiter = '|');
+native GetPlayerNameA(playerid);
+native GetPlayerIpA(playerid);
+native Float:GetPlayerHealthA(playerid);
+native Float:GetPlayerArmourA(playerid);
  */
 
 
@@ -227,5 +233,57 @@ stock ReturnUser(text[])
 	if (count != 1)
 		userid = INVALID_PLAYER_ID;
 	return userid;
+}
+//-----< IsNumeric >------------------------------------------------------------
+stock IsNumeric(const string[])
+{
+	for (new i = 0, t = strlen(string); i < t; i++)
+		if (string[i] < '0' || string[i] > '9')
+			return false;
+	return true;
+}
+//-----< split >----------------------------------------------------------------
+stock split(const strsrc[], strdest[][], delimiter = '|')
+{
+	new i, li, aNum, len, srclen = strlen(strsrc);
+	while (i <= srclen)
+	{
+		if (strsrc[i] == delimiter || i == srclen)
+		{
+			len = strmid(strdest[aNum], strsrc, li, i, 128);
+			strdest[aNum][len] = 0;
+			li = i + 1;
+			aNum++;
+		}
+		i++;
+	}
+}
+//-----< GetPlayerNameA >-------------------------------------------------------
+stock GetPlayerNameA(playerid)
+{
+	new pname[MAX_PLAYER_NAME];
+	GetPlayerName(playerid, pname, sizeof(pname));
+	return pname;
+}
+//-----< GetPlayerIpA >---------------------------------------------------------
+stock GetPlayerIpA(playerid)
+{
+	new pip[16];
+	GetPlayerIp(playerid, pip, sizeof(pip));
+	return pip;
+}
+//-----< GetPlayerHealthA >-----------------------------------------------------
+stock Float:GetPlayerHealthA(playerid)
+{
+	new Float:tmp;
+	GetPlayerHealth(playerid, tmp);
+	return tmp;
+}
+//-----< GetPlayerArmourA >-----------------------------------------------------
+stock Float:GetPlayerArmourA(playerid)
+{
+	new Float:tmp;
+	GetPlayerArmour(playerid, tmp);
+	return tmp;
 }
 //-----<  >---------------------------------------------------------------------
