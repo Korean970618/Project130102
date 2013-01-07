@@ -246,7 +246,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
 		if (CallbacksList[i][CBIndex][pCommandTextHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pCommandTextHandler", CallbacksList[i][CBName]);
-			if (!CallLocalFunction(funcstr, "ds")) returns = true;
+			if (CallLocalFunction(funcstr, "ds")) returns = true;
 		}
 	if (!returns)
 	    SendClientMessage(playerid, COLOR_WHITE, "[SERVER] 존재하지 않는 명령어입니다.");
