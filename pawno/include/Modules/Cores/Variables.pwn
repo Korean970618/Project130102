@@ -98,26 +98,26 @@ public pDisconnectHandler_Variables(playerid,reason)
 //-----< InitializePlayerVariables >--------------------------------------------
 public InitializePlayerVariables(playerid)
 {
-	strcpy(PlayerInfo[playerid][pPassword]," ");
-	strcpy(PlayerInfo[playerid][pIP]," ");
+	strcpy(PlayerInfo[playerid][pPassword],chEmpty);
+	strcpy(PlayerInfo[playerid][pIP],chEmpty);
 	PlayerInfo[playerid][pRegDate] = 0;
 	PlayerInfo[playerid][pLevel] = 0;
 	PlayerInfo[playerid][pRadio] = 0;
-	strcpy(PlayerInfo[playerid][pOrigin]," ");
+	strcpy(PlayerInfo[playerid][pOrigin],chEmpty);
 	PlayerInfo[playerid][pMoney] = 0;
 	PlayerInfo[playerid][pSkin] = 0;
 	PlayerInfo[playerid][pDeaths] = 0;
 	PlayerInfo[playerid][pLastQuit] = 0;
-	strcpy(PlayerInfo[playerid][pLastPos]," ");
+	strcpy(PlayerInfo[playerid][pLastPos],chEmpty);
 	PlayerInfo[playerid][pTutorial] = 0;
 	PlayerInfo[playerid][pAdmin] = 0;
 	PlayerInfo[playerid][pWarns] = 0;
 	PlayerInfo[playerid][pPraises] = 0;
-	strcpy(PlayerInfo[playerid][pToy1]," ");
-	strcpy(PlayerInfo[playerid][pToy2]," ");
-	strcpy(PlayerInfo[playerid][pToy3]," ");
-	strcpy(PlayerInfo[playerid][pToy4]," ");
-	strcpy(PlayerInfo[playerid][pToy5]," ");
+	strcpy(PlayerInfo[playerid][pToy1],chEmpty);
+	strcpy(PlayerInfo[playerid][pToy2],chEmpty);
+	strcpy(PlayerInfo[playerid][pToy3],chEmpty);
+	strcpy(PlayerInfo[playerid][pToy4],chEmpty);
+	strcpy(PlayerInfo[playerid][pToy5],chEmpty);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------

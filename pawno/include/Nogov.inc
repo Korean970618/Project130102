@@ -12,8 +12,8 @@
  *			< pureunba.tistory.com >
  *
  *
- *		Release:	2013/01/12
- *		Update:		2013/01/12
+ *		Release:	2013/01/02
+ *		Update:		2013/01/04
  *
  *
  */
@@ -26,8 +26,14 @@ native AntiDeAMX();
 
 
 //-----< Defines
+//-----< Chars >----------------------------------------------------------------
+#define chNullString            ""
+#define chEmpty                 " "
+#define chCr                    "\r"
+#define chLf                    "\n"
+#define chCrLf                  "\r\n"
 //-----< System Colors >--------------------------------------------------------
-#define COLOR_ADMIN				0x2587CEFF // *Admin:
+#define COLOR_ADMIN				0x2587CEFF
 #define COLOR_DIALOG			0xA9C4E4FF
 #define C_ADMIN					"{2587CE}"
 #define C_DIALOG				"{A9C4E4}"
