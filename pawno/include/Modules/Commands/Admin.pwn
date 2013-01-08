@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/01/07
+ *		Update:		2013/01/08
  *
  *
  */
@@ -46,7 +46,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		str[256];
 	cmd = strtok(cmdtext, idx);
 
-	if (PlayerInfo[playerid][pAdmin] < 1) return 0;
+	if (GetPVarInt_(playerid, "pAdmin") < 1) return 0;
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 	    new help[2048];

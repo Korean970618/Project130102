@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/07
+ *		Update:		2013/01/08
  *
  *
  */
@@ -118,8 +118,11 @@ main()
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
-	AddHandler("Admin",				pCommandTextHandler);
+	// Cores
     AddHandler("InitExit",			gInitHandler, gExitHandler);
+    AddHandler("Variables",         gInitHandler);
+    // Commands
+	AddHandler("Admin",				pCommandTextHandler);
 
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
