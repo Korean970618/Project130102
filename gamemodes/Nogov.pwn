@@ -40,6 +40,7 @@
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/InitExit.pwn"
 #include "Modules/Cores/Variables.pwn"
+#include "Modules/Cores/MySQL.pwn"
 #include "Modules/Commands/Admin.pwn"
 
 
@@ -121,6 +122,7 @@ public OnGameModeInit()
 	// Cores
     AddHandler("InitExit",			gInitHandler, gExitHandler);
     AddHandler("Variables",         gInitHandler);
+    AddHandler("MySQL",             gInitHandler);
     // Commands
 	AddHandler("Admin",				pCommandTextHandler);
 
