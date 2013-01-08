@@ -31,6 +31,8 @@ native GetPlayerNameA(playerid);
 native GetPlayerIpA(playerid);
 native Float:GetPlayerHealthA(playerid);
 native Float:GetPlayerArmourA(playerid);
+native Wait(time);
+native Crash();
  */
 
 
@@ -285,5 +287,21 @@ stock Float:GetPlayerArmourA(playerid)
 	new Float:tmp;
 	GetPlayerArmour(playerid, tmp);
 	return tmp;
+}
+//-----< Wait >-----------------------------------------------------------------
+stock Wait(time)
+{
+	new stamp = tickcount();
+	while (tickcount() - stamp < time) {}
+	return 1;
+}
+//-----< Crash >----------------------------------------------------------------
+stock Crash()
+{
+	new File:hFile;
+	hFile = fopen("crash/crash.txt", io_append);
+	fwrite(hFile, "%s");
+	fclose(hFile);
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------
