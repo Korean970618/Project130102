@@ -85,8 +85,10 @@
 #define vStreamOutHandler				36
 #define dResponseHandler				37
 #define pClickPlayerHandler				38
+#define tTickHandler					39
+#define pTimerTickHandler				40
 
-#define MAX_CALLBACKS					38
+#define MAX_CALLBACKS					40
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -99,12 +101,14 @@ enum eCallBacks
 }
 new
 	CallbacksList[50][eCallBacks],
-	CallbacksIndex = -1
+	CallbacksIndex = -1,
+	Timer_OneSecTimer
 ;
 
 
 
 //-----< Callbacks
+forward OnTimerTick();
 //-----< main >-----------------------------------------------------------------
 main()
 {
@@ -125,6 +129,9 @@ public OnGameModeInit()
     AddHandler("MySQL",             gInitHandler);
     // Commands
 	AddHandler("Admin",				pCommandTextHandler);
+	
+	SetTimer("OnTimerTick", 20, true);
+	Timer_OneSecTimer = GetTickCount();
 
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
@@ -581,6 +588,42 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, clickedplayerid, source);
 		}
+	return 1;
+}
+//-----< OnTimerTick >----------------------------------------------------------
+public OnTimerTick()
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+        if (CallbacksList[i][CBIndex][tTickHandler])
+        {
+        	format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
+            CallLocalFunction(funcstr, "d", 20);
+		}
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	    for(new j = 0; j <= CallbacksIndex; i++)
+	        if (CallbacksList[i][CBIndex][pTimerTickHandler])
+	        {
+	            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[i][CBName]);
+	            CallLocalFunction(funcstr, "dd", 20, i);
+			}
+	if ((GetTickCount() - Timer_OneSecTimer) / 1000)
+	{
+	    for (new i = 0; i <= CallbacksIndex; i++)
+	        if (CallbacksList[i][CBIndex][tTickHandler])
+	        {
+	        	format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
+	            CallLocalFunction(funcstr, "d", 1000);
+			}
+		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+		    for(new j = 0; j <= CallbacksIndex; i++)
+		        if (CallbacksList[i][CBIndex][pTimerTickHandler])
+		        {
+		            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[i][CBName]);
+		            CallLocalFunction(funcstr, "dd", 1000, i);
+				}
+	    Timer_OneSecTimer = GetTickCount();
+	}
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
