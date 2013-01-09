@@ -28,11 +28,6 @@
 
 
 
-//-----< Includes
-#include <mysql>
-
-
-
 //-----< Variables
 new MySQL:MySQL_Handle;
 
