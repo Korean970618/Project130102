@@ -37,6 +37,7 @@
 //-----< Includes
 #include <a_samp>
 #include <Nogov>
+#include <mysql>
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/InitExit.pwn"
 #include "Modules/Cores/Variables.pwn"
