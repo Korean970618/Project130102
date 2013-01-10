@@ -12,13 +12,15 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/01/08
+ *		Update:		2013/01/10
  *
  *
  */
 /*
 
   < Callbacks >
+	pCommandTextHandler_Admin(playerid, cmdtext[]);
+	dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[]);
 
   < Functions >
 
@@ -32,11 +34,13 @@ new Float:Mark[MAX_PLAYERS][4];
 
 
 //-----< Defines
+#define DialogId_Admin(%0)          (50+%0)
 
 
 
 //-----< Callbacks
 forward pCommandTextHandler_Admin(playerid, cmdtext[]);
+forward dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[]);
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Admin(playerid, cmdtext[])
 {
@@ -50,7 +54,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 	    new help[2048];
-	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머");
+	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사");
 	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤");
 	    ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, ""C_BLUE"관리자 도움말", help, "닫기", "");
 	    return 1;
@@ -94,6 +98,56 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		format(str, sizeof(str), "%s님의 아머를 설정했습니다. %f > %f", GetPlayerNameA(destid), ba, a);
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 아머가 설정되었습니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/정보수정", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		SetPVarInt_(playerid, "EditPVar_destid", destid);
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
+		SetPVarString_(playerid, "EditPVar_varname", cmd);
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
+		SetPVarInt_(playerid, "EditPVar_array", strval(cmd));
+		strcpy(cmd, stringslice_c(cmdtext, 4));
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
+		SetPVarString_(playerid, "EditPVar_value", cmd);
+		format(str, sizeof(str), ""C_BLUE"정보수정: %s(%d)", GetPlayerNameA(destid), destid);
+		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, str, ""C_WHITE"INTEGER\nFLOAT\nSTRING", "확인", "취소");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/정보검사", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보검사 [플레이어] [정보] [배열]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+        cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보검사 [플레이어] [정보] [배열]");
+		new varname[64];
+		strcpy(varname, cmd);
+        cmd = strtok(cmdtext, idx);
+		new array = (strlen(cmd))?strval(cmd):0;
+		format(str, sizeof(str), "- %s의 %s", GetPlayerNameA(destid), varname);
+		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(str, sizeof(str), "  INTEGER: %d", GetPVarInt_(playerid, varname, array));
+		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(str, sizeof(str), "  FLOAT: %f", GetPVarFloat_(playerid, varname, array));
+		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(str, sizeof(str), "  STRING: %s", GetPVarString_(playerid, varname, array));
+		SendClientMessage(playerid, COLOR_YELLOW, str);
 		return 1;
 	}
 	//
@@ -185,6 +239,42 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		return 1;
 	}
 	return 0;
+}
+//-----< dResponseHandler >-----------------------------------------------------
+public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[])
+{
+	new str[256];
+	switch (dialogid - DialogId_Admin(0))
+	{
+		case 0:
+		{
+		    if (response)
+		    {
+				new destid = GetPVarInt_(playerid, "EditPVar_destid");
+		        if (!IsPlayerConnected(destid))
+		    		return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+				new varname[64];
+				strcpy(varname, GetPVarString_(playerid, "EditPVar_varname"));
+				new array = GetPVarInt_(playerid, "EditPVar_array");
+				strcpy(str, GetPVarString_(playerid, "EditPVar_value"));
+				switch (listitem)
+				{
+				    case 0:
+				        SetPVarInt_(destid, varname, strval(str), array);
+				    case 1:
+				        SetPVarFloat_(destid, varname, floatstr(str), array);
+				    default:
+				        SetPVarString_(destid, varname, str, array);
+				}
+				format(str, sizeof(str), "%s의 %s 수정: %s", GetPlayerNameA(destid), varname, str);
+				SendClientMessage(playerid, COLOR_YELLOW, str);
+			}
+			SetPVarInt_(playerid, "EditPVar_destid", 0);
+			SetPVarString_(playerid, "EditPVar_varname", chNullString);
+			SetPVarString_(playerid, "EditPVar_value", chNullString);
+		}
+	}
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------
 

@@ -13,14 +13,17 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/08
+ *		Update:		2013/01/10
  *
  *
  */
 /*
 
-  < Modules >
-	
+  < Dialog List >
+	0: Nogov Main Script
+	25: UserData Core
+	50: Admin Command
+
   < Functions >
 	AddHandler(module[], ...)
 
@@ -40,7 +43,7 @@
 #include <mysql>
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/InitExit.pwn"
-#include "Modules/Cores/Variables.pwn"
+#include "Modules/Cores/UserData.pwn"
 #include "Modules/Cores/MySQL.pwn"
 #include "Modules/Commands/Admin.pwn"
 
@@ -126,12 +129,12 @@ public OnGameModeInit()
 {
 	// Cores
     AddHandler("InitExit",			gInitHandler, gExitHandler);
-    AddHandler("Variables",         gInitHandler);
+    AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
     AddHandler("MySQL",             gInitHandler);
     // Commands
-	AddHandler("Admin",				pCommandTextHandler);
+	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	
-	SetTimer("OnTimerTick", 20, true);
+	SetTimer("OnTimerTick", TimeFix(20), true);
 	Timer_OneSecTimer = GetTickCount();
 
 	new funcstr[64];
@@ -158,15 +161,14 @@ public OnGameModeExit()
 //-----< OnPlayerRequestClass >-------------------------------------------------
 public OnPlayerRequestClass(playerid, classid)
 {
-    new funcstr[64]
-		, returns;
+    new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestClassHandler", CallbacksList[i][CBName]);
-			returns = CallLocalFunction(funcstr, "dd", playerid, classid);
+			CallLocalFunction(funcstr, "dd", playerid, classid);
 		}
-	return returns;
+	return 1;
 }
 //-----< OnPlayerConnect >------------------------------------------------------
 public OnPlayerConnect(playerid)
@@ -255,16 +257,14 @@ public OnPlayerText(playerid, text[])
 //-----< OnPlayerCommandText >--------------------------------------------------
 public OnPlayerCommandText(playerid, cmdtext[])
 {
-    new funcstr[64],
-		bool:returns;
+    new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pCommandTextHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pCommandTextHandler", CallbacksList[i][CBName]);
-			if (CallLocalFunction(funcstr, "ds")) returns = true;
+			if (CallLocalFunction(funcstr, "ds", playerid, cmdtext)) return 1;
 		}
-	if (!returns)
-	    SendClientMessage(playerid, COLOR_WHITE, "[SERVER] 존재하지 않는 명령어입니다.");
+	SendClientMessage(playerid, COLOR_WHITE, "[SERVER] 존재하지 않는 명령어입니다.");
 	return 1;
 }
 //-----< OnPlayerEnterVehicle >-------------------------------------------------
@@ -371,7 +371,7 @@ public OnPlayerRequestSpawn(playerid)
 		if (CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestClassHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "d", playerid);
+			if (!CallLocalFunction(funcstr, "d", playerid)) return 0;
 		}
 	return 1;
 }
@@ -602,10 +602,10 @@ public OnTimerTick()
             CallLocalFunction(funcstr, "d", 20);
 		}
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-	    for(new j = 0; j <= CallbacksIndex; i++)
-	        if (CallbacksList[i][CBIndex][pTimerTickHandler])
+	    for(new j = 0; j <= CallbacksIndex; j++)
+	        if (CallbacksList[j][CBIndex][pTimerTickHandler])
 	        {
-	            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[i][CBName]);
+	            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
 	            CallLocalFunction(funcstr, "dd", 20, i);
 			}
 	if ((GetTickCount() - Timer_OneSecTimer) / 1000)
@@ -617,11 +617,11 @@ public OnTimerTick()
 	            CallLocalFunction(funcstr, "d", 1000);
 			}
 		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		    for(new j = 0; j <= CallbacksIndex; i++)
-		        if (CallbacksList[i][CBIndex][pTimerTickHandler])
+		    for(new j = 0; j <= CallbacksIndex; j++)
+		        if (CallbacksList[j][CBIndex][pTimerTickHandler])
 		        {
-		            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[i][CBName]);
-		            CallLocalFunction(funcstr, "dd", 1000, i);
+		            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
+					CallLocalFunction(funcstr, "dd", 1000, i);
 				}
 	    Timer_OneSecTimer = GetTickCount();
 	}
@@ -639,5 +639,4 @@ stock AddHandler(name[], ...)
 		if (getarg(i) >= 1 && getarg(i) <= MAX_CALLBACKS)
 			CallbacksList[CallbacksIndex][CBIndex][getarg(i)] = 1;
 }
-//-----<  >---------------------------------------------------------------------
 //-----<  >---------------------------------------------------------------------

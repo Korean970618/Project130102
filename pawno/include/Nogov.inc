@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/07
+ *		Update:		2013/01/10
  *
  *
  */
@@ -33,7 +33,19 @@ native Float:GetPlayerHealthA(playerid);
 native Float:GetPlayerArmourA(playerid);
 native Wait(time);
 native Crash();
+native TimeFix(time);
+native SetPVarInt_(playerid, varname[], int_value, array=0);
+native Float:SetPVarFloat_(playerid, varname[], Float:float_value, array=0);
+native SetPVarString_(playerid, varname[], string_value[], array=0);
+native GetPVarInt_(playerid, varname[], array=0);
+native GetPVarFloat_(playerid, varname[], array=0);
+native GetPVarString_(playerid, varname[], array=0);
  */
+
+
+
+//-----< Pragmas
+#pragma dynamic					20000000
 
 
 
@@ -303,5 +315,65 @@ stock Crash()
 	fwrite(hFile, "%s");
 	fclose(hFile);
 	return 1;
+}
+//-----< TimeFix >--------------------------------------------------------------
+stock TimeFix(time)
+{
+	return floatround(time*0.85);
+}
+//-----< SetPVarInt_ >----------------------------------------------------------
+stock SetPVarInt_(playerid, varname[], int_value, array=0)
+{
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	if (int_value == 0)
+	    DeletePVar(playerid, varname_);
+	else
+		SetPVarInt(playerid, varname_, int_value);
+}
+//-----< SetPVarFloat_ >--------------------------------------------------------
+stock SetPVarFloat_(playerid, varname[], Float:float_value, array=0)
+{
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	if (float_value == 0.0)
+	    DeletePVar(playerid, varname_);
+	else
+		SetPVarFloat(playerid, varname_, float_value);
+}
+//-----< SetPVarString_ >-------------------------------------------------------
+stock SetPVarString_(playerid, varname[], string_value[], array=0)
+{
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	if (strlen(string_value) == 0)
+	    DeletePVar(playerid, varname_);
+	else
+		SetPVarString(playerid, varname_, string_value);
+}
+//-----< GetPVarInt_ >----------------------------------------------------------
+stock GetPVarInt_(playerid, varname[], array=0)
+{
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	return GetPVarInt(playerid, varname_);
+}
+//-----< GetPVarFloat_ >--------------------------------------------------------
+stock Float:GetPVarFloat_(playerid, varname[], array=0)
+{
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	return GetPVarFloat(playerid, varname_);
+}
+//-----< GetPVarString_ >-------------------------------------------------------
+stock GetPVarString_(playerid, varname[], array=0)
+{
+	new
+		varname_[64],
+		string[512]
+	;
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	GetPVarString(playerid, varname_, string, sizeof(string));
+	return string;
 }
 //-----<  >---------------------------------------------------------------------

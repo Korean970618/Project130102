@@ -48,10 +48,11 @@ public gInitHandler_MySQL()
 {
 	printf("DB 서버에 접속중입니다.");
 	MySQL_Handle = mysql_init(LOG_OFF, true);
-	if (mysql_connect(SQL_IP, SQL_ID, SQL_DB, SQL_PW, MySQL_Handle))
+	if (mysql_connect(SQL_IP, SQL_ID, SQL_PW, SQL_DB, MySQL_Handle))
 	{
 	    printf("DB 서버에 접속했습니다.");
 		mysql_query("SET NAMES 'euckr'");
+		CreatePlayerDataTable();
 	}
 	else
 	{
