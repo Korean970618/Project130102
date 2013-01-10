@@ -19,10 +19,11 @@
 /*
 
   < Callbacks >
-	pCommandTextHandler_Admin(playerid, cmdtext[]);
-	dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[]);
+	pCommandTextHandler_Admin(playerid, cmdtext[])
+	dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[])
 
   < Functions >
+	SendAdminMessage(color, message[], level=1)
 
 */
 
@@ -140,7 +141,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		strcpy(varname, cmd);
         cmd = strtok(cmdtext, idx);
 		new array = (strlen(cmd))?strval(cmd):0;
-		format(str, sizeof(str), "- %s¿« %s", GetPlayerNameA(destid), varname);
+		format(str, sizeof(str), "- %s¥‘¿« %s", GetPlayerNameA(destid), varname);
 		SendClientMessage(playerid, COLOR_YELLOW, str);
 		format(str, sizeof(str), "  INTEGER: %d", GetPVarInt_(playerid, varname, array));
 		SendClientMessage(playerid, COLOR_YELLOW, str);
@@ -266,8 +267,8 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 				    default:
 				        SetPVarString_(destid, varname, str, array);
 				}
-				format(str, sizeof(str), "%s¿« %s ºˆ¡§: %s", GetPlayerNameA(destid), varname, str);
-				SendClientMessage(playerid, COLOR_YELLOW, str);
+				format(str, sizeof(str), "%s¥‘¿Ã %s¥‘¿« %s ºˆ¡§: %s", GetPlayerNameA(playerid), GetPlayerNameA(destid), varname, str);
+				SendAdminMessage(COLOR_YELLOW, str);
 			}
 			SetPVarInt_(playerid, "EditPVar_destid", 0);
 			SetPVarString_(playerid, "EditPVar_varname", chNullString);
@@ -281,4 +282,11 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 
 
 //-----< Functions
+//-----< SendAdminMessage >-----------------------------------------------------
+stock SendAdminMessage(color, message[], level=1)
+{
+	for (new i = 0, t = GetMaxPlayers(); i < t; t++)
+	    if (GetPVarInt_(i, "pAdmin") >= level)
+	        SendClientMessage(i, color, message);
+}
 //-----<  >---------------------------------------------------------------------
