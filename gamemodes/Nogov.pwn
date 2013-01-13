@@ -39,12 +39,12 @@
 
 //-----< Includes
 #include <a_samp>
-#include <Nogov>
 #include <mysql>
+#include <Nogov>
 //-----< Modules >--------------------------------------------------------------
+#include "Modules/Cores/MySQL.pwn"
 #include "Modules/Cores/InitExit.pwn"
 #include "Modules/Cores/UserData.pwn"
-#include "Modules/Cores/MySQL.pwn"
 #include "Modules/Commands/Admin.pwn"
 
 
@@ -128,9 +128,9 @@ main()
 public OnGameModeInit()
 {
 	// Cores
+	AddHandler("MySQL",             gInitHandler);
     AddHandler("InitExit",			gInitHandler, gExitHandler);
     AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
-    AddHandler("MySQL",             gInitHandler);
     // Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	

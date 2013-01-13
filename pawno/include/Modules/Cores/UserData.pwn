@@ -51,6 +51,7 @@
 
 
 //-----< Callbacks
+forward gInitHandler_UserData();
 forward pConnectHandler_UserData(playerid);
 forward pRequestSpawnHandler_UserData(playerid);
 forward pDeathHandler_UserData(playerid, killerid, reason);
@@ -58,6 +59,12 @@ forward pSpawnHandler_UserData(playerid);
 forward pCommandTextHandler_UserData(playerid, cmdtext[]);
 forward dResponseHandler_UserData(playerid, dialogid, response, listitem, inputtext[]);
 forward pTimerTickHandler_UserData(nsec, playerid);
+//-----< gInitHandler >---------------------------------------------------------
+public gInitHandler_UserData()
+{
+    CreatePlayerDataTable();
+    return 1;
+}
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_UserData(playerid)
 {

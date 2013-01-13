@@ -52,7 +52,6 @@ public gInitHandler_MySQL()
 	{
 	    printf("DB 서버에 접속했습니다.");
 		mysql_query("SET NAMES 'euckr'");
-		CreatePlayerDataTable();
 	}
 	else
 	{
