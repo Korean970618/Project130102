@@ -27,9 +27,9 @@
 	pTimerTickHandler_UserData(nsec, playerid)
 	
   < Functions >
-	CreatePlayerDataTable()
-	SavePlayerData(playerid)
-	LoadPlayerData(playerid)
+	CreateUserDataTable()
+	SaveUserData(playerid)
+	LoadUserData(playerid)
 	ShowPlayerLoginDialog(playerid, bool:wrong)
 	LetPlayerSpawn(playerid)
 
@@ -62,7 +62,7 @@ forward pTimerTickHandler_UserData(nsec, playerid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_UserData()
 {
-    CreatePlayerDataTable();
+    CreateUserDataTable();
     return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
@@ -152,7 +152,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 				    SetPVarInt_(playerid, "pRegDate", strval(str));
 				    format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 				    mysql_query(str);
-				    SavePlayerData(playerid);
+				    SaveUserData(playerid);
 				    SetPVarInt_(playerid, "Registered", true);
 				    SetPVarInt_(playerid, "LoggedIn", true);
 					LetPlayerSpawn(playerid);
@@ -168,7 +168,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 			    if (mysql_num_rows() == 1)
 			    {
 					SetPVarInt_(playerid, "LoggedIn", true);
-			        LoadPlayerData(playerid);
+			        LoadUserData(playerid);
 			        if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
 			            ShowPlayerDialog(playerid, DialogId_UserData(2), DIALOG_STYLE_LIST, ""C_BLUE"로그인", ""C_WHITE"리스폰\n위치 복구", "선택", chNullString);
 			        else
@@ -220,7 +220,7 @@ public pTimerTickHandler_UserData(nsec, playerid)
 	    format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
 	    SetPVarString_(playerid, "pLastPos", str);
 	}
-	SavePlayerData(playerid);
+	SaveUserData(playerid);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -228,8 +228,8 @@ public pTimerTickHandler_UserData(nsec, playerid)
 
 
 //-----< Functions
-//-----< CreatePlayerDataTable >------------------------------------------------
-stock CreatePlayerDataTable()
+//-----< CreateUserDataTable >--------------------------------------------------
+stock CreateUserDataTable()
 {
 	new str[3840];
 	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS userdata (");
@@ -269,8 +269,8 @@ stock CreatePlayerDataTable()
 	mysql_query(str);
 	return 1;
 }
-//-----< SavePlayerData >-------------------------------------------------------
-stock SavePlayerData(playerid)
+//-----< SaveUserData >---------------------------------------------------------
+stock SaveUserData(playerid)
 {
 	new str[3840];
 	if (IsPlayerNPC(playerid)) return 1;
@@ -301,8 +301,8 @@ stock SavePlayerData(playerid)
 	mysql_query(str);
 	return 1;
 }
-//-----< LoadPlayerData >-------------------------------------------------------
-stock LoadPlayerData(playerid)
+//-----< LoadUserData >---------------------------------------------------------
+stock LoadUserData(playerid)
 {
 	new str[256],
 	    receive[24][256],
