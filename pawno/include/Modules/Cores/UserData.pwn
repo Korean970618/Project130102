@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/10
+ *		Update:		2013/01/14
  *
  *
  */
@@ -30,7 +30,6 @@
 	CreatePlayerDataTable()
 	SavePlayerData(playerid)
 	LoadPlayerData(playerid)
-	escape(str[])
 	ShowPlayerLoginDialog(playerid, bool:wrong)
 	LetPlayerSpawn(playerid)
 
@@ -342,13 +341,6 @@ stock LoadPlayerData(playerid)
 	    SetPVarInt_(playerid, "pRegDate", strval(str));
 	}
 	return 1;
-}
-//-----< escape >---------------------------------------------------------------
-stock escape(str[])
-{
-	new escaped[256];
-	mysql_real_escape_string(str, escaped);
-	return escaped;
 }
 //-----< ShowPlayerLoginDialog >------------------------------------------------
 stock ShowPlayerLoginDialog(playerid, bool:wrong)

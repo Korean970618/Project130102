@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/10
+ *		Update:		2013/01/14
  *
  *
  */
@@ -40,6 +40,7 @@ native SetPVarString_(playerid, varname[], string_value[], array=0);
 native GetPVarInt_(playerid, varname[], array=0);
 native GetPVarFloat_(playerid, varname[], array=0);
 native GetPVarString_(playerid, varname[], array=0);
+native escape(str[])
  */
 
 
@@ -375,5 +376,12 @@ stock GetPVarString_(playerid, varname[], array=0)
 	format(varname_, sizeof(varname_), "%s_%d", varname, array);
 	GetPVarString(playerid, varname_, string, sizeof(string));
 	return string;
+}
+//-----< escape >---------------------------------------------------------------
+stock escape(str[])
+{
+	new escaped[256];
+	mysql_real_escape_string(str, escaped);
+	return escaped;
 }
 //-----<  >---------------------------------------------------------------------
