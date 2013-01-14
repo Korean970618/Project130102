@@ -399,9 +399,8 @@ stock escape(str[])
 //-----< ResetPlayerDialogData >------------------------------------------------
 stock ResetPlayerDialogData(playerid)
 {
-	for (new i = 0; i < DialogListArrays[playerid]; i++)
+	for (new i = 0; i < 100; i++)
 		DeletePVar_(playerid, "DialogList", i);
-	DialogListArrays[playerid] = 0;
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
