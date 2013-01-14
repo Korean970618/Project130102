@@ -382,10 +382,7 @@ stock GetPVarString_(playerid, varname[], array=0)
 //-----< DeletePVar_ >----------------------------------------------------------
 stock DeletePVar_(playerid, varname[], array=0)
 {
-	new
-		varname_[64],
-		string[512]
-	;
+	new varname_[64];
 	format(varname_, sizeof(varname_), "%s_%d", varname, array);
 	DeletePVar(playerid, varname_);
 }
