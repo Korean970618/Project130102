@@ -40,7 +40,9 @@ native SetPVarString_(playerid, varname[], string_value[], array=0);
 native GetPVarInt_(playerid, varname[], array=0);
 native GetPVarFloat_(playerid, varname[], array=0);
 native GetPVarString_(playerid, varname[], array=0);
+native DeletePVar_(playerid, varname[], array=0);
 native escape(str[])
+native ResetPlayerDialogData(playerid);
  */
 
 
@@ -377,11 +379,29 @@ stock GetPVarString_(playerid, varname[], array=0)
 	GetPVarString(playerid, varname_, string, sizeof(string));
 	return string;
 }
+//-----< DeletePVar_ >----------------------------------------------------------
+stock DeletePVar_(playerid, varname[], array=0)
+{
+	new
+		varname_[64],
+		string[512]
+	;
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	DeletePVar(playerid, varname_);
+}
 //-----< escape >---------------------------------------------------------------
 stock escape(str[])
 {
 	new escaped[256];
 	mysql_real_escape_string(str, escaped);
 	return escaped;
+}
+//-----< ResetPlayerDialogData >------------------------------------------------
+stock ResetPlayerDialogData(playerid)
+{
+	for (new i = 0; i < DialogListArrays[playerid]; i++)
+		DeletePVar(playerid, "DialogList", i);
+	DialogListArrays[playerid] = 0;
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------
