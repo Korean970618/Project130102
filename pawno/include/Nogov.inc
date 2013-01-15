@@ -411,6 +411,8 @@ stock escape(str[])
 {
 	new escaped[256];
 	mysql_real_escape_string(str, escaped);
+	if (!strcmp(escaped, "NULL"))
+	    strcpy(escaped, " ");
 	return escaped;
 }
 //-----< ResetPlayerDialogData >------------------------------------------------
