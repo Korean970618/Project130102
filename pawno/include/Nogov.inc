@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/14
+ *		Update:		2013/01/15
  *
  *
  */
@@ -119,6 +119,26 @@ native ResetPlayerDialogData(playerid);
 #define C_TAXIYELLOW	  		"{F0E68C}"
 #define C_SKYBLUE				"{9CEAFB}"
 #define C_LIGHTBLUE	  			"{33CCFF}"
+
+
+
+//-----< Hooks
+forward ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[], button2[]);
+//-----< ShowPlayerDialog >-----------------------------------------------------
+public ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[], button2[])
+{
+	new caption_[128],
+	    info_[10240];
+	format(caption_, sizeof(caption_), "%s[Nogov] %s%s", C_PASTEL_BLUE, C_WHITE, caption);
+	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
+	return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
+}
+#if defined _ALS_ShowPlayerDialog
+	#undef ShowPlayerDialog
+#else
+	#define _ALS_ShowPlayerDialog
+#endif
+#define ShowPlayerDialog ShowPlayerDialog_
 
 
 

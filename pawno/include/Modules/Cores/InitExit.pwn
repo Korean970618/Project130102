@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/10
+ *		Update:		2013/01/15
  *
  *
  */
@@ -71,7 +71,7 @@ public gExitHandler_InitExit()
 	{
 		if (IsPlayerNPC(i))
 			Kick(i);
-		ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, ""C_BLUE"리붓", ""C_WHITE"서버를 리붓중입니다.\n잠시만 기다려 주세요.", "확인", chNullString);
+		ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "Rebooting", "서버를 리붓중입니다.\n잠시만 기다려 주세요.", "확인", chNullString);
         for (new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
 			RemovePlayerAttachedObject(i, j);
 	}

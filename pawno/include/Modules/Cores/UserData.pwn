@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/14
+ *		Update:		2013/01/15
  *
  *
  */
@@ -127,10 +127,10 @@ public pCommandTextHandler_UserData(playerid, cmdtext[])
 	{
 	    format(str, sizeof(str), "\
 		\n\
-	    "C_WHITE"새 비밀번호를 입력하세요.\n\
+	    새 비밀번호를 입력하세요.\n\
 		\n\
 		");
-		ShowPlayerDialog(playerid, DialogId_UserData(1), DIALOG_STYLE_PASSWORD, ""C_BLUE"비밀번호 변경", str, "확인", "취소");
+		ShowPlayerDialog(playerid, DialogId_UserData(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
 		return 1;
 	}
 	return 0;
@@ -170,7 +170,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 					SetPVarInt_(playerid, "LoggedIn", true);
 			        LoadUserData(playerid);
 			        if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
-			            ShowPlayerDialog(playerid, DialogId_UserData(2), DIALOG_STYLE_LIST, ""C_BLUE"로그인", ""C_WHITE"리스폰\n위치 복구", "선택", chNullString);
+			            ShowPlayerDialog(playerid, DialogId_UserData(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 			        else
 			            LetPlayerSpawn(playerid);
 				}
@@ -189,11 +189,11 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 				{
 				    format(str, sizeof(str), "\
 					\n\
-				    "C_WHITE"새 비밀번호를 입력하세요.\n\
+				    새 비밀번호를 입력하세요.\n\
                     비밀번호는 반드시 8자리 이상이어야 합니다.\n\
 					\n\
 					");
-					ShowPlayerDialog(playerid, DialogId_UserData(1), DIALOG_STYLE_PASSWORD, ""C_BLUE"비밀번호 변경", str, "확인", "취소");
+					ShowPlayerDialog(playerid, DialogId_UserData(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
 				}
 		case 2:
 		{
@@ -374,7 +374,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 			비밀번호를 입력하여 로그인하세요.\n\
 			\n\
 			");
-		ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, ""C_BLUE"Login", str, "로그인", chNullString);
+		ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, "Login", str, "로그인", chNullString);
 	}
 	else
 	{
@@ -391,7 +391,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 		    비밀번호를 입력하여 가입하세요.\n\
 		    \n\
 		    ");
-	    ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, ""C_BLUE"Login", str, "가입", chNullString);
+	    ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
 	}
 	return 1;
 }

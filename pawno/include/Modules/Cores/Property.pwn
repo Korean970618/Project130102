@@ -132,13 +132,13 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 			    {
 			        case 0:
 			        {
-			            format(str, sizeof(str), ""C_WHITE"건물 이름을 입력하세요. (현재: %s)", PropertyModify[playerid][pPropname]);
-			            ShowPlayerDialog(playerid, DialogId_Property(1), DIALOG_STYLE_INPUT, ""C_BLUE"건물 설정", str, "확인", "취소");
+			            format(str, sizeof(str), "건물 이름을 입력하세요. (현재: %s)", PropertyModify[playerid][pPropname]);
+			            ShowPlayerDialog(playerid, DialogId_Property(1), DIALOG_STYLE_INPUT, "건물 설정", str, "확인", "취소");
 					}
 					case 1:
 					{
-					    format(str, sizeof(str), ""C_WHITE"주인 이름을 입력하세요. (현재: %s)", PropertyModify[playerid][pOwnername]);
-					    ShowPlayerDialog(playerid, DialogId_Property(2), DIALOG_STYLE_INPUT, ""C_BLUE"건물 설정", str, "확인", "취소");
+					    format(str, sizeof(str), "주인 이름을 입력하세요. (현재: %s)", PropertyModify[playerid][pOwnername]);
+					    ShowPlayerDialog(playerid, DialogId_Property(2), DIALOG_STYLE_INPUT, "건물 설정", str, "확인", "취소");
 					}
 					case 2:
 					{
@@ -173,8 +173,8 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 					}
 					case 7:
 					{
-					    format(str, sizeof(str), ""C_WHITE"메모할 내용을 입력하세요. (현재: %s)", PropertyModify[playerid][pMemo]);
-					    ShowPlayerDialog(playerid, DialogId_Property(3), DIALOG_STYLE_INPUT, ""C_BLUE"건물 설정", str, "확인", "취소");
+					    format(str, sizeof(str), "메모할 내용을 입력하세요. (현재: %s)", PropertyModify[playerid][pMemo]);
+					    ShowPlayerDialog(playerid, DialogId_Property(3), DIALOG_STYLE_INPUT, "건물 설정", str, "확인", "취소");
 					}
 					case 8:
 					{
@@ -390,7 +390,7 @@ stock ShowPropertyList(playerid, dialogid)
 	if (!idx)
 		SendClientMessage(playerid, COLOR_WHITE, "생성된 건물이 없습니다.");
 	else
-		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, ""C_BLUE"건물 목록", str, "선택", "닫기");
+		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "건물 목록", str, "선택", "닫기");
 	return 1;
 }
 //-----< ShowPropertyModifier >-------------------------------------------------
@@ -418,7 +418,7 @@ stock ShowPropertyModifier(playerid, propid)
 		strcpy(PropertyModify[playerid][pMemo], PropertyInfo[propid][pMemo]);
 	}
 	
-	format(str, sizeof(str), "%s건물 이름:\t\t%s", C_WHITE, PropertyModify[playerid][pPropname]);
+	format(str, sizeof(str), "건물 이름:\t\t%s", PropertyModify[playerid][pPropname]);
 	format(str, sizeof(str), "%s\n주인 이름:\t\t%s", str, PropertyModify[playerid][pOwnername]);
 	format(str, sizeof(str), "%s\n입구 좌표:\t\t%.4f,%.4f,%.4f / %.4f / %d / %d", str,
 		PropertyModify[playerid][pPosEn][0], PropertyModify[playerid][pPosEn][1], PropertyModify[playerid][pPosEn][2],
@@ -442,7 +442,7 @@ stock ShowPropertyModifier(playerid, propid)
 	strcat(str, "\n> 저장하기");
 	strcat(str, "\n> 취소하기");
 	
-	ShowPlayerDialog(playerid, DialogId_Property(0), DIALOG_STYLE_LIST, ""C_BLUE"건물 설정", str, "확인", "닫기");
+	ShowPlayerDialog(playerid, DialogId_Property(0), DIALOG_STYLE_LIST, "건물 설정", str, "확인", "닫기");
 	return 1;
 }
 //-----< GetPropertyDBID >------------------------------------------------------

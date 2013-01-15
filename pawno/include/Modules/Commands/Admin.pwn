@@ -58,7 +58,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사\n\n");
 	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 건물 -"C_WHITE"\n/건물생성, /건물설정\n\n");
-		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, ""C_BLUE"관리자 도움말", help, "닫기", "");
+		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 	    return 1;
 	}
 	//
@@ -123,8 +123,8 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		if (!strlen(cmd))
 		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
 		SetPVarString_(playerid, "EditPVar_value", cmd);
-		format(str, sizeof(str), ""C_BLUE"정보수정: %s(%d)", GetPlayerNameA(destid), destid);
-		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, str, ""C_WHITE"INTEGER\nFLOAT\nSTRING", "확인", "취소");
+		format(str, sizeof(str), "정보수정: %s(%d)", GetPlayerNameA(destid), destid);
+		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, str, "INTEGER\nFLOAT\nSTRING", "확인", "취소");
 		return 1;
 	}
 	else if (!strcmp(cmd, "/정보검사", true))
