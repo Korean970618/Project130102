@@ -30,7 +30,9 @@
 
 
 //-----< Variables
-new Float:Mark[MAX_PLAYERS][4];
+new Float:Mark[MAX_PLAYERS][4],
+	MarkInterior[MAX_PLAYERS],
+	MarkVirtualWorld[MAX_PLAYERS];
 
 
 
@@ -55,7 +57,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 	    new help[2048];
-	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사\n\n");
+	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드\n\n");
 	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 건물 -"C_WHITE"\n/건물생성, /건물설정\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
@@ -152,6 +154,44 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_YELLOW, str);
 		return 1;
 	}
+	else if (!strcmp(cmd, "/인테리어", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /인테리어 [플레이어] [값]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /인테리어 [플레이어] [값]");
+		new interior = strval(cmd);
+		new binterior = GetPlayerInterior(destid);
+		SetPlayerInterior(destid, interior);
+		format(str, sizeof(str), "%s님의 인테리어를 설정했습니다. %d > %d", GetPlayerNameA(destid), binterior, interior);
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 인테리어가 설정되었습니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/버추얼월드", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /버추얼월드 [플레이어] [값]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /버추얼월드 [플레이어] [값]");
+		new virtualworld = strval(cmd);
+		new bvirtualworld = GetPlayerInterior(destid);
+		SetPlayerInterior(destid, virtualworld);
+		format(str, sizeof(str), "%s님의 버추얼월드를 설정했습니다. %d > %d", GetPlayerNameA(destid), bvirtualworld, virtualworld);
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 버추얼월드가 설정되었습니다.");
+		return 1;
+	}
 	//
 	// 이동
 	//
@@ -171,6 +211,8 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SetPlayerPos(playerid, x, y, z);
 		SetPlayerFacingAngle(playerid, a + 180.0);
 		SetCameraBehindPlayer(playerid);
+		SetPlayerInterior(playerid, GetPlayerInterior(destid));
+		SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(destid));
 		return 1;
 	}
 	else if (!strcmp(cmd, "/소환", true))
@@ -189,6 +231,8 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SetPlayerPos(destid, x, y, z);
 		SetPlayerFacingAngle(destid, a + 180.0);
 		SetCameraBehindPlayer(destid);
+		SetPlayerInterior(destid, GetPlayerInterior(playerid));
+		SetPlayerVirtualWorld(destid, GetPlayerVirtualWorld(playerid));
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 소환되었습니다.");
 		return 1;
 	}
@@ -196,6 +240,8 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	{
 	    GetPlayerPos(playerid, Mark[playerid][0], Mark[playerid][1], Mark[playerid][2]);
 	    GetPlayerFacingAngle(playerid, Mark[playerid][3]);
+	    MarkInterior[playerid] = GetPlayerInterior(playerid);
+	    MarkVirtualWorld[playerid] = GetPlayerVirtualWorld(playerid);
 	    SendClientMessage(playerid, COLOR_WHITE, "현재 위치가 마크되었습니다.");
 	    return 1;
 	}
@@ -204,6 +250,8 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	    SetPlayerPos(playerid, Mark[playerid][0], Mark[playerid][1], Mark[playerid][2]);
 	    SetPlayerFacingAngle(playerid, Mark[playerid][3]);
 	    SetCameraBehindPlayer(playerid);
+	    SetPlayerInterior(playerid, MarkInterior[playerid]);
+	    SetPlayerVirtualWorld(playerid, MarkVirtualWorld[playerid]);
 	    return 1;
 	}
 	else if (!strcmp(cmd, "/텔레포트", true))
@@ -222,6 +270,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1531.4265, -1676.7639, 13.3828 + 2.0);
 		else
 			SetPlayerPos(playerid, 1531.4265, -1676.7639, 13.3828 + 2.0);
+		SetPlayerInterior(playerid, 0);
 		return 1;
 	}
 	else if (!strcmp(cmd, "/샌피", true))
@@ -230,6 +279,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			SetVehiclePos(GetPlayerVehicleID(playerid), -1422.2572, -289.8291, 14.1484 + 2.0);
 		else
 			SetPlayerPos(playerid, -1422.2572, -289.8291, 14.1484 + 2.0);
+		SetPlayerInterior(playerid, 0);
 		return 1;
 	}
 	else if (!strcmp(cmd, "/라벤", true))
@@ -238,6 +288,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1679.5079, 1448.0795, 47.7813 + 2.0);
 		else
 			SetPlayerPos(playerid, 1679.5079, 1448.0795, 47.7813 + 2.0);
+		SetPlayerInterior(playerid, 0);
 		return 1;
 	}
 	//
