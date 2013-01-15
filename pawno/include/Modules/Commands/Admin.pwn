@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/01/10
+ *		Update:		2013/01/15
  *
  *
  */
@@ -55,9 +55,10 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 	    new help[2048];
-	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사");
-	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤");
-	    ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, ""C_BLUE"관리자 도움말", help, "닫기", "");
+	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사\n\n");
+	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 건물 -"C_WHITE"\n/건물생성, /건물설정\n\n");
+		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, ""C_BLUE"관리자 도움말", help, "닫기", "");
 	    return 1;
 	}
 	//
@@ -215,7 +216,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SetPlayerPos(playerid, floatstr(pos[0]), floatstr(pos[1]), floatstr(pos[2]));
 		return 1;
 	}
-	else if (!strcmp(cmd, "/로산",true))
+	else if (!strcmp(cmd, "/로산", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid))
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1531.4265, -1676.7639, 13.3828 + 2.0);
@@ -223,7 +224,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			SetPlayerPos(playerid, 1531.4265, -1676.7639, 13.3828 + 2.0);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/샌피",true))
+	else if (!strcmp(cmd, "/샌피", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid))
 			SetVehiclePos(GetPlayerVehicleID(playerid), -1422.2572, -289.8291, 14.1484 + 2.0);
@@ -231,12 +232,34 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			SetPlayerPos(playerid, -1422.2572, -289.8291, 14.1484 + 2.0);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/라벤",true))
+	else if (!strcmp(cmd, "/라벤", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid))
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1679.5079, 1448.0795, 47.7813 + 2.0);
 		else
 			SetPlayerPos(playerid, 1679.5079, 1448.0795, 47.7813 + 2.0);
+		return 1;
+	}
+	//
+	// 건물
+	//
+	else if (!strcmp(cmd, "/건물생성", true))
+	{
+		CreateProperty();
+		SendClientMessage(playerid, COLOR_WHITE, "건물을 생성했습니다. '/건물설정'에서 설정하세요.");
+	    return 1;
+	}
+	else if (!strcmp(cmd, "/건물설정", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+			return ShowPropertyList(playerid, DialogId_Admin(1));
+		destid = strval(cmd);
+		if (!IsValidPropertyID(destid))
+		for (new i = 0, t = GetMaxProperties(); i < t; i++)
+		    if (IsValidPropertyID(i) && GetPropertyDBID(i) == destid)
+		        return ShowPropertyModifier(playerid, i);
+		SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 건물입니다.");
 		return 1;
 	}
 	return 0;
@@ -274,6 +297,9 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			SetPVarString_(playerid, "EditPVar_varname", chNullString);
 			SetPVarString_(playerid, "EditPVar_value", chNullString);
 		}
+		case 1:
+		    if (response)
+		        ShowPropertyModifier(playerid, GetPVarInt_(playerid, "DialogData", listitem));
 	}
 	return 1;
 }
@@ -285,7 +311,7 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 //-----< SendAdminMessage >-----------------------------------------------------
 stock SendAdminMessage(color, message[], level=1)
 {
-	for (new i = 0, t = GetMaxPlayers(); i < t; t++)
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
 	    if (GetPVarInt_(i, "pAdmin") >= level)
 	        SendClientMessage(i, color, message);
 }

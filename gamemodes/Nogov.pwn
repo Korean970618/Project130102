@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/10
+ *		Update:		2013/01/15
  *
  *
  */
@@ -23,6 +23,7 @@
 	0: Nogov Main Script
 	25: UserData Core
 	50: Admin Command
+	75: PropertyData Core
 
   < Functions >
 	AddHandler(module[], ...)
@@ -40,11 +41,13 @@
 //-----< Includes
 #include <a_samp>
 #include <mysql>
+#include <streamer>
 #include <Nogov>
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/MySQL.pwn"
 #include "Modules/Cores/InitExit.pwn"
 #include "Modules/Cores/UserData.pwn"
+#include "Modules/Cores/Property.pwn"
 #include "Modules/Commands/Admin.pwn"
 
 
@@ -131,7 +134,8 @@ public OnGameModeInit()
 	AddHandler("MySQL",             gInitHandler);
     AddHandler("InitExit",			gInitHandler, gExitHandler);
     AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
-    // Commands
+	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
+	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(20), true);
@@ -250,7 +254,7 @@ public OnPlayerText(playerid, text[])
 		if (CallbacksList[i][CBIndex][pTextHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pTextHandler", CallbacksList[i][CBName]);
-			if (!CallLocalFunction(funcstr, "ds", playerid, text)) return 0;
+			if (!CallLocalFunction(funcstr, "ds", playerid, FixBlankString(text))) return 0;
 		}
 	return 1;
 }
@@ -262,7 +266,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
 		if (CallbacksList[i][CBIndex][pCommandTextHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pCommandTextHandler", CallbacksList[i][CBName]);
-			if (CallLocalFunction(funcstr, "ds", playerid, cmdtext)) return 1;
+			if (CallLocalFunction(funcstr, "ds", playerid, FixBlankString(cmdtext))) return 1;
 		}
 	SendClientMessage(playerid, COLOR_WHITE, "[SERVER] 존재하지 않는 명령어입니다.");
 	return 1;
@@ -359,7 +363,7 @@ public OnRconCommand(cmd[])
 		if (CallbacksList[i][CBIndex][RconCommandHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "RconCommandHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "s", cmd);
+			CallLocalFunction(funcstr, "s", FixBlankString(cmd));
 		}
 	return 1;
 }
@@ -490,7 +494,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pKeyStateChangeHandler])
 		{
-			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestClassHandlerHandler", CallbacksList[i][CBName]);
+			format(funcstr, sizeof(funcstr), "%s_%s", "pKeyStateChangeHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, newkeys, oldkeys);
 		}
 	return 1;
@@ -503,7 +507,7 @@ public OnRconLoginAttempt(ip[], password[], success)
 		if (CallbacksList[i][CBIndex][RconLoginAttempHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "RconLoginAttempHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "ssd", ip, password, success);
+			CallLocalFunction(funcstr, "ssd", FixBlankString(ip), FixBlankString(password), success);
 		}
 	return 1;
 }
@@ -574,8 +578,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][dResponseHandler])
 		{
-			format(funcstr, sizeof(funcstr), "%s_%s", "dResponseHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "dddds", playerid, dialogid, response, listitem, inputtext);
+		    format(funcstr, sizeof(funcstr), "%s_%s", "dResponseHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dddds", playerid, dialogid, response, listitem, FixBlankString(inputtext));
 		}
 	return 1;
 }
