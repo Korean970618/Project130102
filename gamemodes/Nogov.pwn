@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/15
+ *		Update:		2013/01/17
  *
  *
  */
@@ -48,6 +48,7 @@
 #include "Modules/Cores/InitExit.pwn"
 #include "Modules/Cores/UserData.pwn"
 #include "Modules/Cores/Property.pwn"
+#include "Modules/Cores/Vehicle.pwn"
 #include "Modules/Commands/Admin.pwn"
 
 
@@ -135,6 +136,7 @@ public OnGameModeInit()
     AddHandler("InitExit",			gInitHandler, gExitHandler);
     AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
+	AddHandler("Vehicle",           gInitHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	
