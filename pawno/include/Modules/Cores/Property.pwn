@@ -334,7 +334,7 @@ stock SavePropertyData()
 {
 	for (new i = 0, t = GetMaxProperties; i < t; i++)
 	    if (IsValidPropertyID(i))
-	        SavePropertyDataById(PropertyInfo[i][pID]);
+	        SavePropertyDataById(i);
 	return 1;
 }
 //-----< LoadPropertyData >-----------------------------------------------------
