@@ -140,7 +140,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 		case 0:
 	        if (!GetPVarInt_(playerid, "Registered"))
 			{
-				if (strval(inputtext) >= 8)
+				if (strlen(inputtext) >= 8)
 				{
 				    new year, month, day;
 				    getdate(year, month, day);
