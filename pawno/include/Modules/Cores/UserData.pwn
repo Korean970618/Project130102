@@ -41,10 +41,6 @@
 
 
 
-//-----< UserData
-
-
-
 //-----< Defines
 #define DialogId_UserData(%0)      (25+%0)
 
