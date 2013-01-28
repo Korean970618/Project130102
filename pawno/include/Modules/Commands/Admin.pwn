@@ -59,7 +59,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	    new help[2048];
 	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드\n\n");
 	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 건물 -"C_WHITE"\n/건물생성, /건물설정\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 	    return 1;
 	}
@@ -292,7 +292,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		return 1;
 	}
 	//
-	// 건물
+	// 서버
 	//
 	else if (!strcmp(cmd, "/건물생성", true))
 	{
@@ -311,6 +311,25 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		    if (IsValidPropertyID(i) && GetPropertyDBID(i) == destid)
 		        return ShowPropertyModifier(playerid, i);
 		SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 건물입니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/아이템생성", true))
+	{
+	    strcpy(cmd, stringslice_c(cmdtext, 1));
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /아이템생성 [이름]");
+		new Float:x, Float:y, Float:z, Float:a;
+		GetPlayerPos(playerid, x, y, z);
+		GetPlayerFacingAngle(playerid, a);
+		CreateItem(cmd, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 0, chEmpty);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/아이템제거", true))
+	{
+	    new itemid = GetPlayerNearestItem(playerid);
+	    if (!IsValidItemID(itemid))
+	        return SendClientMessage(playerid, COLOR_WHITE, "근처에 떨어진 아이템이 없습니다.");
+		DestroyItem(itemid);
 		return 1;
 	}
 	return 0;

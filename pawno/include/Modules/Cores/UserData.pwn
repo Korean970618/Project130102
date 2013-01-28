@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/15
+ *		Update:		2013/01/28
  *
  *
  */
@@ -30,6 +30,7 @@
 	CreateUserDataTable()
 	SaveUserData(playerid)
 	LoadUserData(playerid)
+	SetDefaultUserData(playerid)
 	ShowPlayerLoginDialog(playerid, bool:wrong)
 	LetPlayerSpawn(playerid)
 
@@ -148,7 +149,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 				    SetPVarInt_(playerid, "pRegDate", strval(str));
 				    format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 				    mysql_query(str);
-				    SaveUserData(playerid);
+				    SetDefaultUserData(playerid);
 				    SetPVarInt_(playerid, "Registered", true);
 				    SetPVarInt_(playerid, "LoggedIn", true);
 					LetPlayerSpawn(playerid);
@@ -229,38 +230,40 @@ stock CreateUserDataTable()
 {
 	new str[3840];
 	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS userdata (");
-	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY,");
-	strcat(str, "Username varchar(32) NOT NULL default '',");
-	strcat(str, "Password varchar(128) NOT NULL  default '',");
-	strcat(str, "IP varchar(15) NOT NULL default '0.0.0.0',");
-	strcat(str, "RegDate int(8) NOT NULL default '0',");
-	strcat(str, "Level int(5) NOT NULL default '0',");
-	strcat(str, "Radio int(5) NOT NULL default '0',");
-	strcat(str, "Origin varchar(64) NOT NULL  default '',");
-	strcat(str, "Money int(10) NOT NULL default '0',");
-	strcat(str, "Skin int(3) NOT NULL default '0',");
-	strcat(str, "Deaths int(5) NOT NULL default '0',");
-	strcat(str, "LastQuit int(1) NOT NULL default '0',");
-	strcat(str, "LastPos varchar(64) NOT NULL  default '',");
-	strcat(str, "Tutorial int(1) NOT NULL default '0',");
-	strcat(str, "Admin int(5) NOT NULL default '0',");
-	strcat(str, "Warns int(5) NOT NULL default '0',");
-	strcat(str, "Praises int(5) NOT NULL default '0',");
-	strcat(str, "Toy1 varchar(256) NOT NULL  default '',");
-	strcat(str, "Toy2 varchar(256) NOT NULL  default '',");
-	strcat(str, "Toy3 varchar(256) NOT NULL  default '',");
-	strcat(str, "Toy4 varchar(256) NOT NULL  default '',");
-	strcat(str, "Toy5 varchar(256) NOT NULL  default '',");
-	strcat(str, "Banned varchar(256) NOT NULL default '') ");
-	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
+	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
+	strcat(str, ",Username varchar(32) NOT NULL default ''");
+	strcat(str, ",Password varchar(128) NOT NULL  default ''");
+	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
+	strcat(str, ",RegDate int(8) NOT NULL default '0'");
+	strcat(str, ",Level int(5) NOT NULL default '0'");
+	strcat(str, ",Radio int(5) NOT NULL default '0'");
+	strcat(str, ",Origin varchar(64) NOT NULL  default ''");
+	strcat(str, ",Money int(10) NOT NULL default '0'");
+	strcat(str, ",Skin int(3) NOT NULL default '0'");
+	strcat(str, ",Deaths int(5) NOT NULL default '0'");
+	strcat(str, ",LastQuit int(1) NOT NULL default '0'");
+	strcat(str, ",LastPos varchar(64) NOT NULL  default ''");
+	strcat(str, ",Tutorial int(1) NOT NULL default '0'");
+	strcat(str, ",Admin int(5) NOT NULL default '0'");
+	strcat(str, ",Warns int(5) NOT NULL default '0'");
+	strcat(str, ",Praises int(5) NOT NULL default '0'");
+	strcat(str, ",Toy1 varchar(256) NOT NULL  default ''");
+	strcat(str, ",Toy2 varchar(256) NOT NULL  default ''");
+	strcat(str, ",Toy3 varchar(256) NOT NULL  default ''");
+	strcat(str, ",Toy4 varchar(256) NOT NULL  default ''");
+	strcat(str, ",Toy5 varchar(256) NOT NULL  default ''");
+	strcat(str, ",Banned varchar(256) NOT NULL default ''");
+	strcat(str, ",Weight int(3) NOT NULL default '0'");
+	strcat(str, ",Power int(3) NOT NULL default '0'");
+	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
 	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS bandata (");
-	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY,");
-	strcat(str, "IP varchar(15) NOT NULL default '0.0.0.0',");
-	strcat(str, "Username varchar(32) NOT NULL  default '',");
-	strcat(str, "Date int(8) NOT NULL default '0',");
-	strcat(str, "Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
+	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
+	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
+	strcat(str, ",Username varchar(32) NOT NULL  default ''");
+	strcat(str, ",Date int(8) NOT NULL default '0'");
+	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -293,6 +296,8 @@ stock SaveUserData(playerid)
 	format(str, sizeof(str), "%s,Toy4='%s'", str, GetPVarString_(playerid, "pToy4"));
 	format(str, sizeof(str), "%s,Toy5='%s'", str, GetPVarString_(playerid, "pToy5"));
 	format(str, sizeof(str), "%s,Banned='%s'", str, GetPVarString_(playerid, "pBanned"));
+	format(str, sizeof(str), "%s,Weight=%d", str, GetPVarInt_(playerid, "pWeight"));
+	format(str, sizeof(str), "%s,Power=%d", str, GetPVarInt_(playerid, "pPower"));
 	format(str, sizeof(str), "%s WHERE Username='%s'", str, GetPlayerNameA(playerid));
 	mysql_query(str);
 	return 1;
@@ -301,7 +306,7 @@ stock SaveUserData(playerid)
 stock LoadUserData(playerid)
 {
 	new str[256],
-	    receive[24][256],
+	    receive[26][256],
 	    idx;
 	if (IsPlayerNPC(playerid)) return 1;
 	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
@@ -335,6 +340,8 @@ stock LoadUserData(playerid)
 	SetPVarString_(playerid, "pToy4", receive[idx++]);
 	SetPVarString_(playerid, "pToy5", receive[idx++]);
 	SetPVarString_(playerid, "pBanned", receive[idx++]);
+	SetPVarInt_(playerid, "pWeight", strval(receive[idx++]));
+	SetPVarInt_(playerid, "pPower", strval(receive[idx++]));
 	
 	if (!GetPVarInt_(playerid, "pRegDate"))
 	{
@@ -343,6 +350,14 @@ stock LoadUserData(playerid)
 	    format(str, sizeof(str), "%04d%02d%02d", year, month, day);
 	    SetPVarInt_(playerid, "pRegDate", strval(str));
 	}
+	return 1;
+}
+//-----< SetDefaultUserData >---------------------------------------------------
+stock SetDefaultUserData(playerid)
+{
+	SetPVarInt_(playerid, "pWeight", 50);
+	SetPVarInt_(playerid, "pPower", 20);
+	SaveUserData(playerid);
 	return 1;
 }
 //-----< ShowPlayerLoginDialog >------------------------------------------------

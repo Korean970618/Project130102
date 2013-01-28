@@ -24,6 +24,7 @@
 	25: UserData Core
 	50: Admin Command
 	75: PropertyData Core
+	100: Item Core
 
   < Functions >
 	AddHandler(module[], ...)
@@ -49,6 +50,7 @@
 #include "Modules/Cores/UserData.pwn"
 #include "Modules/Cores/Property.pwn"
 #include "Modules/Cores/Vehicle.pwn"
+#include "Modules/Cores/Item.pwn"
 #include "Modules/Commands/Admin.pwn"
 
 
@@ -137,6 +139,7 @@ public OnGameModeInit()
     AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",           gInitHandler);
+	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	

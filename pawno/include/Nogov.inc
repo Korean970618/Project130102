@@ -43,6 +43,7 @@ native GetPVarString_(playerid, varname[], array=0);
 native DeletePVar_(playerid, varname[], array=0);
 native escape(str[])
 native ResetPlayerDialogData(playerid);
+native strtab(dest[], str[], maxlength);
  */
 
 
@@ -421,5 +422,19 @@ stock ResetPlayerDialogData(playerid)
 	for (new i = 0; i < 100; i++)
 		DeletePVar_(playerid, "DialogList", i);
 	return 1;
+}
+//-----< strtab >---------------------------------------------------------------
+stock strtab(dest[], str[], maxlength)
+{
+	new len = maxlength;
+	strcat(dest, str, len);
+	for (new i = 7; i < maxlength; i += 7)
+		if (strlen(str) <= i)
+		{
+			len += 7;
+			strcat(dest, "\t", len);
+		}
+	len += 7;
+	strcat(dest, "\t", len);
 }
 //-----<  >---------------------------------------------------------------------
