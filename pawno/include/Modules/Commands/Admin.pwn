@@ -315,13 +315,14 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/아이템생성", true))
 	{
-	    strcpy(cmd, stringslice_c(cmdtext, 1));
+	    /*strcpy(cmd, stringslice_c(cmdtext, 1));
 		if (!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /아이템생성 [이름]");
 		new Float:x, Float:y, Float:z, Float:a;
 		GetPlayerPos(playerid, x, y, z);
 		GetPlayerFacingAngle(playerid, a);
-		CreateItem(cmd, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 0, chEmpty);
+		CreateItem(cmd, x, y, z + GetItemZVariation(cmd), a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 0, chEmpty);*/
+		ShowItemModelList(playerid, DialogId_Admin(2));
 		return 1;
 	}
 	else if (!strcmp(cmd, "/아이템제거", true))
@@ -369,7 +370,15 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		}
 		case 1:
 		    if (response)
-		        ShowPropertyModifier(playerid, GetPVarInt_(playerid, "DialogData", listitem));
+		        ShowPropertyModifier(playerid, DialogData[playerid][listitem]);
+		case 2:
+		    if (response && listitem)
+		    {
+		        new Float:x, Float:y, Float:z, Float:a;
+		        GetPlayerPos(playerid, x, y, z);
+		        GetPlayerFacingAngle(playerid, a);
+		        CreateItem(listitem - 1, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), chEmpty);
+			}
 	}
 	return 1;
 }

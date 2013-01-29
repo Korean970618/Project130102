@@ -35,10 +35,10 @@ native Wait(time);
 native Crash();
 native TimeFix(time);
 native SetPVarInt_(playerid, varname[], int_value, array=0);
-native Float:SetPVarFloat_(playerid, varname[], Float:float_value, array=0);
+native SetPVarFloat_(playerid, varname[], Float:float_value, array=0);
 native SetPVarString_(playerid, varname[], string_value[], array=0);
 native GetPVarInt_(playerid, varname[], array=0);
-native GetPVarFloat_(playerid, varname[], array=0);
+native Float:GetPVarFloat_(playerid, varname[], array=0);
 native GetPVarString_(playerid, varname[], array=0);
 native DeletePVar_(playerid, varname[], array=0);
 native escape(str[])
@@ -50,6 +50,11 @@ native strtab(dest[], str[], maxlength);
 
 //-----< Pragmas
 #pragma dynamic					20000000
+
+
+
+//-----< Variables
+new DialogData[MAX_PLAYERS][100];
 
 
 
@@ -419,14 +424,14 @@ stock escape(str[])
 //-----< ResetPlayerDialogData >------------------------------------------------
 stock ResetPlayerDialogData(playerid)
 {
-	for (new i = 0; i < 100; i++)
-		DeletePVar_(playerid, "DialogList", i);
+	for (new i = 0; i < sizeof(DialogData); i++)
+		DialogData[playerid][i] = 0;
 	return 1;
 }
 //-----< strtab >---------------------------------------------------------------
 stock strtab(dest[], str[], maxlength)
 {
-	new len = maxlength;
+	new len = strlen(dest) + maxlength;
 	strcat(dest, str, len);
 	for (new i = 7; i < maxlength; i += 7)
 		if (strlen(str) <= i)

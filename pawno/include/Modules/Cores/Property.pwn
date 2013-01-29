@@ -235,6 +235,7 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 						{
 							RemoveProperty(propid);
 							PropertyModifyDest[playerid] = -1;
+							ResetPlayerDialogData(playerid);
 							format(str, sizeof(str), "%s님에 의해 %d번 건물이 제거되었습니다.", GetPlayerNameA(playerid), propid);
 							SendAdminMessage(COLOR_YELLOW, str);
 						}
@@ -258,10 +259,12 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 							SavePropertyDataById(propid);
 							LoadPropertyData();
 							PropertyModifyDest[playerid] = -1;
+							ResetPlayerDialogData(playerid);
 						}
 						case 12:
 						{
 						    PropertyModifyDest[playerid] = -1;
+						    ResetPlayerDialogData(playerid);
 						}
 					}
 		case 1:
@@ -424,7 +427,8 @@ stock ShowPropertyList(playerid, dialogid)
 	    {
 	        format(tmp, sizeof(tmp), "[%04d] %s\n", PropertyInfo[i][pID], PropertyInfo[i][pPropname]);
 	        strcat(str, tmp);
-	        SetPVarInt_(playerid, "DialogData", i, idx++);
+	        DialogData[playerid][idx] = i;
+	        idx++;
 		}
 	if (!idx)
 		SendClientMessage(playerid, COLOR_WHITE, "생성된 건물이 없습니다.");

@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/17
+ *		Update:		2013/01/28
  *
  *
  */
@@ -139,7 +139,7 @@ public OnGameModeInit()
     AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",           gInitHandler);
-	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler);
+	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	

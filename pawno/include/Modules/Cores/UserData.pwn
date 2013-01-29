@@ -110,6 +110,7 @@ public pSpawnHandler_UserData(playerid)
 	    SetPlayerVirtualWorld(playerid, strval(receive[5]));
 	    SetPVarInt_(playerid, "RestoreSpawn", false);
 	}
+	SetDefaultUserData(playerid);
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
@@ -149,7 +150,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 				    SetPVarInt_(playerid, "pRegDate", strval(str));
 				    format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 				    mysql_query(str);
-				    SetDefaultUserData(playerid);
+				    SaveUserData(playerid);
 				    SetPVarInt_(playerid, "Registered", true);
 				    SetPVarInt_(playerid, "LoggedIn", true);
 					LetPlayerSpawn(playerid);
@@ -355,8 +356,10 @@ stock LoadUserData(playerid)
 //-----< SetDefaultUserData >---------------------------------------------------
 stock SetDefaultUserData(playerid)
 {
-	SetPVarInt_(playerid, "pWeight", 50);
-	SetPVarInt_(playerid, "pPower", 20);
+	if (!GetPVarInt_(playerid, "pWeight"))
+		SetPVarInt_(playerid, "pWeight", 50);
+	if (!GetPVarInt_(playerid, "pPower"))
+		SetPVarInt_(playerid, "pPower", 20);
 	SaveUserData(playerid);
 	return 1;
 }

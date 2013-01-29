@@ -44,8 +44,7 @@ enum eVehicleInfo
 	bool:vLocked,
 	bool:vEngine
 }
-new VehicleInfo[MAX_VEHICLES][eVehicleInfo],
-	MaxVehicles;
+new VehicleInfo[MAX_VEHICLES][eVehicleInfo];
 
 
 
