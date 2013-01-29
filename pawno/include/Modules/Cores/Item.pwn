@@ -191,7 +191,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 						new Float:x, Float:y, Float:z;
 						GetPlayerVelocity(playerid, x, y, z);
 		                if (IsValidItemID(GetPlayerNearestItem(playerid)))
-		                    SendClientMessage(playerid, COLOR_WHITE, "다른 아이템 옆에선 버릴 수 없습니다.");
+		                    SendClientMessage(playerid, COLOR_WHITE, "다른 아이템 근처에선 버릴 수 없습니다.");
 						else if (z != 0.0)
 						    SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else DropPlayerItem(playerid, itemid);
