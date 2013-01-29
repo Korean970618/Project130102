@@ -41,7 +41,7 @@ native GetPVarInt_(playerid, varname[], array=0);
 native Float:GetPVarFloat_(playerid, varname[], array=0);
 native GetPVarString_(playerid, varname[], array=0);
 native DeletePVar_(playerid, varname[], array=0);
-native GetPVarType_(playerid, varname[]);
+native GetPVarType_(playerid, varname[], array=0);
 native escape(str[])
 native ResetPlayerDialogData(playerid);
 native strtab(dest[], str[], maxlength);
@@ -414,7 +414,7 @@ stock DeletePVar_(playerid, varname[], array=0)
 	DeletePVar(playerid, varname_);
 }
 //-----< GetPVarType_ >---------------------------------------------------------
-stock GetPVarType_(playerid, varname[])
+stock GetPVarType_(playerid, varname[], array=0)
 {
 	new varname_[64];
 	format(varname_, sizeof(varname_), "%s_%d", varname, array);
