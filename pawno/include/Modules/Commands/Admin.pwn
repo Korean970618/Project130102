@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/01/15
+ *		Update:		2013/01/30
  *
  *
  */
@@ -58,7 +58,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	{
 	    new help[2048];
 	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드\n\n");
-	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\n");
+	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 	    return 1;
@@ -253,6 +253,12 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	    SetPlayerInterior(playerid, MarkInterior[playerid]);
 	    SetPlayerVirtualWorld(playerid, MarkVirtualWorld[playerid]);
 	    return 1;
+	}
+	else if (!strcmp(cmd, "/날기", true))
+	{
+	    if (GetPVarType_(playerid, "FlyMode")) CancelFlyMode(playerid);
+		else FlyMode(playerid);
+		return 1;
 	}
 	else if (!strcmp(cmd, "/텔레포트", true))
 	{

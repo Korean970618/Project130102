@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/28
+ *		Update:		2013/01/30
  *
  *
  */
@@ -51,6 +51,7 @@
 #include "Modules/Cores/Property.pwn"
 #include "Modules/Cores/Vehicle.pwn"
 #include "Modules/Cores/Item.pwn"
+#include "Modules/Cores/Fly.pwn"
 #include "Modules/Commands/Admin.pwn"
 
 
@@ -140,6 +141,7 @@ public OnGameModeInit()
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",           gInitHandler);
 	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Fly",               gInitHandler, pConnectHandler, pUpdateHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	
