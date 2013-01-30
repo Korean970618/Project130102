@@ -292,6 +292,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				    }
 				}
 				strcpy(PlayerItemInfo[playerid][itemid][iSaveType], htext);
+				SavePlayerItemDataById(playerid, itemid);
 				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
 				SendClientMessage(playerid, COLOR_WHITE, str);
 			}
@@ -305,7 +306,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
                 new itemid = DialogData[playerid][listitem];
 	            DialogData[playerid][0] = DialogData[playerid][listitem];
 	            ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"가방에 넣는다.\n버린다.", "선택", "뒤로");
+					"가방에 넣는다.\n확인한다\n버린다.", "선택", "뒤로");
 	        }
 		case 4:
 		{
@@ -323,10 +324,15 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 						else if (!strcmp(htext, "오른손", true))
 							RemovePlayerAttachedObject(playerid, 1);
 				        strcpy(PlayerItemInfo[playerid][itemid][iSaveType], "가방");
+				        SavePlayerItemDataById(playerid, itemid);
 				        format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 가방에 넣었습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
 				        SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 1:
+					{
+					    ShowPlayerItemInfo(playerid, DialogId_Item(6), itemid);
+					}
+					case 2:
 					{
 						new Float:x, Float:y, Float:z;
 						GetPlayerVelocity(playerid, x, y, z);
@@ -356,6 +362,13 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 	            ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
 					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
+		case 6:
+		    if (!response)
+		    {
+		        new itemid = DialogData[playerid][0];
+		        ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+					"가방에 넣는다.\n확인한다\n버린다.", "선택", "뒤로");
+		    }
 	}
 	return 1;
 }
@@ -531,6 +544,23 @@ stock LoadPlayerItemData(playerid)
 
 		strcpy(PlayerItemInfo[playerid][i][iSaveType], receive[idx++]);
 		strcpy(PlayerItemInfo[playerid][i][iMemo], receive[idx++]);
+		
+		new modelid = PlayerItemInfo[playerid][i][iItemmodel];
+		if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
+			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
+				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
+				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
+				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
+		else if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
+			SetPlayerAttachedObject(playerid, 1, ItemModelInfo[modelid][imModel], 6,
+				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
+				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
+				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
+        else if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
+			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
+				ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
+				ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
+				ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
 	}
 	return 1;
 }

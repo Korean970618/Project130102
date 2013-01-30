@@ -1785,3 +1785,229 @@ v0.3x, (C)2005-2013 SA-MP Team
 [15:29:23] Number of vehicle models: 0
 [15:29:34] Incoming connection: 221.159.188.227:1209
 [15:29:34] [join] Prune_Varh has joined the server (0:221.159.188.227)
+Console input: 흩
+Console input: gmx
+[15:33:11] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[15:33:11] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[15:33:11] [mode] Mode has been unloaded.
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3x, (C)2005-2013 SA-MP Team
+
+[15:33:14] filterscripts = ""  (string)
+[15:33:14] 
+[15:33:14] Server Plugins
+[15:33:14] --------------
+[15:33:14]  Loading plugin: mysql
+[15:33:14]  SA:MP MySQL Plugin v2.1.1 Loaded.
+[15:33:14]   Loaded.
+[15:33:14]  Loading plugin: streamer
+[15:33:14] [MySQL] Thread running. Threadsafe: Yes.
+[15:33:14] 
+
+*** Streamer Plugin v2.6.1 by Incognito loaded ***
+
+[15:33:14]   Loaded.
+[15:33:14]  Loaded 2 plugins.
+
+[15:33:14] 
+[15:33:14] Filterscripts
+[15:33:14] ---------------
+[15:33:14]   Loaded 0 filterscripts.
+
+[15:33:14] DB 서버에 접속중입니다.
+[15:33:14] [MySQL] Connected (0) to 'samp_nogov'@'pureunba.no-ip.org via TCP/IP'.
+[15:33:14] [MySQL] Server Version 5.5.29.
+[15:33:14] DB 서버에 접속했습니다.
+[15:33:14] 
+---------------------------------
+
+[15:33:14]  Nogov v0.0.1
+
+[15:33:14]  	Coded by PureunBa
+[15:33:14]  	pureunba.tistory.com
+
+[15:33:14] ---------------------------------
+
+[15:33:14] Number of vehicle models: 0
+[15:33:25] Incoming connection: 221.159.188.227:1210
+[15:33:25] [join] Prune_Varh has joined the server (0:221.159.188.227)
+Console input: gmx
+[15:41:20] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[15:41:20] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[15:41:20] [mode] Mode has been unloaded.
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3x, (C)2005-2013 SA-MP Team
+
+[15:41:23] filterscripts = ""  (string)
+[15:41:23] 
+[15:41:23] Server Plugins
+[15:41:23] --------------
+[15:41:23]  Loading plugin: mysql
+[15:41:23]  SA:MP MySQL Plugin v2.1.1 Loaded.
+[15:41:23]   Loaded.
+[15:41:23]  Loading plugin: streamer
+[15:41:23] [MySQL] Thread running. Threadsafe: Yes.
+[15:41:23] 
+
+*** Streamer Plugin v2.6.1 by Incognito loaded ***
+
+[15:41:23]   Loaded.
+[15:41:23]  Loaded 2 plugins.
+
+[15:41:24] 
+[15:41:24] Filterscripts
+[15:41:24] ---------------
+[15:41:24]   Loaded 0 filterscripts.
+
+[15:41:24] DB 서버에 접속중입니다.
+[15:41:24] [MySQL] Connected (0) to 'samp_nogov'@'pureunba.no-ip.org via TCP/IP'.
+[15:41:24] [MySQL] Server Version 5.5.29.
+[15:41:24] DB 서버에 접속했습니다.
+[15:41:24] 
+---------------------------------
+
+[15:41:24]  Nogov v0.0.1
+
+[15:41:24]  	Coded by PureunBa
+[15:41:24]  	pureunba.tistory.com
+
+[15:41:24] ---------------------------------
+
+[15:41:24] Number of vehicle models: 0
+[15:41:35] Incoming connection: 221.159.188.227:1211
+[15:41:35] [join] Prune_Varh has joined the server (0:221.159.188.227)
+[16:28:53] [part] Prune_Varh has left the server (0:1)
+[16:29:14] Incoming connection: 221.159.188.227:1221
+[16:29:14] [join] Prune_Varh has joined the server (0:221.159.188.227)
