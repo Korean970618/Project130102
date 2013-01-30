@@ -53,6 +53,7 @@
 #include "Modules/Cores/Item.pwn"
 #include "Modules/Cores/Fly.pwn"
 #include "Modules/Commands/Admin.pwn"
+#include "Modules/Commands/Animation.pwn"
 
 
 
@@ -144,6 +145,7 @@ public OnGameModeInit()
 	AddHandler("Fly",               gInitHandler, pConnectHandler, pUpdateHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
+	AddHandler("Animation",         pCommandTextHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(20), true);
 	Timer_OneSecTimer = GetTickCount();
