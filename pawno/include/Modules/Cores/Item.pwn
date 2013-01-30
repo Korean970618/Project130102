@@ -349,6 +349,13 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		    }
 		    else ShowPlayerItemList(playerid, DialogId_Item(3), "손");
 		}
+		case 5:
+		    if (!response)
+		    {
+		        new itemid = DialogData[playerid][0];
+	            ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
+			}
 	}
 	return 1;
 }
