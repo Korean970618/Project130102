@@ -222,7 +222,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		destid = ReturnUser(cmd);
 		if (!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-	    LetPlayerSpawn(destid);
+	    SpawnPlayer_(destid);
 	    format(str, sizeof(str), "%s님을 리스폰시켰습니다.", GetPlayerNameA(destid));
 	    SendClientMessage(playerid, COLOR_WHITE, str);
 	    SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 리스폰되었습니다.");

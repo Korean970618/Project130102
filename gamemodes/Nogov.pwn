@@ -56,6 +56,7 @@
 #include "Modules/Cores/Vehicle.pwn"
 #include "Modules/Cores/Item.pwn"
 #include "Modules/Cores/Fly.pwn"
+#include "Modules/Cores/PlayerSpawn.pwn"
 #include "Modules/Commands/Admin.pwn"
 #include "Modules/Commands/Animation.pwn"
 
@@ -147,6 +148,7 @@ public OnGameModeInit()
 	AddHandler("Vehicle",           gInitHandler);
 	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",               gInitHandler, pConnectHandler, pUpdateHandler);
+	AddHandler("PlayerSpawn",       pSpawnHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	AddHandler("Animation",         pCommandTextHandler);

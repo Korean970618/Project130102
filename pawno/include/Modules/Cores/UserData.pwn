@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/28
+ *		Update:		2013/01/30
  *
  *
  */
@@ -30,9 +30,7 @@
 	CreateUserDataTable()
 	SaveUserData(playerid)
 	LoadUserData(playerid)
-	SetDefaultUserData(playerid)
 	ShowPlayerLoginDialog(playerid, bool:wrong)
-	LetPlayerSpawn(playerid)
 
 */
 
@@ -110,7 +108,6 @@ public pSpawnHandler_UserData(playerid)
 	    SetPlayerVirtualWorld(playerid, strval(receive[5]));
 	    SetPVarInt_(playerid, "RestoreSpawn", false);
 	}
-	SetDefaultUserData(playerid);
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
@@ -150,10 +147,8 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 				    SetPVarInt_(playerid, "pRegDate", strval(str));
 				    format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 				    mysql_query(str);
-				    SaveUserData(playerid);
 				    SetPVarInt_(playerid, "Registered", true);
-				    SetPVarInt_(playerid, "LoggedIn", true);
-					LetPlayerSpawn(playerid);
+					ShowPlayerLoginDialog(playerid, false);
 				}
 				else
 				    ShowPlayerLoginDialog(playerid, true);
@@ -170,7 +165,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 			        if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
 			            ShowPlayerDialog(playerid, DialogId_UserData(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 			        else
-			            LetPlayerSpawn(playerid);
+			            SpawnPlayer_(playerid);
 				}
 				else
 					ShowPlayerLoginDialog(playerid, true);
@@ -197,7 +192,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 		{
 		    if (listitem == 1)
 		        SetPVarInt_(playerid, "RestoreSpawn", true);
-			LetPlayerSpawn(playerid);
+			SpawnPlayer_(playerid);
 		}
 	}
 	return 1;
@@ -240,7 +235,7 @@ stock CreateUserDataTable()
 	strcat(str, ",Radio int(5) NOT NULL default '0'");
 	strcat(str, ",Origin varchar(64) NOT NULL  default ''");
 	strcat(str, ",Money int(10) NOT NULL default '0'");
-	strcat(str, ",Skin int(3) NOT NULL default '0'");
+	strcat(str, ",Skin int(3) NOT NULL default '29'");
 	strcat(str, ",Deaths int(5) NOT NULL default '0'");
 	strcat(str, ",LastQuit int(1) NOT NULL default '0'");
 	strcat(str, ",LastPos varchar(64) NOT NULL  default ''");
@@ -254,8 +249,8 @@ stock CreateUserDataTable()
 	strcat(str, ",Toy4 varchar(256) NOT NULL  default ''");
 	strcat(str, ",Toy5 varchar(256) NOT NULL  default ''");
 	strcat(str, ",Banned varchar(256) NOT NULL default ''");
-	strcat(str, ",Weight int(3) NOT NULL default '0'");
-	strcat(str, ",Power int(3) NOT NULL default '0'");
+	strcat(str, ",Weight int(3) NOT NULL default '50'");
+	strcat(str, ",Power int(3) NOT NULL default '20'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
@@ -353,16 +348,6 @@ stock LoadUserData(playerid)
 	}
 	return 1;
 }
-//-----< SetDefaultUserData >---------------------------------------------------
-stock SetDefaultUserData(playerid)
-{
-	if (!GetPVarInt_(playerid, "pWeight"))
-		SetPVarInt_(playerid, "pWeight", 50);
-	if (!GetPVarInt_(playerid, "pPower"))
-		SetPVarInt_(playerid, "pPower", 20);
-	SaveUserData(playerid);
-	return 1;
-}
 //-----< ShowPlayerLoginDialog >------------------------------------------------
 stock ShowPlayerLoginDialog(playerid, bool:wrong)
 {
@@ -407,13 +392,6 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 		    ");
 	    ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
 	}
-	return 1;
-}
-//-----< LetPlayerSpawn >-------------------------------------------------------
-stock LetPlayerSpawn(playerid)
-{
-    SetSpawnInfo(playerid,16,0, 1675.9365,-2258.1887,13.3709,108.9242, 0,0,0,0,0,0);
-	SpawnPlayer(playerid);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
