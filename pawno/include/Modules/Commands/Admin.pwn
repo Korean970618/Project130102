@@ -59,7 +59,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 	    new help[2048];
-	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드\n\n");
+	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰\n\n");
 	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트\n\n");
@@ -171,9 +171,9 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		new interior = strval(cmd);
 		new binterior = GetPlayerInterior(destid);
 		SetPlayerInterior(destid, interior);
-		format(str, sizeof(str), "%s님의 인테리어를 설정했습니다. %d > %d", GetPlayerNameA(destid), binterior, interior);
+		format(str, sizeof(str), "%s님의 인테리어를 변경했습니다. %d > %d", GetPlayerNameA(destid), binterior, interior);
 		SendClientMessage(playerid, COLOR_WHITE, str);
-		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 인테리어가 설정되었습니다.");
+		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 인테리어가 변경되었습니다.");
 		return 1;
 	}
 	else if (!strcmp(cmd, "/버추얼월드", true))
@@ -188,12 +188,45 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		if (!strlen(cmd))
 		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /버추얼월드 [플레이어] [값]");
 		new virtualworld = strval(cmd);
-		new bvirtualworld = GetPlayerInterior(destid);
-		SetPlayerInterior(destid, virtualworld);
-		format(str, sizeof(str), "%s님의 버추얼월드를 설정했습니다. %d > %d", GetPlayerNameA(destid), bvirtualworld, virtualworld);
+		new bvirtualworld = GetPlayerVirtualWorld(destid);
+		SetPlayerVirtualWorld(destid, virtualworld);
+		format(str, sizeof(str), "%s님의 버추얼월드를 변경했습니다. %d > %d", GetPlayerNameA(destid), bvirtualworld, virtualworld);
 		SendClientMessage(playerid, COLOR_WHITE, str);
-		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 버추얼월드가 설정되었습니다.");
+		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 버추얼월드가 변경되었습니다.");
 		return 1;
+	}
+	else if (!strcmp(cmd, "/스킨", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스킨 [플레이어] [값]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스킨 [플레이어] [값]");
+		new skin = strval(cmd);
+		new bskin = GetPlayerSkin(destid);
+		SetPlayerSkin(playerid, skin);
+		format(str, sizeof(str), "%s님의 스킨을 변경했습니다. %d > %d", GetPlayerNameA(destid), bskin, skin);
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 스킨이 변경되었습니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/리스폰", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /리스폰 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+	    LetPlayerSpawn(destid);
+	    format(str, sizeof(str), "%s님을 리스폰시켰습니다.", GetPlayerNameA(destid));
+	    SendClientMessage(playerid, COLOR_WHITE, str);
+	    SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 리스폰되었습니다.");
+	    return 1;
 	}
 	//
 	// 이동
