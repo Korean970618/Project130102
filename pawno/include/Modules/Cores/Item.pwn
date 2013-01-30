@@ -289,6 +289,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
 							ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
 							ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
+                        SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 				    }
 				}
 				strcpy(PlayerItemInfo[playerid][itemid][iSaveType], htext);
@@ -319,11 +320,17 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				    {
 						new htext[32];
 						strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-						if (!strcmp(htext, "왼손", true) || !strcmp(htext, "양손", true))
+						if (!strcmp(htext, "왼손", true))
 							RemovePlayerAttachedObject(playerid, 0);
 						else if (!strcmp(htext, "오른손", true))
 							RemovePlayerAttachedObject(playerid, 1);
-				        strcpy(PlayerItemInfo[playerid][itemid][iSaveType], "가방");
+						else if (!strcmp(htext, "양손", true))
+						{
+						    RemovePlayerAttachedObject(playerid, 0);
+							if (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+						    	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+						}
+						strcpy(PlayerItemInfo[playerid][itemid][iSaveType], "가방");
 				        SavePlayerItemDataById(playerid, itemid);
 				        format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 가방에 넣었습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
 				        SendClientMessage(playerid, COLOR_WHITE, str);
@@ -344,10 +351,16 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 						{
 						    new htext[32];
 							strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-							if (!strcmp(htext, "왼손", true) || !strcmp(htext, "양손", true))
+							if (!strcmp(htext, "왼손", true))
 								RemovePlayerAttachedObject(playerid, 0);
 							else if (!strcmp(htext, "오른손", true))
 								RemovePlayerAttachedObject(playerid, 1);
+							else if (!strcmp(htext, "양손", true))
+							{
+							    RemovePlayerAttachedObject(playerid, 0);
+								if (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+							    	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+							}
 							DropPlayerItem(playerid, itemid);
 						}
 		            }
@@ -557,10 +570,13 @@ stock LoadPlayerItemData(playerid)
 				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
 				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
         else if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
+        {
 			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
 				ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
 				ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
 				ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
+            SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+        }
 	}
 	return 1;
 }

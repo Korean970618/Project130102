@@ -41,6 +41,7 @@ forward pSpawnHandler_PlayerSpawn(playerid);
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_PlayerSpawn(playerid)
 {
+	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
