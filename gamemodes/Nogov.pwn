@@ -26,6 +26,10 @@
 	75: PropertyData Core
 	100: Item Core
 
+  < Attached Object Slots (0~9) >
+	0: Item Core
+	1: Item Core
+
   < Functions >
 	AddHandler(module[], ...)
 
