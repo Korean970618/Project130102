@@ -149,7 +149,7 @@ public pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 				SendClientMessage(playerid, COLOR_WHITE, "가방이 너무 무겁습니다.");
 			else
 			{
-			    format(str, sizeof(str), "%s은(는) 너무 무거워서 가방에 넣을 수 없습니다.");
+			    format(str, sizeof(str), "%s은(는) 너무 무거워서 가방에 넣을 수 없습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName]);
 				SendClientMessage(playerid, COLOR_WHITE, str);
 			}
 		}
