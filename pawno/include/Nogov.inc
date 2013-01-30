@@ -4,7 +4,6 @@
  *		PureunBa(¼­¼º¹ü)
  *
  *			Nogov Main Include
- *			v1.0.0
  *
  *
  *		Coded by PureunBa 2011-2013 @ all right reserved.
@@ -18,34 +17,45 @@
  *
  */
 /*
-native strcpy(dest[], src[]);
-native FixBlankString(input[]);
-native AntiDeAMX();
-native strtok(const string[], &index, seperator=' ');
-native stringslice(const string[], stringindex, separator=' ');
-native stringslice_c(const string[], stringindex, separator=' ');
-native ReturnUser(text[]);
-native IsNumeric(const string[]);
-native split(const strsrc[], strdest[][], delimiter = '|');
-native GetPlayerNameA(playerid);
-native GetPlayerIpA(playerid);
-native Float:GetPlayerHealthA(playerid);
-native Float:GetPlayerArmourA(playerid);
-native Wait(time);
-native Crash();
-native TimeFix(time);
-native SetPVarInt_(playerid, varname[], int_value, array=0);
-native SetPVarFloat_(playerid, varname[], Float:float_value, array=0);
-native SetPVarString_(playerid, varname[], string_value[], array=0);
-native GetPVarInt_(playerid, varname[], array=0);
-native Float:GetPVarFloat_(playerid, varname[], array=0);
-native GetPVarString_(playerid, varname[], array=0);
-native DeletePVar_(playerid, varname[], array=0);
-native GetPVarType_(playerid, varname[], array=0);
-native escape(str[])
-native ResetPlayerDialogData(playerid);
-native strtab(dest[], str[], maxlength);
- */
+
+  < Hook Callbacks >
+	OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
+
+  < Hook Functions >
+	ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
+	SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
+
+  < Functions >
+	native strcpy(dest[], src[]);
+	native FixBlankString(input[]);
+	native AntiDeAMX();
+	native strtok(const string[], &index, seperator=' ');
+	native stringslice(const string[], stringindex, separator=' ');
+	native stringslice_c(const string[], stringindex, separator=' ');
+	native ReturnUser(text[]);
+	native IsNumeric(const string[]);
+	native split(const strsrc[], strdest[][], delimiter = '|');
+	native GetPlayerNameA(playerid);
+	native GetPlayerIpA(playerid);
+	native Float:GetPlayerHealthA(playerid);
+	native Float:GetPlayerArmourA(playerid);
+	native Wait(time);
+	native Crash();
+	native TimeFix(time);
+	native SetPVarInt_(playerid, varname[], int_value, array=0);
+	native SetPVarFloat_(playerid, varname[], Float:float_value, array=0);
+	native SetPVarString_(playerid, varname[], string_value[], array=0);
+	native GetPVarInt_(playerid, varname[], array=0);
+	native Float:GetPVarFloat_(playerid, varname[], array=0);
+	native GetPVarString_(playerid, varname[], array=0);
+	native DeletePVar_(playerid, varname[], array=0);
+	native GetPVarType_(playerid, varname[], array=0);
+	native escape(str[])
+	native ResetPlayerDialogData(playerid);
+	native strtab(dest[], str[], maxlength);
+	native valstr_(value);
+
+*/
 
 
 
@@ -56,6 +66,16 @@ native strtab(dest[], str[], maxlength);
 
 //-----< Variables
 new DialogData[MAX_PLAYERS][100];
+enum eAttachedObjectInfo
+{
+	aoModel,
+	aoBone,
+	Float:aoOffset[3],
+	Float:aoRot[3],
+	Float:aoScale[3],
+	aoMColor[2]
+}
+new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo];
 
 
 
@@ -129,10 +149,36 @@ new DialogData[MAX_PLAYERS][100];
 
 
 
-//-----< Hooks
-forward ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[], button2[]);
+//-----< Hook Callbacks
+//-----< OnPlayerEditAttachedObject >-------------------------------------------
+stock OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
+{
+	AttachedObjectInfo[playerid][index][aoModel] 		= modelid;
+	AttachedObjectInfo[playerid][index][aoBone] 		= boneid;
+	AttachedObjectInfo[playerid][index][aoOffset][0] 	= fOffsetX;
+	AttachedObjectInfo[playerid][index][aoOffset][1] 	= fOffsetY;
+	AttachedObjectInfo[playerid][index][aoOffset][2] 	= fOffsetZ;
+	AttachedObjectInfo[playerid][index][aoRot][0] 		= fRotX;
+	AttachedObjectInfo[playerid][index][aoRot][1] 		= fRotY;
+	AttachedObjectInfo[playerid][index][aoRot][2] 		= fRotZ;
+	AttachedObjectInfo[playerid][index][aoScale][0] 	= fScaleX;
+	AttachedObjectInfo[playerid][index][aoScale][1] 	= fScaleY;
+	AttachedObjectInfo[playerid][index][aoScale][2] 	= fScaleZ;
+	return OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ)
+}
+#if defined _ALS_OnPlayerEditAttachedObject
+	#undef OnPlayerEditAttachedObject
+#else
+	#define _ALS_OnPlayerEditAttachedObject
+#endif
+#define OnPlayerEditAttachedObject OnPlayerEditAttachedObject_
+//-----<  >---------------------------------------------------------------------
+
+
+
+//-----< Hook Functions
 //-----< ShowPlayerDialog >-----------------------------------------------------
-public ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[], button2[])
+stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[], button2[])
 {
 	new caption_[128],
 	    info_[10240];
@@ -146,6 +192,31 @@ public ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[]
 	#define _ALS_ShowPlayerDialog
 #endif
 #define ShowPlayerDialog ShowPlayerDialog_
+//-----< SetPlayerAttachedObject >----------------------------------------------
+stock SetPlayerAttachedObject_(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
+{
+    AttachedObjectInfo[playerid][index][aoModel] 		= modelid;
+	AttachedObjectInfo[playerid][index][aoBone] 		= bone;
+	AttachedObjectInfo[playerid][index][aoOffset][0] 	= fOffsetX;
+	AttachedObjectInfo[playerid][index][aoOffset][1] 	= fOffsetY;
+	AttachedObjectInfo[playerid][index][aoOffset][2] 	= fOffsetZ;
+	AttachedObjectInfo[playerid][index][aoRot][0] 		= fRotX;
+	AttachedObjectInfo[playerid][index][aoRot][1] 		= fRotY;
+	AttachedObjectInfo[playerid][index][aoRot][2] 		= fRotZ;
+	AttachedObjectInfo[playerid][index][aoScale][0] 	= fScaleX;
+	AttachedObjectInfo[playerid][index][aoScale][1] 	= fScaleY;
+	AttachedObjectInfo[playerid][index][aoScale][2] 	= fScaleZ;
+	AttachedObjectInfo[playerid][index][aoMColor][0]	= materialcolor1;
+	AttachedObjectInfo[playerid][index][aoMColor][1]    = materialcolor2;
+	return SetPlayerAttachedObject(playerid, index, modelid, bone, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ, materialcolor1, materialcolor2);
+}
+#if defined _ALS_SetPlayerAttachedObject
+	#undef SetPlayerAttachedObject
+#else
+	#define _ALS_SetPlayerAttachedObject
+#endif
+#define SetPlayerAttachedObject SetPlayerAttachedObject_
+//-----<  >---------------------------------------------------------------------
 
 
 
@@ -449,5 +520,12 @@ stock strtab(dest[], str[], maxlength)
 		}
 	len += 7;
 	strcat(dest, "\t", len);
+}
+//-----< valstr_ >--------------------------------------------------------------
+stock valstr_(value)
+{
+	new str[32];
+	valstr(str, value);
+	return str;
 }
 //-----<  >---------------------------------------------------------------------
