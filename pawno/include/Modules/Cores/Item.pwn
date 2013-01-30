@@ -46,7 +46,7 @@
 	GivePlayerItem(playerid, itemid, savetype[]="가방")
 	GetPlayerItemsWeight(playerid, savetype[]="All")
 	ShowPlayerItemList(playerid, dialogid, savetyoe[]="가방")
-	ShowPlayerItemInfo(playerid, itemid)
+	ShowPlayerItemInfo(playerid, playerid, itemid)
 	ShowItemModelList(playerid, dialogid)
 	GetPlayerNearestItem(playerid, Float:distance=1.0)
 	GetItemSaveTypeCode(savetype[])
@@ -185,13 +185,14 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 	    case 0:
 	        if (response)
 	        {
-	            if (!listitem) return 1;
+	            if (!listitem) return ShowPlayerItemList(playerid, DialogId_Item(0));
 	            new itemid = DialogData[playerid][listitem];
 	            DialogData[playerid][0] = DialogData[playerid][listitem];
 	            ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"꺼낸다.\n확인한다.\n버린다.", "선택", "취소");
+					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
 	        }
 		case 1:
+		{
 		    if (response)
 		    {
 		        new itemid = DialogData[playerid][0];
@@ -200,11 +201,11 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		            case 0:
 		            {
 		                ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-		                    "왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "취소");
+		                    "왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "뒤로");
 		            }
 		            case 1:
 		            {
-		                ShowPlayerItemInfo(playerid, itemid);
+		                ShowPlayerItemInfo(playerid, DialogId_Item(5), itemid);
 		            }
 		            case 2:
 		            {
@@ -218,12 +219,15 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		            }
 				}
 		    }
+		    else ShowPlayerItemList(playerid, DialogId_Item(0));
+		}
 		case 2:
+		{
+		    new both[32], left[32], right[32], htext[32],
+				itemid = DialogData[playerid][0],
+				modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
 		    if (response)
 		    {
-				new both[32], left[32], right[32], htext[32],
-					itemid = DialogData[playerid][0],
-					modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
                 for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 		            if (IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
 		            {
@@ -291,6 +295,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
 				SendClientMessage(playerid, COLOR_WHITE, str);
 			}
+			else ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
+		}
 		case 3:
 			if (response)
 			{
@@ -298,7 +305,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
                 new itemid = DialogData[playerid][listitem];
 	            DialogData[playerid][0] = DialogData[playerid][listitem];
 	            ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"가방에 넣는다.\n버린다.", "선택", "취소");
+					"가방에 넣는다.\n버린다.", "선택", "뒤로");
 	        }
 		case 4:
 		{
@@ -610,11 +617,11 @@ stock ShowPlayerItemList(playerid, dialogid, savetype[]="가방")
 			strcat(str, tmp);
 			DialogData[playerid][idx++] = i;
 	    }
-	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, savetype, str, "확인", "취소");
+	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, savetype, str, "확인", "뒤로");
 	return 1;
 }
 //-----< ShowPlayerItemInfo >---------------------------------------------------
-stock ShowPlayerItemInfo(playerid, itemid)
+stock ShowPlayerItemInfo(playerid, dialogid, itemid)
 {
 	new str[512];
     strtab(str, "이름", 5);
@@ -625,7 +632,7 @@ stock ShowPlayerItemInfo(playerid, itemid)
     strcat(str, "\n");
     strtab(str, "설명", 5);
     strcat(str, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imInfo]);
-    ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "아이템 정보", str, "확인", chNullString);
+    ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_MSGBOX, "아이템 정보", str, "확인", "뒤로");
     return 1;
 }
 //-----< ShowItemModelList >----------------------------------------------------
@@ -646,7 +653,7 @@ stock ShowItemModelList(playerid, dialogid)
 		strtab(str, tmp, 5);
 		strcat(str, ItemModelInfo[i][imInfo]);
 	}
-	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "아이템 목록", str, "확인", "취소");
+	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "아이템 목록", str, "확인", "뒤로");
 	return 1;
 }
 //-----< GetPlayerNearestItem >-------------------------------------------------
