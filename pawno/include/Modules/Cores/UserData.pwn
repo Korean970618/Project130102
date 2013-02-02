@@ -12,13 +12,14 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/30
+ *		Update:		2013/02/02
  *
  *
  */
 /*
 
   < Callbacks >
+	gInitHandler_UserData(playerid)
 	pConnectHandler_UserData(playerid)
 	pRequestSpawnHandler_UserData(playerid)
 	pDeathHandler_UserData(playerid, killerid, reason)
@@ -41,13 +42,15 @@
 
 
 //-----< Defines
-#define DialogId_UserData(%0)      (25+%0)
+#define DialogId_UserData(%0)		(25+%0)
+#define INTRO_MUSIC                 "cfile9.uf.tistory.com/original/135DD247510CA50F37CEE8"
 
 
 
 //-----< Callbacks
 forward gInitHandler_UserData();
 forward pConnectHandler_UserData(playerid);
+forward pRequestClassHandler_UserData(playerid, classid);
 forward pRequestSpawnHandler_UserData(playerid);
 forward pDeathHandler_UserData(playerid, killerid, reason);
 forward pSpawnHandler_UserData(playerid);
@@ -75,6 +78,19 @@ public pConnectHandler_UserData(playerid)
 	    {
 	        SetPVarInt_(playerid, "Registered", true);
 		}
+	}
+	return 1;
+}
+//-----< pRequestClassHandler >-------------------------------------------------
+public pRequestClassHandler_UserData(playerid, classid)
+{
+	if (!GetPVarInt_(playerid, "LoggedIn"))
+	{
+     PlayAudioStreamForPlayer(playerid, "http://"INTRO_MUSIC);
+		SetPlayerTime(playerid, 0, 0);
+		SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
+		SetPlayerCameraPos(playerid, -2955.9641, 1280.6005, 30.3001);
+		SetPlayerCameraLookAt(playerid, -2862.5815, 1182.5625, 9.6069);
 		ShowPlayerLoginDialog(playerid, false);
 	}
 	return 1;
@@ -98,6 +114,7 @@ public pDeathHandler_UserData(playerid, killerid, reason)
 public pSpawnHandler_UserData(playerid)
 {
 	SetPVarInt_(playerid, "Spawned", true);
+	StopAudioStreamForPlayer(playerid);
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
 	    new receive[6][16];

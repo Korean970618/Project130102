@@ -47,6 +47,7 @@
 #include <a_samp>
 #include <mysql>
 #include <streamer>
+#include <audio>
 #include <Nogov>
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/MySQL.pwn"
@@ -102,10 +103,20 @@
 #define vStreamOutHandler				36
 #define dResponseHandler				37
 #define pClickPlayerHandler				38
-#define tTickHandler					39
-#define pTimerTickHandler				40
+#define pEditObjectHandler              39
+#define pEditAttachedObjectHandler      40
+#define tTickHandler                    41
+#define pTimerTickHandler				42
+#define aConnectHandler                 43
+#define aDisconnectHandler              44
+#define aTransferFileHandler            45
+#define aPlayHandler                    46
+#define aStopHandler                    47
+#define aTrackChangeHandler             48
+#define aRadioStationChangeHandler      49
+#define aGetPositionHandler             50
 
-#define MAX_CALLBACKS					40
+#define MAX_CALLBACKS					50
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -143,7 +154,7 @@ public OnGameModeInit()
 	// Cores
 	AddHandler("MySQL",             gInitHandler);
     AddHandler("InitExit",			gInitHandler, gExitHandler);
-    AddHandler("UserData",			gInitHandler, pConnectHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
+    AddHandler("UserData",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",           gInitHandler);
 	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler);
@@ -610,6 +621,30 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 		}
 	return 1;
 }
+//-----< OnPlayerEditObject >---------------------------------------------------
+public OnPlayerEditObject(playerid, playerobject, objectid, response, Float:fX, Float:fY, Float:fZ, Float:fRotX, Float:fRotY, Float:fRotZ)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+	    if (CallbacksList[i][CBIndex][pEditObjectHandler])
+	    {
+	        format(funcstr, sizeof(funcstr), "%s_%s", "pEditObjectHandler", CallbacksList[i][CBName]);
+	        CallLocalFunction(funcstr, "ddddffffff", playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
+		}
+	return 1;
+}
+//-----< OnPlayerEditAttachedObject >-------------------------------------------
+public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+	    if (CallbacksList[i][CBIndex][pEditAttachedObjectHandler])
+	    {
+	        format(funcstr, sizeof(funcstr), "%s_%s", "pEditAttachedObjectHandler", CallbacksList[i][CBName]);
+	        CallLocalFunction(funcstr, "dddddfffffffff", playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+		}
+	return 1;
+}
 //-----< OnTimerTick >----------------------------------------------------------
 public OnTimerTick()
 {
@@ -646,7 +681,105 @@ public OnTimerTick()
 	}
 	return 1;
 }
+//-----< Audio_OnClientConnect >------------------------------------------------
+public Audio_OnClientConnect(playerid)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aConnectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aConnectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "d", playerid);
+		}
+	return 1;
+}
+//-----< Audio_OnClientDisconnect >---------------------------------------------
+public Audio_OnClientDisconnect(playerid)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aDisconnectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aDisconnectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "d", playerid);
+		}
+	return 1;
+}
+//-----< Audio_OnTransferFile >-------------------------------------------------
+public Audio_OnTransferFile(playerid, file[], current, total, result)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aTransferFileHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aTransferFileHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dsddd", playerid, file, current, total, result);
+		}
+	return 1;
+}
+//-----< Audio_OnPlay >---------------------------------------------------------
+public Audio_OnPlay(playerid, handleid)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aPlayHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aPlayHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, handleid);
+		}
+	return 1;
+}
+//-----< Audio_OnStop >---------------------------------------------------------
+public Audio_OnStop(playerid, handleid)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aStopHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aStopHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, handleid);
+		}
+	return 1;
+}
+//-----< Audio_OnTrackChange >--------------------------------------------------
+public Audio_OnTrackChange(playerid, handleid, track[])
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aTrackChangeHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aTrackChangeHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dds", playerid, handleid, track);
+		}
+	return 1;
+}
+//-----< Audio_OnRadioStationChange >-------------------------------------------
+public Audio_OnRadioStationChange(playerid, station)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aRadioStationChangeHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aRadioStationChangeHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, station);
+		}
+	return 1;
+}
+//-----< Audio_OnGetPosition >--------------------------------------------------
+public Audio_OnGetPosition(playerid, handleid, seconds)
+{
+    new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][aGetPositionHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "aGetPositionHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "ddd", playerid, handleid, seconds);
+		}
+	return 1;
+}
 //-----<  >---------------------------------------------------------------------
+
+
 
 //-----< Functions
 //-----< AddHandler >-----------------------------------------------------------

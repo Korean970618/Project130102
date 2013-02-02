@@ -24,6 +24,10 @@
   < Hook Functions >
 	ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
 	SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
+    PlayAudioStreamForPlayer(playerid, url[], Float:posX = 0.0, Float:posY = 0.0, Float:posZ = 0.0, Float:distance = 50.0, usepos = 0)
+	StopAudioStreamForPlayer(playerid);
+	SendClientMessage(playerid, color, const message[])
+	SendClientMessageToAll(color, const message[])
 
   < Functions >
 	native strcpy(dest[], src[]);
@@ -75,7 +79,15 @@ enum eAttachedObjectInfo
 	Float:aoScale[3],
 	aoMColor[2]
 }
-new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo];
+enum eClientMessageInfo
+{
+	cmColor,
+	cmMessage[512]
+}
+new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo],
+	Audio_MainStreamIndex[MAX_PLAYERS],
+	ClientMessages[MAX_PLAYERS],
+	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo];
 
 
 
@@ -150,8 +162,44 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 
 
 //-----< Hook Callbacks
+forward OnPlayerConnect_(playerid);
+forward OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ);
+//-----< OnPlayerConnect >------------------------------------------------------
+public OnPlayerConnect(playerid)
+{
+	for (new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	{
+	    AttachedObjectInfo[playerid][i][aoModel] 		= 0;
+		AttachedObjectInfo[playerid][i][aoBone] 		= 0;
+		AttachedObjectInfo[playerid][i][aoOffset][0] 	= 0.0;
+		AttachedObjectInfo[playerid][i][aoOffset][1] 	= 0.0;
+		AttachedObjectInfo[playerid][i][aoOffset][2] 	= 0.0;
+		AttachedObjectInfo[playerid][i][aoRot][0] 		= 0.0;
+		AttachedObjectInfo[playerid][i][aoRot][1] 		= 0.0;
+		AttachedObjectInfo[playerid][i][aoRot][2] 		= 0.0;
+		AttachedObjectInfo[playerid][i][aoScale][0] 	= 0.0;
+		AttachedObjectInfo[playerid][i][aoScale][1] 	= 0.0;
+		AttachedObjectInfo[playerid][i][aoScale][2] 	= 0.0;
+		RemovePlayerAttachedObject(playerid, i);
+	}
+	
+	ClientMessages[playerid] = 0;
+	for (new i = 0; i < 100; i++)
+	{
+	    ClientMessageInfo[playerid][i][cmColor] = 0;
+	    strcpy(ClientMessageInfo[playerid][i][cmMessage], chNullString);
+	}
+	
+	return OnPlayerConnect_(playerid);
+}
+#if defined _ALS_OnPlayerConnect
+	#undef OnPlayerConnect
+#else
+	#define _ALS_OnPlayerConnect
+#endif
+#define OnPlayerConnect OnPlayerConnect_
 //-----< OnPlayerEditAttachedObject >-------------------------------------------
-stock OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
+public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
 	AttachedObjectInfo[playerid][index][aoModel] 		= modelid;
 	AttachedObjectInfo[playerid][index][aoBone] 		= boneid;
@@ -164,7 +212,7 @@ stock OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Fl
 	AttachedObjectInfo[playerid][index][aoScale][0] 	= fScaleX;
 	AttachedObjectInfo[playerid][index][aoScale][1] 	= fScaleY;
 	AttachedObjectInfo[playerid][index][aoScale][2] 	= fScaleZ;
-	return OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ)
+	return OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
 }
 #if defined _ALS_OnPlayerEditAttachedObject
 	#undef OnPlayerEditAttachedObject
@@ -216,6 +264,78 @@ stock SetPlayerAttachedObject_(playerid, index, modelid, bone, Float:fOffsetX = 
 	#define _ALS_SetPlayerAttachedObject
 #endif
 #define SetPlayerAttachedObject SetPlayerAttachedObject_
+//-----< PlayAudioStreamForPlayer >---------------------------------------------
+stock PlayAudioStreamForPlayer_(playerid, url[], Float:posX = 0.0, Float:posY = 0.0, Float:posZ = 0.0, Float:distance = 50.0, usepos = 0)
+{
+	if (Audio_IsClientConnected(playerid))
+	{
+	    Audio_MainStreamIndex[playerid] = Audio_PlayStreamed(playerid, url) + 1;
+	    return 1;
+	}
+	PlayAudioStreamForPlayer(playerid, url, posX, posY, posZ, distance, usepos);
+	for (new i = 0; i < ClientMessages[playerid]; i++)
+		SendClientMessage(playerid, ClientMessageInfo[playerid][i][cmColor], ClientMessageInfo[playerid][i][cmMessage]);
+	return 1;
+}
+#if defined _ALS_PlayAudioStreamForPlayer
+	#undef PlayAudioStreamForPlayer
+#else
+	#define _ALS_PlayAudioStreamForPlayer
+#endif
+#define PlayAudioStreamForPlayer PlayAudioStreamForPlayer_
+//-----< StopAudioStreamForPlayer >---------------------------------------------
+stock StopAudioStreamForPlayer_(playerid)
+{
+	if (Audio_MainStreamIndex[playerid])
+	{
+		Audio_Stop(playerid, Audio_MainStreamIndex[playerid] - 1);
+		Audio_MainStreamIndex[playerid] = 0;
+	}
+	return StopAudioStreamForPlayer(playerid);
+}
+#if defined _ALS_StopAudioStreamForPlayer
+	#undef StopAudioStreamForPlayer
+#else
+	#define _ALS_StopAudioStreamForPlayer
+#endif
+#define StopAudioStreamForPlayer StopAudioStreamForPlayer_
+//-----< SendClientMessage >----------------------------------------------------
+stock SendClientMessage_(playerid, color, const message[])
+{
+	if (ClientMessages[playerid] >= 100)
+	{
+	    for (new i = 0; i < 100 - 1; i++)
+	    {
+	        ClientMessageInfo[i][cmColor] = ClientMessageInfo[i+1][cmColor];
+	        strcpy(ClientMessageInfo[i][cmMessage], ClientMessageInfo[i+1][cmMessage]);
+		}
+		ClientMessages[playerid] = 100 - 1;
+	}
+	new index = ClientMessages[playerid];
+	ClientMessageInfo[playerid][index][cmColor] = color;
+	strmid(ClientMessageInfo[playerid][index][cmMessage], message, 0, 512, 512);
+	ClientMessages[playerid]++;
+	return SendClientMessage(playerid, color, message);
+}
+#if defined _ALS_SendClientMessage
+	#undef SendClientMessage
+#else
+	#define _ALS_SendClientMessage
+#endif
+#define SendClientMessage SendClientMessage_
+//-----< SendClientMessageToAll >-----------------------------------------------
+stock SendClientMessageToAll_(color, const message[])
+{
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+		SendClientMessage(i, color, message);
+	return 1;
+}
+#if defined _ALS_SendClientMessageToAll
+	#undef SendClientMessageToAll
+#else
+	#define _ALS_SendClientMessageToAll
+#endif
+#define SendClientMessageToAll SendClientMessageToAll_
 //-----<  >---------------------------------------------------------------------
 
 

@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/01/30
+ *		Update:		2013/02/02
  *
  *
  */
@@ -62,7 +62,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	    strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰\n\n");
 	    strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 	    return 1;
 	}
@@ -388,6 +388,53 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		DialogData[playerid][0] = destid;
 		ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/음악", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /음악 [플레이어] ([URL])");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		strcpy(cmd, stringslice_c(cmdtext, 2));
+		if (!strlen(cmd))
+		    return StopAudioStreamForPlayer(destid);
+		PlayAudioStreamForPlayer(destid, cmd);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/카메라정보", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /카메라정보 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		new Float:px, Float:py, Float:pz,
+			Float:vx, Float:vy, Float:vz,
+			dstr[256];
+		GetPlayerCameraPos(destid, px, py, pz);
+		GetPlayerCameraFrontVector(destid, vx, vy, vz);
+		strcpy(dstr, chNullString);
+		strcat(dstr, C_LIGHTGREEN);
+		strtab(dstr, "이름", 13);
+		strcat(dstr, C_WHITE);
+		strcat(dstr, GetPlayerNameA(destid));
+		strcat(dstr, "\n");
+		strcat(dstr, C_LIGHTGREEN);
+		strtab(dstr, "카메라좌표", 13);
+		strcat(dstr, C_WHITE);
+		format(str, sizeof(str), "%.4f, %.4f, %.4f", px, py, pz);
+		strcat(dstr, str);
+		strcat(dstr, "\n");
+		strcat(dstr, C_LIGHTGREEN);
+		strtab(dstr, "카메라벡터", 13);
+		strcat(dstr, C_WHITE);
+		format(str, sizeof(str), "%.4f, %.4f, %.4f", vx, vy, vz);
+		strcat(dstr, str);
+		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "카메라정보", dstr, "확인", chNullString);
 		return 1;
 	}
 	return 0;
