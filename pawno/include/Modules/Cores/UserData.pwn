@@ -86,7 +86,7 @@ public pRequestClassHandler_UserData(playerid, classid)
 {
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-     PlayAudioStreamForPlayer(playerid, "http://"INTRO_MUSIC);
+		PlayAudioStreamForPlayer(playerid, "http://"INTRO_MUSIC);
 		SetPlayerTime(playerid, 0, 0);
 		SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
 		SetPlayerCameraPos(playerid, -2955.9641, 1280.6005, 30.3001);
