@@ -21,7 +21,9 @@
   < Callbacks >
 	gInitHandler_Player(playerid)
 	pConnectHandler_Player(playerid)
+	pRequestClassHandler_Player(playerid, classid)
 	pRequestSpawnHandler_Player(playerid)
+	pUpdateHandler_Player(playerid)
 	pDeathHandler_Player(playerid, killerid, reason)
 	pSpawnHandler_Player(playerid)
 	dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
@@ -43,8 +45,8 @@
 
 
 //-----< Defines
-#define DialogId_Player(%0)		(25+%0)
-#define INTRO_MUSIC                 "cfile9.uf.tistory.com/original/135DD247510CA50F37CEE8"
+#define DialogId_Player(%0)			(25+%0)
+#define INTRO_MUSIC					"cfile9.uf.tistory.com/original/135DD247510CA50F37CEE8"
 
 
 
@@ -53,6 +55,7 @@ forward gInitHandler_Player();
 forward pConnectHandler_Player(playerid);
 forward pRequestClassHandler_Player(playerid, classid);
 forward pRequestSpawnHandler_Player(playerid);
+forward pUpdateHandler_Player(playerid);
 forward pDeathHandler_Player(playerid, killerid, reason);
 forward pSpawnHandler_Player(playerid);
 forward pCommandTextHandler_Player(playerid, cmdtext[]);
@@ -61,23 +64,23 @@ forward pTimerTickHandler_Player(nsec, playerid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Player()
 {
-    CreateUserDataTable();
-    return 1;
+	CreateUserDataTable();
+	return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Player(playerid)
 {
-    new str[256];
-    for (new i; i < 20; i++)
-	    SendClientMessage(playerid, COLOR_WHITE, chEmpty);
+	new str[256];
+	for (new i; i < 20; i++)
+		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-	    format(str, sizeof(str), "SELECT Password From userdata WHERE Username='%s'", GetPlayerNameA(playerid));
-	    mysql_query(str);
-	    mysql_store_result();
-	    if (mysql_num_rows() > 0)
-	    {
-	        SetPVarInt_(playerid, "Registered", true);
+		format(str, sizeof(str), "SELECT Password From userdata WHERE Username='%s'", GetPlayerNameA(playerid));
+		mysql_query(str);
+		mysql_store_result();
+		if (mysql_num_rows() > 0)
+		{
+			SetPVarInt_(playerid, "Registered", true);
 		}
 	}
 	return 1;
@@ -100,10 +103,34 @@ public pRequestClassHandler_Player(playerid, classid)
 public pRequestSpawnHandler_Player(playerid)
 {
 	if (!GetPVarInt_(playerid, "LoggedIn"))
-	    ShowPlayerLoginDialog(playerid, false);
+		ShowPlayerLoginDialog(playerid, false);
 	else
 		return 1;
 	return 0;
+}
+//-----< pUpdateHandler >-------------------------------------------------------
+public pUpdateHandler_Player(playerid)
+{
+	new Float:x, Float:y, Float:z,
+		keys, ud, lr;
+	if (IsPlayerInAnyVehicle(playerid)) return 1;
+	GetPlayerVelocity(playerid, x, y, z);
+	GetPlayerKeys(playerid, keys, ud, lr);
+	new Float:weights = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100;
+	if (weights > 75)
+	{
+		if (z > 0.0)
+		{
+			SetPlayerVelocity(playerid, 0.0, 0.0, -z);
+		}
+		else if (ud != 0 || lr != 0)
+		{
+			x -= (x / 100) * weights;
+			y -= (y / 100) * weights;
+			SetPlayerVelocity(playerid, x, y, z);
+		}
+	}
+	return 1;
 }
 //-----< pDeathHandler >--------------------------------------------------------
 public pDeathHandler_Player(playerid, killerid, reason)
@@ -118,13 +145,13 @@ public pSpawnHandler_Player(playerid)
 	StopAudioStreamForPlayer(playerid);
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
-	    new receive[6][16];
-	    split(GetPVarString_(playerid, "pLastPos"), receive, ',');
-	    SetPlayerPos(playerid, floatstr(receive[0]), floatstr(receive[1]), floatstr(receive[2]));
-	    SetPlayerFacingAngle(playerid, floatstr(receive[3]));
-	    SetPlayerInterior(playerid, strval(receive[4]));
-	    SetPlayerVirtualWorld(playerid, strval(receive[5]));
-	    SetPVarInt_(playerid, "RestoreSpawn", false);
+		new receive[6][16];
+		split(GetPVarString_(playerid, "pLastPos"), receive, ',');
+		SetPlayerPos(playerid, floatstr(receive[0]), floatstr(receive[1]), floatstr(receive[2]));
+		SetPlayerFacingAngle(playerid, floatstr(receive[3]));
+		SetPlayerInterior(playerid, strval(receive[4]));
+		SetPlayerVirtualWorld(playerid, strval(receive[5]));
+		SetPVarInt_(playerid, "RestoreSpawn", false);
 	}
 	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	return 1;
@@ -139,9 +166,9 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 	if (!GetPVarInt_(playerid, "LoggedIn")) return 0;
 	else if (!strcmp(cmd, "/비번변경", true) || !strcmp(cmd, "/암호변경", true))
 	{
-	    format(str, sizeof(str), "\
+		format(str, sizeof(str), "\
 		\n\
-	    새 비밀번호를 입력하세요.\n\
+		새 비밀번호를 입력하세요.\n\
 		\n\
 		");
 		ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
@@ -156,61 +183,61 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 	switch (dialogid - DialogId_Player(0))
 	{
 		case 0:
-	        if (!GetPVarInt_(playerid, "Registered"))
+			if (!GetPVarInt_(playerid, "Registered"))
 			{
 				if (strlen(inputtext) >= 8)
 				{
-				    new year, month, day;
-				    getdate(year, month, day);
-				    format(str, sizeof(str), "%04d%02d%02d", year, month, day);
-				    SetPVarInt_(playerid, "pRegDate", strval(str));
-				    format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
-				    mysql_query(str);
-				    SetPVarInt_(playerid, "Registered", true);
+					new year, month, day;
+					getdate(year, month, day);
+					format(str, sizeof(str), "%04d%02d%02d", year, month, day);
+					SetPVarInt_(playerid, "pRegDate", strval(str));
+					format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
+					mysql_query(str);
+					SetPVarInt_(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
 				}
 				else
-				    ShowPlayerLoginDialog(playerid, true);
+					ShowPlayerLoginDialog(playerid, true);
 			}
 			else if (!GetPVarInt_(playerid, "LoggedIn"))
 			{
-			    format(str, sizeof(str), "SELECT ID FROM userdata WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
-			    mysql_query(str);
-			    mysql_store_result();
-			    if (mysql_num_rows() == 1)
-			    {
+				format(str, sizeof(str), "SELECT ID FROM userdata WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
+				mysql_query(str);
+				mysql_store_result();
+				if (mysql_num_rows() == 1)
+				{
 					SetPVarInt_(playerid, "LoggedIn", true);
-			        LoadUserData(playerid);
-			        if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
-			            ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
-			        else
-			            SpawnPlayer_(playerid);
+					LoadUserData(playerid);
+					if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
+						ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
+					else
+						SpawnPlayer_(playerid);
 				}
 				else
 					ShowPlayerLoginDialog(playerid, true);
 			}
 		case 1:
-		    if (response)
-		        if (strlen(inputtext) >= 8)
-		        {
-		            format(str, sizeof(str), "UPDATE userdata SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
-		            mysql_query(str);
-		            SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
+			if (response)
+				if (strlen(inputtext) >= 8)
+				{
+					format(str, sizeof(str), "UPDATE userdata SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
+					mysql_query(str);
+					SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
 				}
 				else
 				{
-				    format(str, sizeof(str), "\
+					format(str, sizeof(str), "\
 					\n\
-				    새 비밀번호를 입력하세요.\n\
-                    비밀번호는 반드시 8자리 이상이어야 합니다.\n\
+					새 비밀번호를 입력하세요.\n\
+					비밀번호는 반드시 8자리 이상이어야 합니다.\n\
 					\n\
 					");
 					ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
 				}
 		case 2:
 		{
-		    if (listitem == 1)
-		        SetPVarInt_(playerid, "RestoreSpawn", true);
+			if (listitem == 1)
+				SetPVarInt_(playerid, "RestoreSpawn", true);
 			SpawnPlayer_(playerid);
 		}
 	}
@@ -222,15 +249,15 @@ public pTimerTickHandler_Player(nsec, playerid)
 	if (nsec != 1000) return 1;
 	else if(!IsPlayerConnected(playerid)) return 1;
 	new Float:pos[4],
-	    interior = GetPlayerInterior(playerid),
-	    virtualworld = GetPlayerVirtualWorld(playerid),
-	    str[64];
+		interior = GetPlayerInterior(playerid),
+		virtualworld = GetPlayerVirtualWorld(playerid),
+		str[64];
 	if (GetPVarInt_(playerid, "Spawned") && GetPVarInt_(playerid, "LoggedIn"))
 	{
-	    GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
-	    GetPlayerFacingAngle(playerid, pos[3]);
-	    format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
-	    SetPVarString_(playerid, "pLastPos", str);
+		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+		GetPlayerFacingAngle(playerid, pos[3]);
+		format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
+		SetPVarString_(playerid, "pLastPos", str);
 	}
 	SaveUserData(playerid);
 	return 1;
@@ -321,8 +348,8 @@ stock SaveUserData(playerid)
 stock LoadUserData(playerid)
 {
 	new str[256],
-	    receive[26][256],
-	    idx;
+		receive[26][256],
+		idx;
 	if (IsPlayerNPC(playerid)) return 1;
 	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
 	
@@ -360,10 +387,10 @@ stock LoadUserData(playerid)
 	
 	if (!GetPVarInt_(playerid, "pRegDate"))
 	{
-	    new year, month, day;
-	    getdate(year, month, day);
-	    format(str, sizeof(str), "%04d%02d%02d", year, month, day);
-	    SetPVarInt_(playerid, "pRegDate", strval(str));
+		new year, month, day;
+		getdate(year, month, day);
+		format(str, sizeof(str), "%04d%02d%02d", year, month, day);
+		SetPVarInt_(playerid, "pRegDate", strval(str));
 	}
 	return 1;
 }
@@ -373,21 +400,21 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 	new str[512];
 	format(str, sizeof(str), "\
 	\n\
-    "C_LIGHTBLUE"%s님, 안녕하세요!\n\
-    "C_YELLOW"Do not trust anyone - Nogov"C_WHITE"에 오신 것을 환영합니다.\n\
+	"C_LIGHTBLUE"%s님, 안녕하세요!\n\
+	"C_YELLOW"Do not trust anyone - Nogov"C_WHITE"에 오신 것을 환영합니다.\n\
 	", GetPlayerNameA(playerid));
 	if (GetPVarInt_(playerid, "Registered"))
 	{
-	    if (wrong)
-	        strcat(str, "\
+		if (wrong)
+			strcat(str, "\
 			\n\
 			비밀번호가 옳바르지 않습니다.\n\
 			다시 확인해 주세요!\n\
 			\n\
 			");
 		else
-		    strcat(str, "\
-		    \n\
+			strcat(str, "\
+			\n\
 			가입되어 있는 닉네임입니다.\n\
 			비밀번호를 입력하여 로그인하세요.\n\
 			\n\
@@ -396,20 +423,20 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 	}
 	else
 	{
-	    if (wrong)
-	        strcat(str, "\
-	        \n\
-            비밀번호를 8자리 이상 입력하세요.\n\
-            \n\
-            ");
-	    else
-		    strcat(str, "\
-		    \n\
-		    가입되어 있지 않은 닉네임입니다.\n\
-		    비밀번호를 입력하여 가입하세요.\n\
-		    \n\
-		    ");
-	    ShowPlayerDialog(playerid, DialogId_Player(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
+		if (wrong)
+			strcat(str, "\
+			\n\
+			비밀번호를 8자리 이상 입력하세요.\n\
+			\n\
+			");
+		else
+			strcat(str, "\
+			\n\
+			가입되어 있지 않은 닉네임입니다.\n\
+			비밀번호를 입력하여 가입하세요.\n\
+			\n\
+			");
+		ShowPlayerDialog(playerid, DialogId_Player(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
 	}
 	return 1;
 }

@@ -90,8 +90,8 @@ stock SaveVehicleDataById(vehicleid)
 	format(str, sizeof(str), "%s Ownername='%s'", str, escape(VehicleInfo[vehicleid][vOwnername]));
 	format(str, sizeof(str), "%s,Model=%d", str, VehicleInfo[vehicleid][vModel]);
 	format(str, sizeof(str), "%s,LastPos='%.4f,%.4f,%.4f,%.4f,%d,%d'", str,
-	    VehicleInfo[vehicleid][vPos][0], VehicleInfo[vehicleid][vPos][1], VehicleInfo[vehicleid][vPos][2], VehicleInfo[vehicleid][vPos][3],
-	    VehicleInfo[vehicleid][vInterior], VehicleInfo[vehicleid][vVirtualWorld]);
+		VehicleInfo[vehicleid][vPos][0], VehicleInfo[vehicleid][vPos][1], VehicleInfo[vehicleid][vPos][2], VehicleInfo[vehicleid][vPos][3],
+		VehicleInfo[vehicleid][vInterior], VehicleInfo[vehicleid][vVirtualWorld]);
 	format(str, sizeof(str), "%s,Color1=%d", str, VehicleInfo[vehicleid][vColor1]);
 	format(str, sizeof(str), "%s,Color2=%d", str, VehicleInfo[vehicleid][vColor2]);
 	format(str, sizeof(str), "%s,Paintjob=%d", str, VehicleInfo[vehicleid][vPaintjob]);
@@ -104,32 +104,32 @@ stock SaveVehicleDataById(vehicleid)
 stock SaveVehicleData()
 {
 	for (new i = 0, t = GetMaxVehicles(); i < t; i++)
-	    if (IsValidVehicleID(i))
-	        SaveVehicleDataById(i);
+		if (IsValidVehicleID(i))
+			SaveVehicleDataById(i);
 	return 1;
 }
 //-----< LoadVehicleData >------------------------------------------------------
 stock LoadVehicleData()
 {
 	new str[512],
-	    receive[8][128],
-	    idx,
-	    splited[6][16];
+		receive[8][128],
+		idx,
+		splited[6][16];
 	mysql_query("SELECT * FROM vehicledata");
 	mysql_store_result();
 	for (new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
-	    mysql_fetch_row(str, "|");
-	    split(str, receive, '|');
-	    idx = 0;
-	    
-	    VehicleInfo[i][vID] = strval(receive[idx++]);
-	    strcpy(VehicleInfo[i][vOwnername], receive[idx++]);
-	    VehicleInfo[i][vModel] = strval(receive[idx++]);
+		mysql_fetch_row(str, "|");
+		split(str, receive, '|');
+		idx = 0;
+
+		VehicleInfo[i][vID] = strval(receive[idx++]);
+		strcpy(VehicleInfo[i][vOwnername], receive[idx++]);
+		VehicleInfo[i][vModel] = strval(receive[idx++]);
 
 		split(receive[idx++], splited, ',');
 		for (new j = 0; j < 4; j++)
-		    VehicleInfo[i][vPos][j] = floatstr(splited[j]);
+			VehicleInfo[i][vPos][j] = floatstr(splited[j]);
 		VehicleInfo[i][vInterior] = strval(splited[4]);
 		VehicleInfo[i][vVirtualWorld] = strval(splited[5]);
 		
@@ -158,7 +158,7 @@ stock UnloadVehicleDataById(vehicleid)
 stock UnloadVehicleData()
 {
 	for (new i = 0, t = GetMaxVehicles(); i < t; i++)
-	    if (IsValidVehicleID(i))
+		if (IsValidVehicleID(i))
 			UnloadVehicleDataById(i);
 	return 1;
 }
@@ -167,15 +167,15 @@ stock CreateVehicle_(vehicletype, Float:x, Float:y, Float:z, Float:rotation, int
 {
 	new str[5];
 	for (new i = 0, t = GetMaxVehicles(); i < t; i++)
-	    if (!IsValidVehicleID(i))
-	    {
+		if (!IsValidVehicleID(i))
+		{
 			mysql_query("INSERT INTO vehicledata (Model) VALUES (0)");
 			mysql_query("SELECT ID FROM vehicledata WHERE Model=0");
 			mysql_store_result();
 			mysql_fetch_row(str, "|");
 			
 			new dbid = strval(str),
-			    vehicleid = CreateVehicle(vehicletype, x, y, z, rotation, color1, color2, respawn_delay);
+				vehicleid = CreateVehicle(vehicletype, x, y, z, rotation, color1, color2, respawn_delay);
 			LinkVehicleToInterior(vehicleid, interiorid);
 			SetVehicleVirtualWorld(vehicleid, worldid);
 

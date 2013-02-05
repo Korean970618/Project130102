@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/18
- *		Update:		2013/02/04
+ *		Update:		2013/02/05
  *
  *
  */
@@ -26,7 +26,6 @@
 	pDeathHandler_Item(playerid, killerid, reason)
 	pTimerTickHandler_Item(nsec, playerid)
 	pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
-	pUpdateHandler_Item(playerid)
 	pCommandHandler_Item(playerid, cmdtext[])
 	dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
 
@@ -136,7 +135,6 @@ forward pDisconnectHandler_Item(playerid, reason);
 forward pDeathHandler_Item(playerid, killerid, reason);
 forward pTimerTickHandler_Item(nsec, playerid);
 forward pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys);
-forward pUpdateHandler_Item(playerid);
 forward pCommandTextHandler_Item(playerid, cmdtext[]);
 forward dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]);
 forward PlunderTimer(playerid);
@@ -238,30 +236,6 @@ public pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 		}
 		else
 			GivePlayerItem(playerid, itemid);
-	}
-	return 1;
-}
-//-----< pUpdateHandler >-------------------------------------------------------
-public pUpdateHandler_Item(playerid)
-{
-	new Float:x, Float:y, Float:z,
-		keys, ud, lr;
-	if (IsPlayerInAnyVehicle(playerid)) return 1;
-	GetPlayerVelocity(playerid, x, y, z);
-	GetPlayerKeys(playerid, keys, ud, lr);
-	new Float:weights = (float(GetPlayerItemsWeight(playerid, "°¡¹æ")) / float(GetPVarInt_(playerid, "pWeight"))) * 100;
-	if (weights > 75)
-	{
-		if (z > 0.0)
-		{
-			SetPlayerVelocity(playerid, 0.0, 0.0, -z);
-		}
-		else if (ud != 0 || lr != 0)
-		{ 
-			x -= (x / 100) * weights;
-			y -= (y / 100) * weights;
-			SetPlayerVelocity(playerid, x, y, z);
-		}
 	}
 	return 1;
 }

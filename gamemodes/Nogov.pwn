@@ -38,8 +38,8 @@
 
 
 //-----< Pre-Defines
-#define SCRIPT_NAME             "Nogov"
-#define SCRIPT_VERSION          "0.0.1"
+#define SCRIPT_NAME				"Nogov"
+#define SCRIPT_VERSION			"0.0.1"
 #define SERVER_HOSTNAME			"[NOGOV] pureunba.tistory.com"
 
 
@@ -64,20 +64,20 @@
 
 //-----< Defines
 //-----< Handlers >-------------------------------------------------------------
-#define gInitHandler         			1
-#define gExitHandler         			2
+#define gInitHandler		 			1
+#define gExitHandler		 			2
 #define pRequestClassHandler   			3
-#define pConnectHandler            		4
-#define pDisconnectHandler         		5
-#define pSpawnHandler              		6
-#define pDeathHandler              		7
-#define vSpawnHandler             		8
-#define vDeathHandler             		9
-#define pTextHandler               		10
+#define pConnectHandler					4
+#define pDisconnectHandler		 		5
+#define pSpawnHandler			  		6
+#define pDeathHandler			  		7
+#define vSpawnHandler			 		8
+#define vDeathHandler			 		9
+#define pTextHandler			   		10
 #define pCommandTextHandler				11
 #define pEnterVehicleHandler			12
 #define pExitVehicleHandler				13
-#define pStateChangeHandler        		14
+#define pStateChangeHandler				14
 #define pEnterCheckpointHandler			15
 #define pLeaveCheckpointHandler			16
 #define pEnterRaceCheckpointHandler		17
@@ -102,18 +102,18 @@
 #define vStreamOutHandler				36
 #define dResponseHandler				37
 #define pClickPlayerHandler				38
-#define pEditObjectHandler              39
-#define pEditAttachedObjectHandler      40
-#define tTickHandler                    41
+#define pEditObjectHandler				39
+#define pEditAttachedObjectHandler		40
+#define tTickHandler					41
 #define pTimerTickHandler				42
-#define aConnectHandler                 43
-#define aDisconnectHandler              44
-#define aTransferFileHandler            45
-#define aPlayHandler                    46
-#define aStopHandler                    47
-#define aTrackChangeHandler             48
-#define aRadioStationChangeHandler      49
-#define aGetPositionHandler             50
+#define aConnectHandler					43
+#define aDisconnectHandler				44
+#define aTransferFileHandler			45
+#define aPlayHandler					46
+#define aStopHandler					47
+#define aTrackChangeHandler				48
+#define aRadioStationChangeHandler		49
+#define aGetPositionHandler				50
 
 #define MAX_CALLBACKS					50
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
@@ -139,7 +139,7 @@ forward OnTimerTick();
 //-----< main >-----------------------------------------------------------------
 main()
 {
-    AntiDeAMX();
+	AntiDeAMX();
 	printf("\n---------------------------------\n");
 	printf(" %s v%s\n", SCRIPT_NAME, SCRIPT_VERSION);
 	printf(" \tCoded by PureunBa");
@@ -151,16 +151,16 @@ main()
 public OnGameModeInit()
 {
 	// Cores
-	AddHandler("MySQL",             gInitHandler);
-    AddHandler("InitExit",			gInitHandler, gExitHandler);
-    AddHandler("Player",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
+	AddHandler("MySQL",			 	gInitHandler);
+	AddHandler("InitExit",			gInitHandler, gExitHandler);
+	AddHandler("Player",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
-	AddHandler("Vehicle",           gInitHandler);
-	AddHandler("Item",              gInitHandler, pSpawnHandler, pConnectHandler, pDisconnectHandler, pDeathHandler, pTimerTickHandler, pKeyStateChangeHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
-	AddHandler("Fly",               gInitHandler, pConnectHandler, pUpdateHandler);
+	AddHandler("Vehicle",		   	gInitHandler);
+	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pDisconnectHandler, pDeathHandler, pTimerTickHandler, pKeyStateChangeHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
-	AddHandler("Animation",         pCommandTextHandler);
+	AddHandler("Animation",		 	pCommandTextHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(20), true);
 	Timer_OneSecTimer = GetTickCount();
@@ -177,7 +177,7 @@ public OnGameModeInit()
 //-----< OnGameModeExit >-------------------------------------------------------
 public OnGameModeExit()
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][gExitHandler])
 		{
@@ -189,7 +189,7 @@ public OnGameModeExit()
 //-----< OnPlayerRequestClass >-------------------------------------------------
 public OnPlayerRequestClass(playerid, classid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
@@ -201,7 +201,7 @@ public OnPlayerRequestClass(playerid, classid)
 //-----< OnPlayerConnect >------------------------------------------------------
 public OnPlayerConnect(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pConnectHandler])
 		{
@@ -213,7 +213,7 @@ public OnPlayerConnect(playerid)
 //-----< OnPlayerDisconnect >---------------------------------------------------
 public OnPlayerDisconnect(playerid, reason)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pDisconnectHandler])
 		{
@@ -225,7 +225,7 @@ public OnPlayerDisconnect(playerid, reason)
 //-----< OnPlayerSpawn >--------------------------------------------------------
 public OnPlayerSpawn(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pSpawnHandler])
 		{
@@ -237,7 +237,7 @@ public OnPlayerSpawn(playerid)
 //-----< OnPlayerDeath >--------------------------------------------------------
 public OnPlayerDeath(playerid, killerid, reason)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pDeathHandler])
 		{
@@ -249,7 +249,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 //-----< OnVehicleSpawn >-------------------------------------------------------
 public OnVehicleSpawn(vehicleid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vSpawnHandler])
 		{
@@ -261,7 +261,7 @@ public OnVehicleSpawn(vehicleid)
 //-----< OnVehicleDeath >-------------------------------------------------------
 public OnVehicleDeath(vehicleid, killerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vDeathHandler])
 		{
@@ -273,7 +273,7 @@ public OnVehicleDeath(vehicleid, killerid)
 //-----< OnPlayerText >---------------------------------------------------------
 public OnPlayerText(playerid, text[])
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pTextHandler])
 		{
@@ -285,7 +285,7 @@ public OnPlayerText(playerid, text[])
 //-----< OnPlayerCommandText >--------------------------------------------------
 public OnPlayerCommandText(playerid, cmdtext[])
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pCommandTextHandler])
 		{
@@ -298,7 +298,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
 //-----< OnPlayerEnterVehicle >-------------------------------------------------
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pEnterVehicleHandler])
 		{
@@ -310,7 +310,7 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 //-----< OnPlayerExitVehicle >--------------------------------------------------
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pExitVehicleHandler])
 		{
@@ -322,7 +322,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 //-----< OnPlayerStateChange >--------------------------------------------------
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pStateChangeHandler])
 		{
@@ -334,7 +334,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 //-----< OnPlayerEnterCheckpoint >----------------------------------------------
 public OnPlayerEnterCheckpoint(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pEnterCheckpointHandler])
 		{
@@ -346,7 +346,7 @@ public OnPlayerEnterCheckpoint(playerid)
 //-----< OnPlayerLeaveCheckpoint >----------------------------------------------
 public OnPlayerLeaveCheckpoint(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pLeaveCheckpointHandler])
 		{
@@ -358,7 +358,7 @@ public OnPlayerLeaveCheckpoint(playerid)
 //-----< OnPlayerEnterRaceCheckpoint >------------------------------------------
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pEnterRaceCheckpointHandler])
 		{
@@ -370,7 +370,7 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 //-----< OnPlayerLeaveRaceCheckpoint >------------------------------------------
 public OnPlayerLeaveRaceCheckpoint(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pLeaveRaceCheckpointHandler])
 		{
@@ -382,7 +382,7 @@ public OnPlayerLeaveRaceCheckpoint(playerid)
 //-----< OnRconCommand >--------------------------------------------------------
 public OnRconCommand(cmd[])
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][RconCommandHandler])
 		{
@@ -394,7 +394,7 @@ public OnRconCommand(cmd[])
 //-----< OnPlayerRequestSpawn >-------------------------------------------------
 public OnPlayerRequestSpawn(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
@@ -406,7 +406,7 @@ public OnPlayerRequestSpawn(playerid)
 //-----< OnObjectMoved >--------------------------------------------------------
 public OnObjectMoved(objectid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][oMovedHandler])
 		{
@@ -418,7 +418,7 @@ public OnObjectMoved(objectid)
 //-----< OnPlayerObjectMoved >--------------------------------------------------
 public OnPlayerObjectMoved(playerid, objectid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pObjectMovedHandler])
 		{
@@ -430,7 +430,7 @@ public OnPlayerObjectMoved(playerid, objectid)
 //-----< OnPlayerPickUpPickup >-------------------------------------------------
 public OnPlayerPickUpPickup(playerid, pickupid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pPickUpPickupHandler])
 		{
@@ -442,7 +442,7 @@ public OnPlayerPickUpPickup(playerid, pickupid)
 //-----< OnVehicleMod >---------------------------------------------------------
 public OnVehicleMod(playerid, vehicleid, componentid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vModHandler])
 		{
@@ -454,7 +454,7 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 //-----< OnVehiclePaintjob >----------------------------------------------------
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vPaintjobHandler])
 		{
@@ -466,7 +466,7 @@ public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 //-----< OnVehicleRespray >-----------------------------------------------------
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vResprayHandler])
 		{
@@ -478,7 +478,7 @@ public OnVehicleRespray(playerid, vehicleid, color1, color2)
 //-----< OnPlayerSelectedMenuRow >----------------------------------------------
 public OnPlayerSelectedMenuRow(playerid, row)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pSelectedMenuRowHandler])
 		{
@@ -490,7 +490,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 //-----< OnPlayerExitedMenu >---------------------------------------------------
 public OnPlayerExitedMenu(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pExitedMenuHandler])
 		{
@@ -502,7 +502,7 @@ public OnPlayerExitedMenu(playerid)
 //-----< OnPlayerInteriorChange >-----------------------------------------------
 public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pInteriorChangeHandler])
 		{
@@ -514,7 +514,7 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 //-----< OnPlayerKeyStateChange >-----------------------------------------------
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pKeyStateChangeHandler])
 		{
@@ -526,7 +526,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 //-----< OnRconLoginAttempt >---------------------------------------------------
 public OnRconLoginAttempt(ip[], password[], success)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][RconLoginAttempHandler])
 		{
@@ -538,7 +538,7 @@ public OnRconLoginAttempt(ip[], password[], success)
 //-----< OnPlayerUpdate >-------------------------------------------------------
 public OnPlayerUpdate(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pUpdateHandler])
 		{
@@ -550,7 +550,7 @@ public OnPlayerUpdate(playerid)
 //-----< OnPlayerStreamIn >-----------------------------------------------------
 public OnPlayerStreamIn(playerid, forplayerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pStreamInHandler])
 		{
@@ -562,7 +562,7 @@ public OnPlayerStreamIn(playerid, forplayerid)
 //-----< OnPlayerStreamOut >----------------------------------------------------
 public OnPlayerStreamOut(playerid, forplayerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pStreamOutHandler])
 		{
@@ -574,7 +574,7 @@ public OnPlayerStreamOut(playerid, forplayerid)
 //-----< OnVehicleStreamIn >----------------------------------------------------
 public OnVehicleStreamIn(vehicleid, forplayerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vStreamInHandler])
 		{
@@ -586,7 +586,7 @@ public OnVehicleStreamIn(vehicleid, forplayerid)
 //-----< OnVehicleStreamOut >---------------------------------------------------
 public OnVehicleStreamOut(vehicleid, forplayerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][vStreamOutHandler])
 		{
@@ -598,11 +598,11 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 //-----< OnDialogResponse >-----------------------------------------------------
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][dResponseHandler])
 		{
-		    format(funcstr, sizeof(funcstr), "%s_%s", "dResponseHandler", CallbacksList[i][CBName]);
+			format(funcstr, sizeof(funcstr), "%s_%s", "dResponseHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dddds", playerid, dialogid, response, listitem, FixBlankString(inputtext));
 		}
 	return 1;
@@ -610,7 +610,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 //-----< OnPlayerClickPlayer >--------------------------------------------------
 public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pClickPlayerHandler])
 		{
@@ -624,22 +624,22 @@ public OnPlayerEditObject(playerid, playerobject, objectid, response, Float:fX, 
 {
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
-	    if (CallbacksList[i][CBIndex][pEditObjectHandler])
-	    {
-	        format(funcstr, sizeof(funcstr), "%s_%s", "pEditObjectHandler", CallbacksList[i][CBName]);
-	        CallLocalFunction(funcstr, "ddddffffff", playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
+		if (CallbacksList[i][CBIndex][pEditObjectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pEditObjectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "ddddffffff", playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
 		}
 	return 1;
 }
 //-----< OnPlayerEditAttachedObject >-------------------------------------------
 public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
-	    if (CallbacksList[i][CBIndex][pEditAttachedObjectHandler])
-	    {
-	        format(funcstr, sizeof(funcstr), "%s_%s", "pEditAttachedObjectHandler", CallbacksList[i][CBName]);
-	        CallLocalFunction(funcstr, "dddddfffffffff", playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+		if (CallbacksList[i][CBIndex][pEditAttachedObjectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pEditAttachedObjectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dddddfffffffff", playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
 		}
 	return 1;
 }
@@ -648,41 +648,41 @@ public OnTimerTick()
 {
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
-        if (CallbacksList[i][CBIndex][tTickHandler])
-        {
-        	format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
-            CallLocalFunction(funcstr, "d", 20);
+		if (CallbacksList[i][CBIndex][tTickHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "d", 20);
 		}
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-	    for(new j = 0; j <= CallbacksIndex; j++)
-	        if (CallbacksList[j][CBIndex][pTimerTickHandler])
-	        {
-	            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
-	            CallLocalFunction(funcstr, "dd", 20, i);
+		for(new j = 0; j <= CallbacksIndex; j++)
+			if (CallbacksList[j][CBIndex][pTimerTickHandler])
+			{
+				format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
+				CallLocalFunction(funcstr, "dd", 20, i);
 			}
 	if ((GetTickCount() - Timer_OneSecTimer) / 1000)
 	{
-	    for (new i = 0; i <= CallbacksIndex; i++)
-	        if (CallbacksList[i][CBIndex][tTickHandler])
-	        {
-	        	format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
-	            CallLocalFunction(funcstr, "d", 1000);
+		for (new i = 0; i <= CallbacksIndex; i++)
+			if (CallbacksList[i][CBIndex][tTickHandler])
+			{
+				format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
+				CallLocalFunction(funcstr, "d", 1000);
 			}
 		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		    for(new j = 0; j <= CallbacksIndex; j++)
-		        if (CallbacksList[j][CBIndex][pTimerTickHandler])
-		        {
-		            format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
+			for(new j = 0; j <= CallbacksIndex; j++)
+				if (CallbacksList[j][CBIndex][pTimerTickHandler])
+				{
+					format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
 					CallLocalFunction(funcstr, "dd", 1000, i);
 				}
-	    Timer_OneSecTimer = GetTickCount();
+		Timer_OneSecTimer = GetTickCount();
 	}
 	return 1;
 }
 //-----< Audio_OnClientConnect >------------------------------------------------
 public Audio_OnClientConnect(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aConnectHandler])
 		{
@@ -694,7 +694,7 @@ public Audio_OnClientConnect(playerid)
 //-----< Audio_OnClientDisconnect >---------------------------------------------
 public Audio_OnClientDisconnect(playerid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aDisconnectHandler])
 		{
@@ -706,7 +706,7 @@ public Audio_OnClientDisconnect(playerid)
 //-----< Audio_OnTransferFile >-------------------------------------------------
 public Audio_OnTransferFile(playerid, file[], current, total, result)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aTransferFileHandler])
 		{
@@ -718,7 +718,7 @@ public Audio_OnTransferFile(playerid, file[], current, total, result)
 //-----< Audio_OnPlay >---------------------------------------------------------
 public Audio_OnPlay(playerid, handleid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aPlayHandler])
 		{
@@ -730,7 +730,7 @@ public Audio_OnPlay(playerid, handleid)
 //-----< Audio_OnStop >---------------------------------------------------------
 public Audio_OnStop(playerid, handleid)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aStopHandler])
 		{
@@ -742,7 +742,7 @@ public Audio_OnStop(playerid, handleid)
 //-----< Audio_OnTrackChange >--------------------------------------------------
 public Audio_OnTrackChange(playerid, handleid, track[])
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aTrackChangeHandler])
 		{
@@ -754,7 +754,7 @@ public Audio_OnTrackChange(playerid, handleid, track[])
 //-----< Audio_OnRadioStationChange >-------------------------------------------
 public Audio_OnRadioStationChange(playerid, station)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aRadioStationChangeHandler])
 		{
@@ -766,7 +766,7 @@ public Audio_OnRadioStationChange(playerid, station)
 //-----< Audio_OnGetPosition >--------------------------------------------------
 public Audio_OnGetPosition(playerid, handleid, seconds)
 {
-    new funcstr[64];
+	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][aGetPositionHandler])
 		{

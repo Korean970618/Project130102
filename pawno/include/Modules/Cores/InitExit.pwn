@@ -3,7 +3,7 @@
  *
  *		PureunBa(서성범)
  *
- *          InitExit Core
+ *		  InitExit Core
  *
  *
  *		Coded by PureunBa 2011-2013 @ all right reserved.
@@ -42,10 +42,10 @@ forward gExitHandler_InitExit();
 //-----< gInitHandler_InitExit >------------------------------------------------
 public gInitHandler_InitExit()
 {
-    new str[64];
-    
-    AntiDeAMX();
-    
+	new str[64];
+
+	AntiDeAMX();
+
 	format(str, sizeof(str), "%s %s", SCRIPT_NAME, SCRIPT_VERSION);
 	SetGameModeText(str);
 	SendRconCommand("hostname "SERVER_HOSTNAME"");
@@ -60,19 +60,19 @@ public gInitHandler_InitExit()
 	DisableInteriorEnterExits();
 	
 	for (new i; i < 20; i++)
-	    SendClientMessageToAll(COLOR_WHITE, " ");
+		SendClientMessageToAll(COLOR_WHITE, " ");
 	SendClientMessageToAll(COLOR_WHITE, "게임모드를 로딩중입니다.");
 	return 1;
 }
 //-----< gExitHandler_InitExit >------------------------------------------------
 public gExitHandler_InitExit()
 {
-    for (new i; i < GetMaxPlayers(); i++)
+	for (new i; i < GetMaxPlayers(); i++)
 	{
 		if (IsPlayerNPC(i))
 			Kick(i);
 		ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "Rebooting", "서버를 리붓중입니다.\n잠시만 기다려 주세요.", "확인", chNullString);
-        for (new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
+		for (new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
 			RemovePlayerAttachedObject(i, j);
 	}
 	for (new i; i < 20; i++)

@@ -24,11 +24,11 @@
 	pUpdateHandler_Fly(playerid)
 	
   < Functions >
-    GetMoveDirectionFromKeys(ud, lr)
-    MoveCamera(playerid)
-    GetNextCameraPosition(move_mode, Float:CP[3], Float:FV[3], &Float:X, &Float:Y, &Float:Z)
-    CancelFlyMode(playerid)
-    FlyMode(playerid)
+	GetMoveDirectionFromKeys(ud, lr)
+	MoveCamera(playerid)
+	GetNextCameraPosition(move_mode, Float:CP[3], Float:FV[3], &Float:X, &Float:Y, &Float:Z)
+	CancelFlyMode(playerid)
+	FlyMode(playerid)
 
 */
 
@@ -51,20 +51,20 @@ new NoclipData[MAX_PLAYERS][eNoclipData];
 
 //-----< Defines
 // Players Move Speed
-#define MOVE_SPEED              100.0
-#define ACCEL_RATE              0.03
+#define MOVE_SPEED			100.0
+#define ACCEL_RATE			0.03
 // Players Mode
-#define CAMERA_MODE_NONE    	0
-#define CAMERA_MODE_FLY     	1
+#define CAMERA_MODE_NONE	0
+#define CAMERA_MODE_FLY	 	1
 // Key state definitions
-#define MOVE_FORWARD    		1
-#define MOVE_BACK       		2
-#define MOVE_LEFT       		3
-#define MOVE_RIGHT      		4
-#define MOVE_FORWARD_LEFT       5
-#define MOVE_FORWARD_RIGHT      6
-#define MOVE_BACK_LEFT          7
-#define MOVE_BACK_RIGHT         8
+#define MOVE_FORWARD		1
+#define MOVE_BACK	   		2
+#define MOVE_LEFT	   		3
+#define MOVE_RIGHT	  		4
+#define MOVE_FORWARD_LEFT	5
+#define MOVE_FORWARD_RIGHT	6
+#define MOVE_BACK_LEFT		7
+#define MOVE_BACK_RIGHT		8
 
 
 
@@ -75,7 +75,7 @@ forward pUpdateHandler_Fly(playerid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Fly()
 {
-    for (new x; x < MAX_PLAYERS; x++)
+	for (new x; x < MAX_PLAYERS; x++)
 	{
 		if (NoclipData[x][nCameramode] == CAMERA_MODE_FLY) CancelFlyMode(x);
 	}
@@ -84,7 +84,7 @@ public gInitHandler_Fly()
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Fly(playerid)
 {
-    NoclipData[playerid][nCameramode] 	= CAMERA_MODE_NONE;
+	NoclipData[playerid][nCameramode] 	= CAMERA_MODE_NONE;
 	NoclipData[playerid][nLrold]	   	= 0;
 	NoclipData[playerid][nUdold]   		= 0;
 	NoclipData[playerid][nMode]   		= 0;
@@ -97,24 +97,24 @@ public pUpdateHandler_Fly(playerid)
 {
 	if (NoclipData[playerid][nCameramode] == CAMERA_MODE_FLY)
 	{
-	    new keys, ud, lr;
-	    GetPlayerKeys(playerid, keys, ud, lr);
-	    
-	    if (NoclipData[playerid][nMode] && (GetTickCount() - NoclipData[playerid][nLastmove] > 100))
-	        MoveCamera(playerid);
+		new keys, ud, lr;
+		GetPlayerKeys(playerid, keys, ud, lr);
+
+		if (NoclipData[playerid][nMode] && (GetTickCount() - NoclipData[playerid][nLastmove] > 100))
+			MoveCamera(playerid);
 
 		if (NoclipData[playerid][nUdold] != ud || NoclipData[playerid][nLrold] != lr)
 		{
-		    if ((NoclipData[playerid][nUdold] != 0 || NoclipData[playerid][nLrold] != 0) && ud == 0 && lr == 0)
-		    {
-		        StopPlayerObject(playerid, NoclipData[playerid][nFlyobject]);
-		        NoclipData[playerid][nMode]     = 0;
-		        NoclipData[playerid][nAccelmul] = 0.0;
+			if ((NoclipData[playerid][nUdold] != 0 || NoclipData[playerid][nLrold] != 0) && ud == 0 && lr == 0)
+			{
+				StopPlayerObject(playerid, NoclipData[playerid][nFlyobject]);
+				NoclipData[playerid][nMode]	 = 0;
+				NoclipData[playerid][nAccelmul] = 0.0;
 			}
 			else
 			{
-			    NoclipData[playerid][nMode] = GetMoveDirectionFromKeys(ud, lr);
-			    MoveCamera(playerid);
+				NoclipData[playerid][nMode] = GetMoveDirectionFromKeys(ud, lr);
+				MoveCamera(playerid);
 			}
 		}
 		NoclipData[playerid][nUdold] = ud;
@@ -135,18 +135,18 @@ stock GetMoveDirectionFromKeys(ud, lr)
 	
 	if (lr < 0)
 	{
-	    if (ud < 0)		 direction = MOVE_FORWARD_LEFT;
-	    else if (ud > 0) direction = MOVE_BACK_LEFT;
-	    else             direction = MOVE_LEFT;
+		if (ud < 0)		 	direction = MOVE_FORWARD_LEFT;
+		else if (ud > 0) 	direction = MOVE_BACK_LEFT;
+		else			 	direction = MOVE_LEFT;
 	}
 	else if (lr > 0)
 	{
-	    if (ud < 0)      direction = MOVE_FORWARD_RIGHT;
-	    else if (ud > 0) direction = MOVE_BACK_RIGHT;
-	    else             direction = MOVE_RIGHT;
+		if (ud < 0)			direction = MOVE_FORWARD_RIGHT;
+		else if (ud > 0)	direction = MOVE_BACK_RIGHT;
+		else				direction = MOVE_RIGHT;
 	}
-	else if (ud < 0)     direction = MOVE_FORWARD;
-	else if (ud > 0)     direction = MOVE_BACK;
+	else if (ud < 0)		direction = MOVE_FORWARD;
+	else if (ud > 0)		direction = MOVE_BACK;
 	
 	return direction;
 }
@@ -171,7 +171,7 @@ stock MoveCamera(playerid)
 //-----< GetNextCameraPosition >------------------------------------------------
 stock GetNextCameraPosition(move_mode, Float:CP[3], Float:FV[3], &Float:X, &Float:Y, &Float:Z)
 {
-    #define OFFSET_X (FV[0]*6000.0)
+	#define OFFSET_X (FV[0]*6000.0)
 	#define OFFSET_Y (FV[1]*6000.0)
 	#define OFFSET_Z (FV[2]*6000.0)
 	switch (move_mode)
@@ -229,7 +229,7 @@ stock GetNextCameraPosition(move_mode, Float:CP[3], Float:FV[3], &Float:X, &Floa
 //-----< CancelFlyMode >--------------------------------------------------------
 stock CancelFlyMode(playerid)
 {
-    new Float:X, Float:Y, Float:Z;
+	new Float:X, Float:Y, Float:Z;
 	GetPlayerCameraPos(playerid, X, Y, Z);
 
 	DeletePVar_(playerid, "FlyMode");
