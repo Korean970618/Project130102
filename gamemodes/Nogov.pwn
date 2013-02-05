@@ -101,21 +101,26 @@
 #define vStreamInHandler				35
 #define vStreamOutHandler				36
 #define dResponseHandler				37
-#define pClickPlayerHandler				38
-#define pEditObjectHandler				39
-#define pEditAttachedObjectHandler		40
-#define tTickHandler					41
-#define pTimerTickHandler				42
-#define aConnectHandler					43
-#define aDisconnectHandler				44
-#define aTransferFileHandler			45
-#define aPlayHandler					46
-#define aStopHandler					47
-#define aTrackChangeHandler				48
-#define aRadioStationChangeHandler		49
-#define aGetPositionHandler				50
+#define pTakeDamageHandler			  	38
+#define pGiveDamageHandler			  	39
+#define pClickMapHandler				40
+#define pClickTextDrawHandler		   	41
+#define pClickPlayerTextDrawHandler	 	42
+#define pClickPlayerHandler				43
+#define pEditObjectHandler				44
+#define pEditAttachedObjectHandler		45
+#define tTickHandler					46
+#define pTimerTickHandler				47
+#define aConnectHandler					48
+#define aDisconnectHandler				49
+#define aTransferFileHandler			50
+#define aPlayHandler					51
+#define aStopHandler					52
+#define aTrackChangeHandler				53
+#define aRadioStationChangeHandler		54
+#define aGetPositionHandler				55
 
-#define MAX_CALLBACKS					50
+#define MAX_CALLBACKS					55
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -604,6 +609,66 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "dResponseHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dddds", playerid, dialogid, response, listitem, FixBlankString(inputtext));
+		}
+	return 1;
+}
+//-----< OnPlayerTakeDamage >---------------------------------------------------
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][pTakeDamageHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pTakeDamageHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "ddfd", playerid, issuerid, amount, weaponid);
+		}
+	return 1;
+}
+//-----< OnPlayerGiveDamage >---------------------------------------------------
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][pGiveDamageHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pGiveDamageHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "ddfd", playerid, damagedid, amount, weaponid);
+		}
+	return 1;
+}
+//-----< OnPlayerClickMap >-----------------------------------------------------
+public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][pClickMapHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pClickMapHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dfff", playerid, fX, fY, fZ);
+		}
+	return 1;
+}
+//-----< OnPlayerClickTextDraw >------------------------------------------------
+public OnPlayerClickTextDraw(playerid, Text:clickedid)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][pClickTextDrawHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pClickTextDrawHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, clickedid);
+		}
+	return 1;
+}
+//-----< OnPlayerClickPlayerTextDraw >------------------------------------------
+public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][pClickPlayerTextDrawHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerTextDrawHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, clickedid);
 		}
 	return 1;
 }
