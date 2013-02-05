@@ -7,56 +7,48 @@ SA-MP Dedicated Server
 ----------------------
 v0.3x, (C)2005-2013 SA-MP Team
 
-[21:38:22] filterscripts = ""  (string)
-[21:38:22] 
-[21:38:22] Server Plugins
-[21:38:22] --------------
-[21:38:22]  Loading plugin: mysql
-[21:38:22]  SA:MP MySQL Plugin v2.1.1 Loaded.
-[21:38:22]   Loaded.
-[21:38:22]  Loading plugin: streamer
-[21:38:22] [MySQL] Thread running. Threadsafe: Yes.
-[21:38:22] 
+[17:55:56] filterscripts = ""  (string)
+[17:55:56] 
+[17:55:56] Server Plugins
+[17:55:56] --------------
+[17:55:56]  Loading plugin: mysql
+[17:55:56]  SA:MP MySQL Plugin v2.1.1 Loaded.
+[17:55:56]   Loaded.
+[17:55:56]  Loading plugin: streamer
+[17:55:56] [MySQL] Thread running. Threadsafe: Yes.
+[17:55:56] 
 
 *** Streamer Plugin v2.6.1 by Incognito loaded ***
 
-[21:38:22]   Loaded.
-[21:38:22]  Loading plugin: audio
-[21:38:22] 
+[17:55:56]   Loaded.
+[17:55:56]  Loading plugin: audio
+[17:55:56] 
 
 *** Audio Plugin v0.5 by Incognito loaded ***
 
-[21:38:22]   Loaded.
-[21:38:22]  Loaded 3 plugins.
+[17:55:56]   Loaded.
+[17:55:56]  Loaded 3 plugins.
 
-[21:38:22] 
-[21:38:22] Filterscripts
-[21:38:22] ---------------
-[21:38:22]   Loaded 0 filterscripts.
+[17:55:56] 
+[17:55:56] Filterscripts
+[17:55:56] ---------------
+[17:55:56]   Loaded 0 filterscripts.
 
-[21:38:22] DB 서버에 접속중입니다.
-[21:38:22] *** Audio Plugin: Started TCP server on port 7777
-[21:38:22] [MySQL] Connected (0) to 'samp_nogov'@'pureunba.no-ip.org via TCP/IP'.
-[21:38:22] [MySQL] Server Version 5.5.29.
-[21:38:22] DB 서버에 접속했습니다.
-[21:38:22] 
+[17:55:56] DB 서버에 접속중입니다.
+[17:55:56] *** Audio Plugin: Started TCP server on port 7777
+[17:55:57] Incoming connection: 220.82.156.204:1235
+[17:55:57] [MySQL] Connected (0) to 'samp_nogov'@'localhost via TCP/IP'.
+[17:55:57] [MySQL] Server Version 5.5.29.
+[17:55:57] DB 서버에 접속했습니다.
+[17:55:57] 
 ---------------------------------
 
-[21:38:22]  Nogov v0.0.1
+[17:55:57]  Nogov v0.0.1
 
-[21:38:22]  	Coded by PureunBa
-[21:38:22]  	pureunba.tistory.com
+[17:55:57]  	Coded by PureunBa
+[17:55:57]  	pureunba.tistory.com
 
-[21:38:22] ---------------------------------
+[17:55:57] ---------------------------------
 
-[21:38:22] Number of vehicle models: 0
-[21:39:19] Incoming connection: 220.82.156.204:2927
-[21:39:19] [join] Prune_Varh has joined the server (0:220.82.156.204)
-[21:39:29] *** Audio Plugin: Incoming connecting from 220.82.156.204:2928
-[21:39:29] *** Audio Plugin: Prune_Varh (ID: 0) has connected
-[21:40:01] *** Audio Plugin: Prune_Varh (ID: 0) has disconnected
-[21:40:01] [part] Prune_Varh has left the server (0:1)
-[21:40:35] Incoming connection: 220.82.156.204:2933
-[21:40:35] [join] Prune_Varh has joined the server (0:220.82.156.204)
-[21:40:45] *** Audio Plugin: Incoming connecting from 220.82.156.204:2934
-[21:40:45] *** Audio Plugin: Prune_Varh (ID: 0) has connected
+[17:55:57] Number of vehicle models: 0
+[17:55:57] [join] Prune_Varh has joined the server (0:220.82.156.204)

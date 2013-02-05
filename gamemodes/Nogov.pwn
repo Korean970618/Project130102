@@ -21,7 +21,7 @@
 
   < Dialog List >
 	0: Nogov Main Script
-	25: UserData Core
+	25: Player Core
 	50: Admin Command
 	75: PropertyData Core
 	100: Item Core
@@ -52,12 +52,11 @@
 //-----< Modules >--------------------------------------------------------------
 #include "Modules/Cores/MySQL.pwn"
 #include "Modules/Cores/InitExit.pwn"
-#include "Modules/Cores/UserData.pwn"
+#include "Modules/Cores/Player.pwn"
 #include "Modules/Cores/Property.pwn"
 #include "Modules/Cores/Vehicle.pwn"
 #include "Modules/Cores/Item.pwn"
 #include "Modules/Cores/Fly.pwn"
-#include "Modules/Cores/PlayerSpawn.pwn"
 #include "Modules/Commands/Admin.pwn"
 #include "Modules/Commands/Animation.pwn"
 
@@ -154,12 +153,11 @@ public OnGameModeInit()
 	// Cores
 	AddHandler("MySQL",             gInitHandler);
     AddHandler("InitExit",			gInitHandler, gExitHandler);
-    AddHandler("UserData",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
+    AddHandler("Player",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",           gInitHandler);
-	AddHandler("Item",              gInitHandler, pSpawnHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Item",              gInitHandler, pSpawnHandler, pConnectHandler, pDisconnectHandler, pDeathHandler, pTimerTickHandler, pKeyStateChangeHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",               gInitHandler, pConnectHandler, pUpdateHandler);
-	AddHandler("PlayerSpawn",       pSpawnHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	AddHandler("Animation",         pCommandTextHandler);
@@ -400,7 +398,7 @@ public OnPlayerRequestSpawn(playerid)
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
-			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestClassHandler", CallbacksList[i][CBName]);
+			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestSpawnHandler", CallbacksList[i][CBName]);
 			if (!CallLocalFunction(funcstr, "d", playerid)) return 0;
 		}
 	return 1;

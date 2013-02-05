@@ -3,7 +3,7 @@
  *
  *		PureunBa(서성범)
  *
- *			UserData Core
+ *			Player Core
  *
  *
  *		Coded by PureunBa 2011-2013 @ all right reserved.
@@ -12,26 +12,27 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/02
+ *		Update:		2013/02/05
  *
  *
  */
 /*
 
   < Callbacks >
-	gInitHandler_UserData(playerid)
-	pConnectHandler_UserData(playerid)
-	pRequestSpawnHandler_UserData(playerid)
-	pDeathHandler_UserData(playerid, killerid, reason)
-	pSpawnHandler_UserData(playerid)
-	dResponseHandler_UserData(playerid, dialogid, response, listitem, inputtext[])
-	pTimerTickHandler_UserData(nsec, playerid)
+	gInitHandler_Player(playerid)
+	pConnectHandler_Player(playerid)
+	pRequestSpawnHandler_Player(playerid)
+	pDeathHandler_Player(playerid, killerid, reason)
+	pSpawnHandler_Player(playerid)
+	dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
+	pTimerTickHandler_Player(nsec, playerid)
 	
   < Functions >
 	CreateUserDataTable()
 	SaveUserData(playerid)
 	LoadUserData(playerid)
 	ShowPlayerLoginDialog(playerid, bool:wrong)
+	SpawnPlayer_(playerid)
 
 */
 
@@ -42,29 +43,29 @@
 
 
 //-----< Defines
-#define DialogId_UserData(%0)		(25+%0)
+#define DialogId_Player(%0)		(25+%0)
 #define INTRO_MUSIC                 "cfile9.uf.tistory.com/original/135DD247510CA50F37CEE8"
 
 
 
 //-----< Callbacks
-forward gInitHandler_UserData();
-forward pConnectHandler_UserData(playerid);
-forward pRequestClassHandler_UserData(playerid, classid);
-forward pRequestSpawnHandler_UserData(playerid);
-forward pDeathHandler_UserData(playerid, killerid, reason);
-forward pSpawnHandler_UserData(playerid);
-forward pCommandTextHandler_UserData(playerid, cmdtext[]);
-forward dResponseHandler_UserData(playerid, dialogid, response, listitem, inputtext[]);
-forward pTimerTickHandler_UserData(nsec, playerid);
+forward gInitHandler_Player();
+forward pConnectHandler_Player(playerid);
+forward pRequestClassHandler_Player(playerid, classid);
+forward pRequestSpawnHandler_Player(playerid);
+forward pDeathHandler_Player(playerid, killerid, reason);
+forward pSpawnHandler_Player(playerid);
+forward pCommandTextHandler_Player(playerid, cmdtext[]);
+forward dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[]);
+forward pTimerTickHandler_Player(nsec, playerid);
 //-----< gInitHandler >---------------------------------------------------------
-public gInitHandler_UserData()
+public gInitHandler_Player()
 {
     CreateUserDataTable();
     return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
-public pConnectHandler_UserData(playerid)
+public pConnectHandler_Player(playerid)
 {
     new str[256];
     for (new i; i < 20; i++)
@@ -82,7 +83,7 @@ public pConnectHandler_UserData(playerid)
 	return 1;
 }
 //-----< pRequestClassHandler >-------------------------------------------------
-public pRequestClassHandler_UserData(playerid, classid)
+public pRequestClassHandler_Player(playerid, classid)
 {
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
@@ -96,7 +97,7 @@ public pRequestClassHandler_UserData(playerid, classid)
 	return 1;
 }
 //-----< pRequestSpawnHandler >-------------------------------------------------
-public pRequestSpawnHandler_UserData(playerid)
+public pRequestSpawnHandler_Player(playerid)
 {
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	    ShowPlayerLoginDialog(playerid, false);
@@ -105,13 +106,13 @@ public pRequestSpawnHandler_UserData(playerid)
 	return 0;
 }
 //-----< pDeathHandler >--------------------------------------------------------
-public pDeathHandler_UserData(playerid, killerid, reason)
+public pDeathHandler_Player(playerid, killerid, reason)
 {
 	SetPVarInt_(playerid, "Spawned", false);
 	return 1;
 }
 //-----< pSpawnHandler >--------------------------------------------------------
-public pSpawnHandler_UserData(playerid)
+public pSpawnHandler_Player(playerid)
 {
 	SetPVarInt_(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
@@ -125,10 +126,11 @@ public pSpawnHandler_UserData(playerid)
 	    SetPlayerVirtualWorld(playerid, strval(receive[5]));
 	    SetPVarInt_(playerid, "RestoreSpawn", false);
 	}
+	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
-public pCommandTextHandler_UserData(playerid, cmdtext[])
+public pCommandTextHandler_Player(playerid, cmdtext[])
 {
 	new cmd[256], idx,
 		str[256];
@@ -142,16 +144,16 @@ public pCommandTextHandler_UserData(playerid, cmdtext[])
 	    새 비밀번호를 입력하세요.\n\
 		\n\
 		");
-		ShowPlayerDialog(playerid, DialogId_UserData(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
+		ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
 		return 1;
 	}
 	return 0;
 }
 //-----< dResponseHandler >-----------------------------------------------------
-public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputtext[])
+public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
 {
 	new str[256];
-	switch (dialogid - DialogId_UserData(0))
+	switch (dialogid - DialogId_Player(0))
 	{
 		case 0:
 	        if (!GetPVarInt_(playerid, "Registered"))
@@ -180,7 +182,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 					SetPVarInt_(playerid, "LoggedIn", true);
 			        LoadUserData(playerid);
 			        if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
-			            ShowPlayerDialog(playerid, DialogId_UserData(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
+			            ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 			        else
 			            SpawnPlayer_(playerid);
 				}
@@ -203,7 +205,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
                     비밀번호는 반드시 8자리 이상이어야 합니다.\n\
 					\n\
 					");
-					ShowPlayerDialog(playerid, DialogId_UserData(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
+					ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
 				}
 		case 2:
 		{
@@ -215,7 +217,7 @@ public dResponseHandler_UserData(playerid, dialogid, response, listitem, inputte
 	return 1;
 }
 //-----< pTimerTickHandler >----------------------------------------------------
-public pTimerTickHandler_UserData(nsec, playerid)
+public pTimerTickHandler_Player(nsec, playerid)
 {
 	if (nsec != 1000) return 1;
 	else if(!IsPlayerConnected(playerid)) return 1;
@@ -390,7 +392,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 			비밀번호를 입력하여 로그인하세요.\n\
 			\n\
 			");
-		ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, "Login", str, "로그인", chNullString);
+		ShowPlayerDialog(playerid, DialogId_Player(0), DIALOG_STYLE_PASSWORD, "Login", str, "로그인", chNullString);
 	}
 	else
 	{
@@ -407,8 +409,15 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 		    비밀번호를 입력하여 가입하세요.\n\
 		    \n\
 		    ");
-	    ShowPlayerDialog(playerid, DialogId_UserData(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
+	    ShowPlayerDialog(playerid, DialogId_Player(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
 	}
+	return 1;
+}
+//-----< SpawnPlayer_ >---------------------------------------------------------
+stock SpawnPlayer_(playerid)
+{
+	SetSpawnInfo(playerid, 0, GetPVarInt_(playerid, "pSkin"), -1422.2572, -289.8291, 14.1484, 270.0, 0, 0, 0, 0, 0, 0);
+	SpawnPlayer(playerid);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------

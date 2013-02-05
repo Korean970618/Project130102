@@ -47,7 +47,7 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 	{
 		new help[2560];
 
-		strcat(help, ""C_PASTEL_BLUE"/정상, /손, /운반, /걷기, /설치, /웃기, /수갑애니, /화이팅, /엎드리기, /금지, /억울\n");
+		strcat(help, ""C_PASTEL_BLUE"/정상, /손, /걷기, /설치, /웃기, /수갑애니, /화이팅, /엎드리기, /금지, /억울\n");
 		strcat(help, "/조직, /조직인사, /말, /먹기, /승리, /구토, /기절하기, /두려움, /배째\n");
 		strcat(help, "/엿, /복싱, /백스탭, /땅치기, /가라데, /총맞고걷기, /환호, /날아가기, /걷어차기\n");
 		strcat(help, "/총들기, /다리꼬우기, /땅파기, /총조준, /자위, /총맞음, /앉기, /기대기, /구르기\n");
@@ -93,14 +93,6 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		if (IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "ROB_BANK", "SHP_HandsUp_Scr", 4.1, 0, 1, 1, 1, 1, 1);
-		return 1;
-	}
-	
-	else if (strcmp(cmd, "/운반", true) == 0)
-	{
-		if (IsPlayerInAnyVehicle(playerid))
-			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
-		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 		return 1;
 	}
 
