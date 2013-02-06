@@ -58,6 +58,7 @@
 	native ResetPlayerDialogData(playerid);
 	native strtab(dest[], str[], maxlength);
 	native valstr_(value);
+	native GivePlayerDamage(playerid, Float:amount);
 
 */
 
@@ -648,4 +649,43 @@ stock valstr_(value)
 	valstr(str, value);
 	return str;
 }
+//-----< GivePlayerDamage >-----------------------------------------------------
+stock GivePlayerDamage(playerid, Float:amount)
+{
+	new Float:armour, Float:health;
+	GetPlayerArmour(playerid, armour);
+	GetPlayerHealth(playerid, health);
+	if(amount > 0)
+	{
+		if(armour > 0)
+		{
+			if(armour >= amount)
+			{
+		   		SetPlayerArmour(playerid, armour - amount);
+			}
+			else
+			{
+				SetPlayerArmour(playerid, 0);
+				SetPlayerHealth(playerid, health + (armour - amount));
+			}
+		}
+		else
+		{
+			SetPlayerHealth(playerid, health - amount);
+		}
+	}
+	else
+	{
+		if(armour > 0)
+		{
+		   	SetPlayerArmour(playerid, armour - amount);
+		}
+		else
+		{
+			SetPlayerHealth(playerid, health - amount);
+		}
+	}
+	return 1;
+}
+
 //-----<  >---------------------------------------------------------------------
