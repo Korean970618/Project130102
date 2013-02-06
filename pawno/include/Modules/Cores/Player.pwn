@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/05
+ *		Update:		2013/02/06
  *
  *
  */
@@ -28,6 +28,7 @@
 	pSpawnHandler_Player(playerid)
 	dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
 	pTimerTickHandler_Player(nsec, playerid)
+	pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 	
   < Functions >
 	CreateUserDataTable()
@@ -61,6 +62,7 @@ forward pSpawnHandler_Player(playerid);
 forward pCommandTextHandler_Player(playerid, cmdtext[]);
 forward dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[]);
 forward pTimerTickHandler_Player(nsec, playerid);
+forward pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Player()
 {
@@ -143,6 +145,8 @@ public pSpawnHandler_Player(playerid)
 {
 	SetPVarInt_(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
+	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
+	SetPlayerTeam(playerid, 0);
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
@@ -153,7 +157,6 @@ public pSpawnHandler_Player(playerid)
 		SetPlayerVirtualWorld(playerid, strval(receive[5]));
 		SetPVarInt_(playerid, "RestoreSpawn", false);
 	}
-	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
@@ -260,6 +263,18 @@ public pTimerTickHandler_Player(nsec, playerid)
 		SetPVarString_(playerid, "pLastPos", str);
 	}
 	SaveUserData(playerid);
+	return 1;
+}
+//-----< pTakeDamageHandler >---------------------------------------------------
+public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
+{
+	new Float:damage = amount;
+	printf("%d, %f, %d", playerid, amount, weaponid);
+	if (weaponid == 0)
+	{
+		damage = (amount / 50) * GetPVarInt_(issuerid, "pPower");
+	}
+	GivePlayerDamage(playerid, damage);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -401,7 +416,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 	format(str, sizeof(str), "\
 	\n\
 	"C_LIGHTBLUE"%s님, 안녕하세요!\n\
-	"C_YELLOW"Do not trust anyone - Nogov"C_WHITE"에 오신 것을 환영합니다.\n\
+	"C_YELLOW"Nogov"C_WHITE"에 오신 것을 환영합니다.\n\
 	", GetPlayerNameA(playerid));
 	if (GetPVarInt_(playerid, "Registered"))
 	{

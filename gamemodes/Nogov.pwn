@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/30
+ *		Update:		2013/02/06
  *
  *
  */
@@ -158,7 +158,7 @@ public OnGameModeInit()
 	// Cores
 	AddHandler("MySQL",			 	gInitHandler);
 	AddHandler("InitExit",			gInitHandler, gExitHandler);
-	AddHandler("Player",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
+	AddHandler("Player",			gInitHandler, pConnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pUpdateHandler, pDeathHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",		   	gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pDisconnectHandler, pDeathHandler, pTimerTickHandler, pKeyStateChangeHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
@@ -668,7 +668,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 		if (CallbacksList[i][CBIndex][pClickPlayerTextDrawHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerTextDrawHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "dd", playerid, clickedid);
+			CallLocalFunction(funcstr, "dd", playerid, playertextid);
 		}
 	return 1;
 }

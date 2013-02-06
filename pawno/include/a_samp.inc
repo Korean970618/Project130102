@@ -66,8 +66,8 @@ native SetTimerEx(funcname[], interval, repeating, const format[], {Float,_}:...
 native KillTimer(timerid);
 native GetTickCount();
 native GetMaxPlayers();
-native CallRemoteFunction(const function[], const format[], {Float,_}:...);
-native CallLocalFunction(const function[], const format[], {Float,_}:...);
+native CallRemoteFunction(const function[], const format[], {Float,Text,PlayerText,_}:...);
+native CallLocalFunction(const function[], const format[], {Float,Text,PlayerText,_}:...);
 native Float:asin(Float:value);
 native Float:acos(Float:value);
 native Float:atan(Float:value);
