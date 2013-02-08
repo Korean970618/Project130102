@@ -45,6 +45,12 @@
 
 
 
+//-----< Variables
+new ItemPickingTime[MAX_PLAYERS],
+	Float:ItemPickingPos[MAX_PLAYERS][3];
+
+
+
 //-----< Defines
 #define DialogId_Player(%0)			(25+%0)
 #define INTRO_MUSIC					"cfile9.uf.tistory.com/original/135DD247510CA50F37CEE8"
@@ -118,8 +124,9 @@ public pUpdateHandler_Player(playerid)
 	if (IsPlayerInAnyVehicle(playerid)) return 1;
 	GetPlayerVelocity(playerid, x, y, z);
 	GetPlayerKeys(playerid, keys, ud, lr);
-	new Float:weights = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100;
-	if (weights > 75)
+	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100;
+	new Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt_(playerid, "pPower"))) * 100;
+	if (bag > 75.0 || hand > 100.0)
 	{
 		if (z > 0.0)
 		{
@@ -127,8 +134,18 @@ public pUpdateHandler_Player(playerid)
 		}
 		else if (ud != 0 || lr != 0)
 		{
-			x -= (x / 100) * weights;
-			y -= (y / 100) * weights;
+			if (bag > 75.0)
+			{
+				x -= (x / 100) * bag;
+				y -= (y / 100) * bag;
+			}
+			if (hand > 100.0)
+			{
+				x -= hand / 100;
+				y -= hand / 100;
+			}
+			x = (x < 0.0) ? 0.0 : x;
+			y = (y < 0.0) ? 0.0 : y;
 			SetPlayerVelocity(playerid, x, y, z);
 		}
 	}
@@ -147,6 +164,7 @@ public pSpawnHandler_Player(playerid)
 	StopAudioStreamForPlayer(playerid);
 	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	SetPlayerTeam(playerid, 0);
+	ItemPickingTime[playerid] = GetPVarInt_(playerid, "pPower") * 10;
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
@@ -249,19 +267,52 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 //-----< pTimerTickHandler >----------------------------------------------------
 public pTimerTickHandler_Player(nsec, playerid)
 {
-	if (nsec != 1000) return 1;
-	else if(!IsPlayerConnected(playerid)) return 1;
-	new Float:pos[4],
-		interior = GetPlayerInterior(playerid),
-		virtualworld = GetPlayerVirtualWorld(playerid),
-		str[64];
-	if (GetPVarInt_(playerid, "Spawned") && GetPVarInt_(playerid, "LoggedIn"))
+	if(!IsPlayerConnected(playerid)) return 1;
+
+	else if (nsec == 100)
 	{
+		new items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
+			Float:pos[3];
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
-		GetPlayerFacingAngle(playerid, pos[3]);
-		format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
-		SetPVarString_(playerid, "pLastPos", str);
+
+		if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 10
+		&& pos[0] == ItemPickingPos[playerid][0] && pos[1] == ItemPickingPos[playerid][1] && pos[2] == ItemPickingPos[playerid][2]
+		&& (GetPlayerAnimationIndex(playerid) == 1274 || GetPlayerAnimationIndex(playerid) == 1159))
+		{
+			ItemPickingTime[playerid] += GetPVarInt_(playerid, "pPower");
+			if (ItemPickingTime[playerid] > GetPVarInt_(playerid, "pPower") * 10)
+				ItemPickingTime[playerid] = GetPVarInt_(playerid, "pPower") * 10;
+		}
+		else if (items)
+		{
+			ItemPickingTime[playerid] -= (GetPVarInt_(playerid, "pPower") / items) * 2;
+			if (!ItemPickingTime[playerid])
+			{
+				SetPlayerVelocity(playerid, 0.0, 0.0, 0.0);
+			}
+		}
+		
+		if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 10)
+		{
+		}
 	}
+
+	else if (nsec == 1000)
+	{
+		new Float:pos[4],
+			interior = GetPlayerInterior(playerid),
+			virtualworld = GetPlayerVirtualWorld(playerid),
+			str[64];
+		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+
+		if (GetPVarInt_(playerid, "Spawned") && GetPVarInt_(playerid, "LoggedIn"))
+		{
+			GetPlayerFacingAngle(playerid, pos[3]);
+			format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
+			SetPVarString_(playerid, "pLastPos", str);
+		}
+	}
+	
 	SaveUserData(playerid);
 	return 1;
 }
@@ -269,7 +320,6 @@ public pTimerTickHandler_Player(nsec, playerid)
 public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 {
 	new Float:damage = amount;
-	printf("%d, %f, %d", playerid, amount, weaponid);
 	if (weaponid == 0)
 	{
 		damage = (amount / 50) * GetPVarInt_(issuerid, "pPower");

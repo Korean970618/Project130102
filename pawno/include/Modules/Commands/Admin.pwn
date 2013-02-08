@@ -62,7 +62,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /텍스트드로우\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 		return 1;
 	}
@@ -493,6 +493,11 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		return 1;
 	}
+	else if (!strcmp(cmd, "/텍스트드로우", true))
+	{
+		ShowPlayerDialog(playerid, DialogId_Admin(10), DIALOG_STYLE_LIST, "TextDraw", "보기\n편집\n제거", "확인", "취소");
+		return 1;
+	}
 	return 0;
 }
 //-----< dResponseHandler >-----------------------------------------------------
@@ -690,6 +695,14 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			}
 			else ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
 		}
+		case 10:
+		    if (response)
+		    {
+		        switch (listitem)
+		        {
+		            case 0: ShowTextDrawList(playerid, DialogId_Admin(11));
+				}
+		    }
 	}
 	return 1;
 }
@@ -750,5 +763,27 @@ stock ShowAttachedObjectModifier(playerid, destid, index, dialogid, dialogstyle)
 		AttachedObjectInfo[destid][index][aoMColor][0], AttachedObjectInfo[destid][index][aoMColor][1]);
 	ShowPlayerDialog(playerid, dialogid, dialogstyle, "부착오브젝트", str, "확인", "취소");
 	return 1;
+}
+//-----< ShowTextDrawList >-----------------------------------------------------
+stock ShowTextDrawList(playerid, dialogid)
+{
+	new str[1024];
+	strtab(str, "ID", 5);
+	strcat(str, "Text");
+	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
+	{
+	    strcat(str, "\n");
+	    strtab(str, valstr_(i), 5);
+	    if (TextDrawInfo[i][tdID] != INVALID_TEXT_DRAW)
+	        strcat(str, TextDrawInfo[i][tdText]);
+	}
+	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "TextDraw", str, "확인", "뒤로");
+	return 1;
+}
+//-----< ShowTextDrawModifier >-------------------------------------------------
+stock ShowTextDrawModifier(playerid, textid, dialogid, dialogstyle)
+{
+	new str[1024];
+	strtab(str, "ID", 5);
 }
 //-----<  >---------------------------------------------------------------------
