@@ -62,7 +62,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 		return 1;
 	}
@@ -470,6 +470,26 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		if (!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		format(str, sizeof(str), "%s님의 애니메이션 인덱스: %d", GetPlayerNameA(destid), GetPlayerAnimationIndex(destid));
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/스페셜액션", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스페셜액션 [플레이어] ([값])");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		{
+			format(str, sizeof(str), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), GetPlayerSpecialAction(destid));
+			SendClientMessage(playerid, COLOR_WHITE, str);
+			return 1;
+		}
+		SetPlayerSpecialAction(playerid, strval(cmd));
+		format(str, sizeof(str), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), strval(cmd));
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		return 1;
 	}
