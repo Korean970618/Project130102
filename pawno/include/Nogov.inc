@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/01/30
+ *		Update:		2013/02/14
  *
  *
  */
@@ -34,27 +34,27 @@
 	SendClientMessage(playerid, color, const message[])
 	SendClientMessageToAll(color, const message[])
 	
-	Text:TextDrawCreate(Float:x, Float:y, text[])
-	TextDrawDestroy(Text:text)
-	TextDrawLetterSize(Text:text, Float:x, Float:y)
-	TextDrawTextSize(Text:text, Float:x, Float:y)
-	TextDrawAlignment(Text:text, alignment)
-	TextDrawColor(Text:text, color)
-	TextDrawUseBox(Text:text, use)
-	TextDrawBoxColor(Text:text, color)
-	TextDrawSetShadow(Text:text, size)
-	TextDrawSetOutline(Text:text, size)
-	TextDrawBackgroundColor(Text:text, color)
-	TextDrawFont(Text:text, font)
-	TextDrawSetProportional(Text:text, set)
-	TextDrawShowForPlayer(playerid, Text:text)
-	TextDrawHideForPlayer(playerid, Text:text)
-	TextDrawShowForAll(Text:text)
-	TextDrawHideForAll(Text:text)
-	TextDrawSetString(Text:text, string[])
-	TextDrawSetPreviewModel(Text:text, modelindex)
-	TextDrawSetPreviewRot(Text:text, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fZoom = 1.0)
-	TextDrawSetPreviewVehCol(Text:text, color1, color2)
+	TextDrawCreate(Float:x, Float:y, text[])
+	TextDrawDestroy(text)
+	TextDrawLetterSize(text, Float:x, Float:y)
+	TextDrawTextSize(text, Float:x, Float:y)
+	TextDrawAlignment(text, alignment)
+	TextDrawColor(text, color)
+	TextDrawUseBox(text, use)
+	TextDrawBoxColor(text, color)
+	TextDrawSetShadow(text, size)
+	TextDrawSetOutline(text, size)
+	TextDrawBackgroundColor(text, color)
+	TextDrawFont(text, font)
+	TextDrawSetProportional(text, set)
+	TextDrawShowForPlayer(playerid, text)
+	TextDrawHideForPlayer(playerid, text)
+	TextDrawShowForAll(text)
+	TextDrawHideForAll(text)
+	TextDrawSetString(text, string[])
+	TextDrawSetPreviewModel(text, modelindex)
+	TextDrawSetPreviewRot(text, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fZoom = 1.0)
+	TextDrawSetPreviewVehCol(text, color1, color2)
 
   < Functions >
 	native strcpy(dest[], src[]);
@@ -86,6 +86,7 @@
 	native strtab(dest[], str[], maxlength);
 	native valstr_(value);
 	native GivePlayerDamage(playerid, Float:amount);
+	native TextDrawSetPosition(text, Float:x, Float:y);
 
 */
 
@@ -122,12 +123,13 @@ enum eTextDrawInfo
 	tdAlignment,
 	tdColor,
 	tdUseBox,
+	tdBoxColor,
 	tdShadow,
 	tdOutline,
 	tdBackgroundColor,
 	tdFont,
 	tdProportional,
-	bool:tdPlayer[MAX_PLAYERS],
+	bool:tdShowPlayer[MAX_PLAYERS],
 	tdPreviewModel,
 	Float:tdPreviewRot[4],
 	tdPreviewVehCol[2]
@@ -215,13 +217,13 @@ forward OnGameModeInit_();
 forward OnPlayerConnect_(playerid);
 forward OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ);
 //-----< OnGameModeInit >-------------------------------------------------------
-public OnGameModeInit_()
+public OnGameModeInit()
 {
 	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
 	{
-		TextDrawInfo[i][tdID] = INVALID_TEXT_DRAW;
+		TextDrawInfo[i][tdID] = Text:INVALID_TEXT_DRAW;
 	}
-	return OnGameModeInit();
+	return OnGameModeInit_();
 }
 #if defined _ALS_OnGameModeInit
 	#undef OnGameModeInit
@@ -299,6 +301,8 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 }
+stock _ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
+	return ShowPlayerDialog(playerid, dialogid, style, caption, info, button, button2);
 #if defined _ALS_ShowPlayerDialog
 	#undef ShowPlayerDialog
 #else
@@ -324,6 +328,8 @@ stock SetPlayerAttachedObject_(playerid, index, modelid, bone, Float:fOffsetX = 
 	AttachedObjectInfo[playerid][index][aoMColor][1]	= materialcolor2;
 	return SetPlayerAttachedObject(playerid, index, modelid, bone, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ, materialcolor1, materialcolor2);
 }
+stock _SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
+	return SetPlayerAttachedObject(playerid, index, modelid, bone, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ, materialcolor1, materialcolor2);
 #if defined _ALS_SetPlayerAttachedObject
 	#undef SetPlayerAttachedObject
 #else
@@ -344,6 +350,8 @@ stock PlayAudioStreamForPlayer_(playerid, url[], Float:posX = 0.0, Float:posY = 
 		SendClientMessage(playerid, ClientMessageInfo[playerid][i][cmColor], ClientMessageInfo[playerid][i][cmMessage]);
 	return 1;
 }
+stock _PlayAudioStreamForPlayer(playerid, url[], Float:posX = 0.0, Float:posY = 0.0, Float:posZ = 0.0, Float:distance = 50.0, usepos = 0)
+	return PlayAudioStreamForPlayer(playerid, url, posX, posY, posZ, distance, usepos);
 #if defined _ALS_PlayAudioStreamForPlayer
 	#undef PlayAudioStreamForPlayer
 #else
@@ -360,6 +368,8 @@ stock StopAudioStreamForPlayer_(playerid)
 	}
 	return StopAudioStreamForPlayer(playerid);
 }
+stock _StopAudioStreamForPlayer(playerid)
+	return StopAudioStreamForPlayer(playerid);
 #if defined _ALS_StopAudioStreamForPlayer
 	#undef StopAudioStreamForPlayer
 #else
@@ -385,6 +395,8 @@ stock SendClientMessage_(playerid, color, const message[])
 	ClientMessages[playerid]++;
 	return SendClientMessage(playerid, color, message);
 }
+stock _SendClientMessage(playerid, color, const message[])
+	return SendClientMessage(playerid, color, message);
 #if defined _ALS_SendClientMessage
 	#undef SendClientMessage
 #else
@@ -398,6 +410,8 @@ stock SendClientMessageToAll_(color, const message[])
 		SendClientMessage(i, color, message);
 	return 1;
 }
+stock _SendClientMessageToAll(color, const message[])
+	return SendClientMessageToAll(color, message);
 #if defined _ALS_SendClientMessageToAll
 	#undef SendClientMessageToAll
 #else
@@ -406,41 +420,45 @@ stock SendClientMessageToAll_(color, const message[])
 #define SendClientMessageToAll SendClientMessageToAll_
 //-----<  >---------------------------------------------------------------------
 //-----< TextDrawCreate >-------------------------------------------------------
-stock Text:TextDrawCreate_(Float:x, Float:y, text[])
+stock TextDrawCreate_(Float:x, Float:y, text[])
 {
-	new Text:text = TextDrawCreate(x, y, text);
+	new textid = INVALID_TEXT_DRAW;
 	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == INVALID_TEXT_DRAW)
+		if (TextDrawInfo[i][tdID] == Text:INVALID_TEXT_DRAW)
 		{
-			TextDrawInfo[i][tdID]				= text;
-			TextDrawInfo[i][tdPos][0]			= x;
-			TextDrawInfo[i][tdPos][1]			= y;
+			TextDrawInfo[i][tdID]					= TextDrawCreate(x, y, text);
+			TextDrawInfo[i][tdPos][0]				= x;
+			TextDrawInfo[i][tdPos][1]				= y;
 			strmid(TextDrawInfo[i][tdText], text, 0, 512, 512);
-			TextDrawInfo[i][tdLetterSize][0]	= 0.0;
-			TextDrawInfo[i][tdLetterSize][1]	= 0.0;
-			TextDrawInfo[i][tdTextSize][0]		= 0.0;
-			TextDrawInfo[i][tdTextSize][1]		= 0.0;
-			TextDrawInfo[i][tdAlignment]		= 0;
-			TextDrawInfo[i][tdColor]			= 0;
-			TextDrawInfo[i][tdUseBox]			= 0;
-			TextDrawInfo[i][tdShadow]			= 0;
-			TextDrawInfo[i][tdOutline]			= 0;
-			TextDrawInfo[i][tdBackgroundColor]	= 0;
-			TextDrawInfo[i][tdFont]				= 0;
-			TextDrawInfo[i][tdProportional]		= 0;
+			TextDrawInfo[i][tdLetterSize][0]		= 1.0;
+			TextDrawInfo[i][tdLetterSize][1]		= 1.0;
+			TextDrawInfo[i][tdTextSize][0]			= 0.0;
+			TextDrawInfo[i][tdTextSize][1]			= 0.0;
+			TextDrawInfo[i][tdAlignment]			= 0;
+			TextDrawInfo[i][tdColor]				= 0xFFFFFFFF;
+			TextDrawInfo[i][tdUseBox]				= 0;
+			TextDrawInfo[i][tdBoxColor]			 	= 0;
+			TextDrawInfo[i][tdShadow]				= 1;
+			TextDrawInfo[i][tdOutline]				= 1;
+			TextDrawInfo[i][tdBackgroundColor]		= 0x000000FF;
+			TextDrawInfo[i][tdFont]					= 3;
+			TextDrawInfo[i][tdProportional]			= 1;
 			for (new j = 0, t = GetMaxPlayers(); j < t; j++)
-				TextDrawInfo[i][tdPlayer][j]	= false;
-			TextDrawInfo[i][tdPreviewModel]		= 0;
-			TextDrawInfo[i][tdPreviewRot][0]	= 0.0;
-			TextDrawInfo[i][tdPreviewRot][1]	= 0.0;
-			TextDrawInfo[i][tdPreviewRot][2]	= 0.0;
-			TextDrawInfo[i][tdPreviewRot][3]	= 0.0;
-			TextDrawInfo[i][tdPreviewVehCol][0] = 0;
-			TextDrawInfo[i][tdPreviewVehCol][1] = 0;
+				TextDrawInfo[i][tdShowPlayer][j]	= false;
+			TextDrawInfo[i][tdPreviewModel]			= 0;
+			TextDrawInfo[i][tdPreviewRot][0]		= 0.0;
+			TextDrawInfo[i][tdPreviewRot][1]		= 0.0;
+			TextDrawInfo[i][tdPreviewRot][2]		= 0.0;
+			TextDrawInfo[i][tdPreviewRot][3]		= 0.0;
+			TextDrawInfo[i][tdPreviewVehCol][0] 	= 0;
+			TextDrawInfo[i][tdPreviewVehCol][1] 	= 0;
+			textid = i;
 			break;
 		}
-	return text;
+	return textid;
 }
+stock Text:_TextDrawCreate(Float:x, Float:y, text[])
+	return TextDrawCreate(x, y, text);
 #if defined _ALS_TextDrawCreate
 	#undef TextDrawCreate
 #else
@@ -448,16 +466,13 @@ stock Text:TextDrawCreate_(Float:x, Float:y, text[])
 #endif
 #define TextDrawCreate TextDrawCreate_
 //-----< TextDrawDestroy >------------------------------------------------------
-stock TextDrawDestroy_(Text:text)
+stock TextDrawDestroy_(text)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdID] = INVALID_TEXT_DRAW;
-			break;
-		}
-	return TextDrawDestroy(text);
+	TextDrawDestroy(TextDrawInfo[text][tdID]);
+	TextDrawInfo[text][tdID] = Text:INVALID_TEXT_DRAW;
 }
+stock _TextDrawDestroy(Text:text)
+	return TextDrawDestroy(text);
 #if defined _ALS_TextDrawDestroy
 	#undef TextDrawDestroy
 #else
@@ -465,17 +480,15 @@ stock TextDrawDestroy_(Text:text)
 #endif
 #define TextDrawDestroy TextDrawDestroy_
 //-----< TextDrawLetterSize >---------------------------------------------------
-stock TextDrawLetterSize_(Text:text, Float:x, Float:y)
+stock TextDrawLetterSize_(text, Float:x, Float:y)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdLetterSize][0] = x;
-			TextDrawInfo[i][tdLetterSize][1] = y;
-			break;
-		}
-	return TextDrawLetterSize(text, x, y);
+	TextDrawLetterSize(TextDrawInfo[text][tdID], x, y);
+	TextDrawInfo[text][tdLetterSize][0] = x;
+	TextDrawInfo[text][tdLetterSize][1] = y;
+	return 1;
 }
+stock _TextDrawLetterSize(Text:text, Float:x, Float:y)
+	return TextDrawLetterSize(text, x, y);
 #if defined _ALS_TextDrawLetterSize
 	#undef TextDrawLetterSize
 #else
@@ -483,17 +496,15 @@ stock TextDrawLetterSize_(Text:text, Float:x, Float:y)
 #endif
 #define TextDrawLetterSize TextDrawLetterSize_
 //-----< TextDrawTextSize >-----------------------------------------------------
-stock TextDrawTextSize_(Text:text, Float:x, Float:y)
+stock TextDrawTextSize_(text, Float:x, Float:y)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdTextSize][0] = x;
-			TextDrawInfo[i][tdTextSize][1] = y;
-			break;
-		}
-	return TextDrawTextSize(text, x, y);
+	TextDrawTextSize(TextDrawInfo[text][tdID], x, y);
+	TextDrawInfo[text][tdTextSize][0] = x;
+	TextDrawInfo[text][tdTextSize][1] = y;
+	return 1;
 }
+stock _TextDrawTextSize(Text:text, Float:x, Float:y)
+	return TextDrawTextSize(text, x, y);
 #if defined _ALS_TextDrawTextSize
 	#undef TextDrawTextSize
 #else
@@ -501,16 +512,14 @@ stock TextDrawTextSize_(Text:text, Float:x, Float:y)
 #endif
 #define TextDrawTextSize TextDrawTextSize_
 //-----< TextDrawAlignment >----------------------------------------------------
-stock TextDrawAlignment_(Text:text, alignment)
+stock TextDrawAlignment_(text, alignment)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdAlignment] = alignment;
-			break;
-		}
-	return TextDrawAlignment(text, alignment);
+	TextDrawAlignment(TextDrawInfo[text][tdID], alignment);
+	TextDrawInfo[text][tdAlignment] = alignment;
+	return 1;
 }
+stock _TextDrawAlignment(Text:text, alignment)
+	return TextDrawAlignment(text, alignment);
 #if defined _ALS_TextDrawAlignment
 	#undef TextDrawAlignment
 #else
@@ -518,16 +527,14 @@ stock TextDrawAlignment_(Text:text, alignment)
 #endif
 #define TextDrawAlignment TextDrawAlignment_
 //-----< TextDrawColor >--------------------------------------------------------
-stock TextDrawColor_(Text:text, color)
+stock TextDrawColor_(text, color)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdColor] = color;
-			break;
-		}
-	return TextDrawColor(text, color);
+	TextDrawColor(TextDrawInfo[text][tdID], color);
+	TextDrawInfo[text][tdColor] = color;
+	return 1;
 }
+stock _TextDrawColor(Text:text, color)
+	return TextDrawColor(text, color);
 #if defined _ALS_TextDrawColor
 	#undef TextDrawColor
 #else
@@ -535,16 +542,14 @@ stock TextDrawColor_(Text:text, color)
 #endif
 #define TextDrawColor TextDrawColor_
 //-----< TextDrawUseBox >-------------------------------------------------------
-stock TextDrawUseBox_(Text:text, use)
+stock TextDrawUseBox_(text, use)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdUseBox] = use;
-			break;
-		}
-	return TextDrawUseBox(text, use);
+	TextDrawUseBox(TextDrawInfo[text][tdID], use);
+	TextDrawInfo[text][tdUseBox] = use;
+	return 1;
 }
+stock _TextDrawUseBox(Text:text, use)
+	return TextDrawUseBox(text, use);
 #if defined _ALS_TextDrawUseBox
 	#undef TextDrawUseBox
 #else
@@ -552,16 +557,14 @@ stock TextDrawUseBox_(Text:text, use)
 #endif
 #define TextDrawUseBox TextDrawUseBox_
 //-----< TextDrawBoxColor >-----------------------------------------------------
-stock TextDrawBoxColor_(Text:text, color)
+stock TextDrawBoxColor_(text, color)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdBoxColor] = color;
-			break;
-		}
-	return TextDrawBoxColor(text, color);
+	TextDrawBoxColor(TextDrawInfo[text][tdID], color);
+	TextDrawInfo[text][tdBoxColor] = color;
+	return 1;
 }
+stock _TextDrawBoxColor(Text:text, color)
+	return TextDrawBoxColor(text, color);
 #if defined _ALS_TextDrawBoxColor
 	#undef TextDrawBoxColor
 #else
@@ -569,16 +572,14 @@ stock TextDrawBoxColor_(Text:text, color)
 #endif
 #define TextDrawBoxColor TextDrawBoxColor_
 //-----< TextDrawSetShadow >----------------------------------------------------
-stock TextDrawSetShadow_(Text:text, size)
+stock TextDrawSetShadow_(text, size)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdShadow] = size;
-			break;
-		}
-	return TextDrawSetShadow(text, size);
+	TextDrawSetShadow(TextDrawInfo[text][tdID], size);
+	TextDrawInfo[text][tdShadow] = size;
+	return 1;
 }
+stock _TextDrawSetShadow(Text:text, size)
+	return TextDrawSetShadow(text, size);
 #if defined _ALS_TextDrawSetShadow
 	#undef TextDrawSetShadow
 #else
@@ -586,16 +587,14 @@ stock TextDrawSetShadow_(Text:text, size)
 #endif
 #define TextDrawSetShadow TextDrawSetShadow_
 //-----< TextDrawSetOutline >---------------------------------------------------
-stock TextDrawSetOutline_(Text:text, size)
+stock TextDrawSetOutline_(text, size)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdOutline] = size;
-			break;
-		}
-	return TextDrawSetOutline(text, size);
+	TextDrawSetOutline(TextDrawInfo[text][tdID], size);
+	TextDrawInfo[text][tdOutline] = size;
+	return 1;
 }
+stock _TextDrawSetOutline(Text:text, size)
+	return TextDrawSetOutline(text, size);
 #if defined _ALS_TextDrawSetOutline
 	#undef TextDrawSetOutline
 #else
@@ -603,16 +602,14 @@ stock TextDrawSetOutline_(Text:text, size)
 #endif
 #define TextDrawSetOutline TextDrawSetOutline_
 //-----< TextDrawBackgroundColor >----------------------------------------------
-stock TextDrawBackgroundColor_(Text:text, color)
+stock TextDrawBackgroundColor_(text, color)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdBackgroundColor] = color;
-			break;
-		}
-	return TextDrawBackgroundColor(text, color);
+	TextDrawBackgroundColor(TextDrawInfo[text][tdID], color);
+	TextDrawInfo[text][tdBackgroundColor] = color;
+	return 1;
 }
+stock _TextDrawBackgroundColor(Text:text, color)
+	return TextDrawBackgroundColor(text, color);
 #if defined _ALS_TextDrawBackgroundColor
 	#undef TextDrawBackgroundColor
 #else
@@ -620,16 +617,14 @@ stock TextDrawBackgroundColor_(Text:text, color)
 #endif
 #define TextDrawBackgroundColor TextDrawBackgroundColor_
 //-----< TextDrawFont >---------------------------------------------------------
-stock TextDrawFont_(Text:text, font)
+stock TextDrawFont_(text, font)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdFont] = font;
-			break;
-		}
-	return TextDrawFont(text, font);
+	TextDrawFont(TextDrawInfo[text][tdID], font);
+	TextDrawInfo[text][tdFont] = font;
+	return 1;
 }
+stock _TextDrawFont(Text:text, font)
+	return TextDrawFont(text, font);
 #if defined _ALS_TextDrawFont
 	#undef TextDrawFont
 #else
@@ -637,33 +632,29 @@ stock TextDrawFont_(Text:text, font)
 #endif
 #define TextDrawFont TextDrawFont_
 //-----< TextDrawSetProportional >----------------------------------------------
-stock TextDrawSetProportional_(Text:text, set)
+stock TextDrawSetProportional_(text, set)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdProportional] = set;
-			break;
-		}
-	return TextDrawSetProportional(text, set);
+	TextDrawSetProportional(TextDrawInfo[text][tdID], set);
+	TextDrawInfo[text][tdProportional] = set;
+	return 1;
 }
+stock _TextDrawSetProportional(Text:text, set)
+	return TextDrawSetProportional(text, set);
 #if defined _ALS_TextDrawSetProportional
 	#undef TextDrawSetProportional
 #else
 	#define _ALS_TextDrawSetProportional
 #endif
-#define TextDrawsetProportional TextDrawSetProportional_
+#define TextDrawSetProportional TextDrawSetProportional_
 //-----< TextDrawSetSelectable >------------------------------------------------
-stock TextDrawSetSelectable_(Text:text, set)
+stock TextDrawSetSelectable_(text, set)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdSelectable] = set;
-			break;
-		}
-	return TextDrawSetSelectable(text, set);
+	TextDrawSetSelectable(TextDrawInfo[text][tdID], set);
+	TextDrawInfo[text][tdSelectable] = set;
+	return 1;
 }
+stock _TextDrawSetSelectable(Text:text, set)
+	return TextDrawSetSelectable(text, set);
 #if defined _ALS_TextDrawSetSelectable
 	#undef TextDrawSetSelectable
 #else
@@ -671,16 +662,14 @@ stock TextDrawSetSelectable_(Text:text, set)
 #endif
 #define TextDrawSetSelectable TextDrawSetSelectable_
 //-----< TextDrawShowForPlayer >------------------------------------------------
-stock TextDrawShowForPlayer_(playerid, Text:text)
+stock TextDrawShowForPlayer_(playerid, text)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdPlayer][playerid] = true;
-			break;
-		}
-	return TextDrawShowForPlayer(text, playerid);
+	TextDrawShowForPlayer(playerid, TextDrawInfo[text][tdID]);
+	TextDrawInfo[text][tdShowPlayer][playerid] = true;
+	return 1;
 }
+stock _TextDrawShowForPlayer(playerid, Text:text)
+	return TextDrawShowForPlayer(playerid, text);
 #if defined _ALS_TextDrawShowForPlayer
 	#undef TextDrawShowForPlayer
 #else
@@ -688,34 +677,30 @@ stock TextDrawShowForPlayer_(playerid, Text:text)
 #endif
 #define TextDrawShowForPlayer TextDrawShowForPlayer_
 //-----< TextDrawHideForPlayer >------------------------------------------------
-stock TextDrawHideForPlayer_(playerid, Text:text)
+stock TextDrawHideForPlayer_(playerid, text)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdPlayer][playerid] = false;
-			break;
-		}
-	return TextDrawHideForPlayer(text, playerid);
+	TextDrawHideForPlayer(playerid, TextDrawInfo[text][tdID]);
+	TextDrawInfo[text][tdShowPlayer][playerid] = false;
+	return 1;
 }
+stock _TextDrawHideForPlayer(playerid, Text:text)
+	return TextDrawHideForPlayer(playerid, text);
 #if defined _ALS_TextDrawHideForPlayer
-	#undef TextDrawUseBox
+	#undef TextDrawHideForPlayer
 #else
-	#define _ALS_TextDrawUseBox
+	#define _ALS_TextDrawHideForPlayer
 #endif
-#define TextDrawUseBox TextDrawUseBox_
+#define TextDrawHideForPlayer TextDrawHideForPlayer_
 //-----< TextDrawShowForAll >---------------------------------------------------
-stock TextDrawShowForAll_(Text:text)
+stock TextDrawShowForAll_(text)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			for (new j = 0, t = GetMaxPlayers(); j < t; j++)
-				TextDrawInfo[i][tdPlayer][j] = true;
-			break;
-		}
-	return TextDrawShowForAll(text);
+	TextDrawShowForAll(TextDrawInfo[text][tdID]);
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+		TextDrawInfo[text][tdShowPlayer][i] = true;
+	return 1;
 }
+stock _TextDrawShowForAll(Text:text)
+	return TextDrawShowForAll(text);
 #if defined _ALS_TextDrawShowForAll
 	#undef TextDrawShowForAll
 #else
@@ -723,17 +708,15 @@ stock TextDrawShowForAll_(Text:text)
 #endif
 #define TextDrawShowForAll TextDrawShowForAll_
 //-----< TextDrawHideForAll >---------------------------------------------------
-stock TextDrawHideForAll_(Text:text)
+stock TextDrawHideForAll_(text)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			for (new j = 0, t = GetMaxPlayers(); j < t; j++)
-				TextDrawInfo[i][tdPlayer][j] = false;
-			break;
-		}
-	return TextDrawHideForAll(text);
+	TextDrawHideForAll(TextDrawInfo[text][tdID]);
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+		TextDrawInfo[text][tdShowPlayer][i] = false;
+	return 1;
 }
+stock _TextDrawHideForAll(Text:text)
+	return TextDrawHideForAll(text);
 #if defined _ALS_TextDrawHideForAll
 	#undef TextDrawHideForAll
 #else
@@ -741,16 +724,14 @@ stock TextDrawHideForAll_(Text:text)
 #endif
 #define TextDrawHideForAll TextDrawHideForAll_
 //-----< TextDrawSetString >----------------------------------------------------
-stock TextDrawSetString_(Text:text, string[])
+stock TextDrawSetString_(text, string[])
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			strmid(TextDrawInfo[i][tdText], string, 0, 512, 512);
-			break;
-		}
-	return TextDrawSetString(text, string);
+	TextDrawSetString(TextDrawInfo[text][tdID], string);
+	strmid(TextDrawInfo[text][tdText], string, 0, 512, 512);
+	return 1;
 }
+stock _TextDrawSetString(Text:text, string[])
+	return TextDrawSetString(text, string);
 #if defined _ALS_TextDrawSetString
 	#undef TextDrawSetString
 #else
@@ -758,16 +739,14 @@ stock TextDrawSetString_(Text:text, string[])
 #endif
 #define TextDrawSetString TextDrawSetString_
 //-----< TextDrawSetPreviewModel >----------------------------------------------
-stock TextDrawSetPreviewModel_(Text:text, modelindex)
+stock TextDrawSetPreviewModel_(text, modelindex)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdPreviewModel] = modelindex;
-			break;
-		}
-	return TextDrawSetPreviewModel(text, modelindex);
+	TextDrawSetPreviewModel(TextDrawInfo[text][tdID], modelindex);
+	TextDrawInfo[text][tdPreviewModel] = modelindex;
+	return 1;
 }
+stock _TextDrawSetPreviewModel(Text:text, modelindex)
+	return TextDrawSetPreviewModel(text, modelindex);
 #if defined _ALS_TextDrawSetPreviewModel
 	#undef TextDrawSetPreviewModel
 #else
@@ -775,19 +754,17 @@ stock TextDrawSetPreviewModel_(Text:text, modelindex)
 #endif
 #define TextDrawSetPreviewModel TextDrawSetPreviewModel_
 //-----< TextDrawSetPreviewRot >------------------------------------------------
-stock TextDrawSetPreviewRot_(Text:text, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fZoom = 1.0)
+stock TextDrawSetPreviewRot_(text, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fZoom = 1.0)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdPreviewRot][0] = fRotX;
-			TextDrawInfo[i][tdPreviewRot][1] = fRotY;
-			TextDrawInfo[i][tdPreviewRot][2] = fRotZ;
-			TextDrawInfo[i][tdPreviewRot][3] = fZoom;
-			break;
-		}
-	return TextDrawSetPreviewRot(text, fRotX, fRotY, fRotZ, fZoom);
+	TextDrawSetPreviewRot(TextDrawInfo[text][tdID], fRotX, fRotY, fRotZ, fZoom);
+	TextDrawInfo[text][tdPreviewRot][0] = fRotX;
+	TextDrawInfo[text][tdPreviewRot][1] = fRotY;
+	TextDrawInfo[text][tdPreviewRot][2] = fRotZ;
+	TextDrawInfo[text][tdPreviewRot][3] = fZoom;
+	return 1;
 }
+stock _TextDrawSetPreviewRot(Text:text, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fZoom = 1.0)
+	return TextDrawSetPreviewRot(text, fRotX, fRotY, fRotZ, fZoom);
 #if defined _ALS_TextDrawSetPreviewRot
 	#undef TextDrawSetPreviewRot
 #else
@@ -795,17 +772,15 @@ stock TextDrawSetPreviewRot_(Text:text, Float:fRotX, Float:fRotY, Float:fRotZ, F
 #endif
 #define TextDrawSetPreviewRot TextDrawSetPreviewRot_
 //-----< TextDrawSetPreviewVehCol >---------------------------------------------
-stock TextDrawSetPreviewVehCol_(Text:text, color1, color2)
+stock TextDrawSetPreviewVehCol_(text, color1, color2)
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == text)
-		{
-			TextDrawInfo[i][tdPreviewVehCol][0] = color1;
-			TextDrawInfo[i][tdPreviewVehCol][1] = color2;
-			break;
-		}
-	return TextDrawSetPreviewVehCol(text, color1, color2);
+	TextDrawSetPreviewVehCol(TextDrawInfo[text][tdID], color1, color2);
+	TextDrawInfo[text][tdPreviewVehCol][0] = color1;
+	TextDrawInfo[text][tdPreviewVehCol][1] = color2;
+	return 1;
 }
+stock _TextDrawSetPreviewVehCol(Text:text, color1, color2)
+	return TextDrawSetPreviewVehCol(text, color1, color2);
 #if defined _ALS_TextDrawSetPreviewVehCol
 	#undef TextDrawSetPreviewVehCol
 #else
@@ -1162,5 +1137,37 @@ stock GivePlayerDamage(playerid, Float:amount)
 	}
 	return 1;
 }
-
+//-----< TextDrawSetPosition >--------------------------------------------------
+stock TextDrawSetPosition(text, Float:x, Float:y)
+{
+	TextDrawInfo[text][tdPos][0] = x;
+	TextDrawInfo[text][tdPos][1] = y;
+	_TextDrawDestroy(TextDrawInfo[text][tdID]);
+	new Text:tdid = TextDrawInfo[text][tdID] = _TextDrawCreate(x, y, TextDrawInfo[text][tdText]);
+	_TextDrawLetterSize(tdid,		TextDrawInfo[text][tdLetterSize][0], TextDrawInfo[text][tdLetterSize][1]);
+	_TextDrawTextSize(tdid,			TextDrawInfo[text][tdTextSize][0], TextDrawInfo[text][tdTextSize][1]);
+	_TextDrawAlignment(tdid,		TextDrawInfo[text][tdAlignment]);
+	_TextDrawColor(tdid,			TextDrawInfo[text][tdColor]);
+	_TextDrawUseBox(tdid,	   		TextDrawInfo[text][tdUseBox]);
+	_TextDrawBoxColor(tdid,	 		TextDrawInfo[text][tdBoxColor]);
+	_TextDrawSetShadow(tdid,		TextDrawInfo[text][tdShadow]);
+	_TextDrawSetOutline(tdid,   	TextDrawInfo[text][tdOutline]);
+	_TextDrawBackgroundColor(tdid,  TextDrawInfo[text][tdBackgroundColor]);
+	_TextDrawFont(tdid,			 	TextDrawInfo[text][tdFont]);
+	_TextDrawSetProportional(tdid,  TextDrawInfo[text][tdProportional]);
+	_TextDrawSetPreviewModel(tdid,  TextDrawInfo[text][tdPreviewModel]);
+	_TextDrawSetPreviewRot(tdid,	TextDrawInfo[text][tdPreviewRot][0], TextDrawInfo[text][tdPreviewRot][1], TextDrawInfo[text][tdPreviewRot][2], TextDrawInfo[text][tdPreviewRot][3]);
+	_TextDrawSetPreviewVehCol(tdid, TextDrawInfo[text][tdPreviewVehCol][0], TextDrawInfo[text][tdPreviewVehCol][1]);
+	TextDrawUpdate(text);
+	return 1;
+}
+//-----< TextDrawUpdate >-------------------------------------------------------
+stock TextDrawUpdate(text)
+{
+	_TextDrawHideForAll(TextDrawInfo[text][tdID]);
+	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	    if (TextDrawInfo[text][tdShowPlayer][i])
+	        _TextDrawShowForPlayer(i, TextDrawInfo[text][tdID]);
+	return 1;
+}
 //-----<  >---------------------------------------------------------------------

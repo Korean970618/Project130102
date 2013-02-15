@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/02/02
+ *		Update:		2013/02/14
  *
  *
  */
@@ -495,7 +495,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/텍스트드로우", true))
 	{
-		ShowPlayerDialog(playerid, DialogId_Admin(10), DIALOG_STYLE_LIST, "TextDraw", "보기\n편집\n제거", "확인", "취소");
+		ShowPlayerDialog(playerid, DialogId_Admin(10), DIALOG_STYLE_LIST, "TextDraw", "목록\n편집\n제거\n보이기\n숨기기\n추가", "확인", "취소");
 		return 1;
 	}
 	return 0;
@@ -503,7 +503,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 //-----< dResponseHandler >-----------------------------------------------------
 public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[])
 {
-	new str[256], destid;
+	new str[256], destid, receive[4][16];
 	switch (dialogid - DialogId_Admin(0))
 	{
 		case 0:
@@ -641,12 +641,10 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		case 8:
 		{
 			destid = DialogData[playerid][0];
-			new index = DialogData[playerid][1],
-				mode = DialogData[playerid][2],
-				receive[3][16];
+			new index = DialogData[playerid][1];
 			if (response && strlen(inputtext))
 			{
-				switch (mode)
+				switch (DialogData[playerid][2])
 				{
 					case 1: AttachedObjectInfo[destid][index][aoModel] = strval(inputtext);
 					case 2: AttachedObjectInfo[destid][index][aoBone] = strval(inputtext);
@@ -696,13 +694,150 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			else ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
 		}
 		case 10:
-		    if (response)
-		    {
-		        switch (listitem)
-		        {
-		            case 0: ShowTextDrawList(playerid, DialogId_Admin(11));
+			if (response)
+			{
+				if (listitem == 5)
+				{
+					TextDrawCreate(1.0, 1.0, "New TextDraw");
+					OnPlayerCommandText(playerid, "/텍스트드로우");
+					return 1;
 				}
-		    }
+				DialogData[playerid][0] = listitem;
+				ShowTextDrawList(playerid, DialogId_Admin(11));
+			}
+		case 11:
+		{
+			if (response)
+			{
+				destid = DialogData[playerid][1] = listitem - 1;
+				if (TextDrawInfo[destid][tdID] == Text:INVALID_TEXT_DRAW || !listitem)
+					return OnDialogResponse(playerid, DialogId_Admin(11), true, listitem, chEmpty);
+				switch (DialogData[playerid][0])
+				{
+					case 0: ShowTextDrawModifier(playerid, destid, DialogId_Admin(12), DIALOG_STYLE_MSGBOX);
+					case 1: ShowTextDrawModifier(playerid, destid, DialogId_Admin(13), DIALOG_STYLE_LIST);
+					case 2:
+					{
+						TextDrawDestroy(destid);
+						OnDialogResponse(playerid, DialogId_Admin(10), true, DialogData[playerid][0], chEmpty);
+					}
+					case 3: ShowPlayerDialog(playerid, DialogId_Admin(15), DIALOG_STYLE_INPUT, "TextDraw", "텍스트드로우를 볼 플레이어를 적으세요.", "확인", "뒤로");
+					case 4: ShowPlayerDialog(playerid, DialogId_Admin(15), DIALOG_STYLE_INPUT, "TextDraw", "텍스트드로우를 숨길 플레이어를 적으세요.", "확인", "뒤로");
+				}
+			}
+			else OnPlayerCommandText(playerid, "/텍스트드로우");
+		}
+		case 12:
+			if (!response)
+				OnDialogResponse(playerid, DialogId_Admin(10), true, DialogData[playerid][0], chEmpty);
+		case 13:
+		{
+			if (response)
+			{
+				destid = DialogData[playerid][1];
+				if (!listitem)
+					return OnDialogResponse(playerid, DialogId_Admin(11), true, destid + 1, chEmpty);
+				DialogData[playerid][2] = listitem - 1;
+				switch (DialogData[playerid][2])
+				{
+					case 0: format(str, sizeof(str), "현재 Position: %.4f,%.4f", TextDrawInfo[destid][tdPos][0], TextDrawInfo[destid][tdPos][1]);
+					case 1: format(str, sizeof(str), "현재 Text: %s", TextDrawInfo[destid][tdText]);
+					case 2: format(str, sizeof(str), "현재 LetterSize: %.4f,%.4f", TextDrawInfo[destid][tdLetterSize][0], TextDrawInfo[destid][tdLetterSize][1]);
+					case 3: format(str, sizeof(str), "현재 TextSize: %.4f,%.4f", TextDrawInfo[destid][tdTextSize][0], TextDrawInfo[destid][tdTextSize][1]);
+					case 4: format(str, sizeof(str), "현재 Alignment: %d", TextDrawInfo[destid][tdAlignment]);
+					case 5: format(str, sizeof(str), "현재 Color: %d", TextDrawInfo[destid][tdColor]);
+					case 6: format(str, sizeof(str), "현재 UseBox: %d", TextDrawInfo[destid][tdUseBox]);
+					case 7: format(str, sizeof(str), "현재 BoxColor: %d", TextDrawInfo[destid][tdBoxColor]);
+					case 8: format(str, sizeof(str), "현재 Shadow: %d", TextDrawInfo[destid][tdShadow]);
+					case 9: format(str, sizeof(str), "현재 Outline: %d", TextDrawInfo[destid][tdOutline]);
+					case 10: format(str, sizeof(str), "현재 BackgroundColor: %d", TextDrawInfo[destid][tdBackgroundColor]);
+					case 11: format(str, sizeof(str), "현재 Font: %d", TextDrawInfo[destid][tdFont]);
+					case 12: format(str, sizeof(str), "현재 Proportional: %d", TextDrawInfo[destid][tdProportional]);
+					case 13: format(str, sizeof(str), "현재 PreviewModel: %d", TextDrawInfo[destid][tdPreviewModel]);
+					case 14: format(str, sizeof(str), "현재 PreviewRot: %.4f,%.4f,%.4f,%.4f", TextDrawInfo[destid][tdPreviewRot][0], TextDrawInfo[destid][tdPreviewRot][1], TextDrawInfo[destid][tdPreviewRot][2], TextDrawInfo[destid][tdPreviewRot][3]);
+					case 15: format(str, sizeof(str), "현재 PreviewVehCol: %d,%d", TextDrawInfo[destid][tdPreviewVehCol][0], TextDrawInfo[destid][tdPreviewVehCol][1]);
+				}
+				ShowPlayerDialog(playerid, DialogId_Admin(14), DIALOG_STYLE_INPUT, "TextDraw", str, "확인", "뒤로");
+			}
+			else OnDialogResponse(playerid, DialogId_Admin(10), true, DialogData[playerid][0], chEmpty);
+		}
+		case 14:
+		{
+			destid = DialogData[playerid][1];
+			if (response && strlen(inputtext))
+				switch (DialogData[playerid][2])
+				{
+					case 0:
+					{
+						split(inputtext, receive, ',');
+						TextDrawSetPosition(destid, floatstr(receive[0]), floatstr(receive[1]));
+					}
+					case 1: TextDrawSetString(destid, inputtext);
+					case 2:
+					{
+						split(inputtext, receive, ',');
+						TextDrawLetterSize(destid, floatstr(receive[0]), floatstr(receive[1]));
+					}
+					case 3:
+					{
+						split(inputtext, receive, ',');
+						TextDrawTextSize(destid, strval(receive[0]), strval(receive[1]));
+					}
+					case 4: TextDrawAlignment(destid, strval(inputtext));
+					case 5: TextDrawColor(destid, strval(inputtext));
+					case 6: TextDrawUseBox(destid, strval(inputtext));
+					case 7: TextDrawBoxColor(destid, strval(inputtext));
+					case 8: TextDrawSetShadow(destid, strval(inputtext));
+					case 9: TextDrawSetOutline(destid, strval(inputtext));
+					case 10: TextDrawBackgroundColor(destid, strval(inputtext));
+					case 11: TextDrawFont(destid, strval(inputtext));
+					case 12: TextDrawSetProportional(destid, strval(inputtext));
+					case 13: TextDrawSetPreviewModel(destid, strval(inputtext));
+					case 14:
+					{
+						split(inputtext, receive, ',');
+						TextDrawSetPreviewRot(destid, floatstr(receive[0]), floatstr(receive[1]), floatstr(receive[2]), floatstr(receive[3]));
+					}
+					case 15:
+					{
+						split(inputtext, receive, ',');
+						TextDrawSetPreviewVehCol(destid, strval(receive[0]), strval(receive[1]));
+					}
+				}
+			TextDrawUpdate(destid);
+			OnDialogResponse(playerid, DialogId_Admin(11), true, destid + 1, chEmpty);
+		}
+		case 15:
+		{
+			new mode = DialogData[playerid][0];
+			if (response)
+			{
+				destid = ReturnUser(inputtext);
+				if (!IsPlayerConnected(destid) && strval(inputtext) != -1)
+				{
+					SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+				}
+				else
+					switch (mode)
+					{
+						case 0:
+						{
+							if (strval(inputtext) == -1)
+								TextDrawShowForAll(DialogData[playerid][1]);
+							else
+								TextDrawShowForPlayer(playerid, DialogData[playerid][1]);
+						}
+						case 1:
+						{
+							if (strval(inputtext) == -1)
+								TextDrawHideForAll(DialogData[playerid][1]);
+							else
+								TextDrawHideForPlayer(playerid, DialogData[playerid][1]);
+						}
+					}
+			}
+			OnDialogResponse(playerid, DialogId_Admin(10), true, mode, chEmpty);
+		}
 	}
 	return 1;
 }
@@ -767,15 +902,18 @@ stock ShowAttachedObjectModifier(playerid, destid, index, dialogid, dialogstyle)
 //-----< ShowTextDrawList >-----------------------------------------------------
 stock ShowTextDrawList(playerid, dialogid)
 {
-	new str[1024];
+	new str[MAX_TEXT_DRAWS * 128];
+	strcpy(str, chNullString);
 	strtab(str, "ID", 5);
 	strcat(str, "Text");
 	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
 	{
-	    strcat(str, "\n");
-	    strtab(str, valstr_(i), 5);
-	    if (TextDrawInfo[i][tdID] != INVALID_TEXT_DRAW)
-	        strcat(str, TextDrawInfo[i][tdText]);
+		strcat(str, "\n");
+		strtab(str, valstr_(i), 5);
+		if (TextDrawInfo[i][tdID] != Text:INVALID_TEXT_DRAW)
+			strcat(str, TextDrawInfo[i][tdText]);
+		else
+			strcat(str, "None");
 	}
 	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "TextDraw", str, "확인", "뒤로");
 	return 1;
@@ -784,6 +922,24 @@ stock ShowTextDrawList(playerid, dialogid)
 stock ShowTextDrawModifier(playerid, textid, dialogid, dialogstyle)
 {
 	new str[1024];
-	strtab(str, "ID", 5);
+	strtab(str, "ID", 17); strcat(str, valstr_(textid));
+	strcat(str, "\n");	strtab(str, "Position",			17);	format(str, sizeof(str), "%s%.4f,%.4f", str, TextDrawInfo[textid][tdPos][0], TextDrawInfo[textid][tdPos][1]);
+	strcat(str, "\n");	strtab(str, "Text",				17);	strcat(str, TextDrawInfo[textid][tdText]);
+	strcat(str, "\n");  strtab(str, "LetterSize",		17);	format(str, sizeof(str), "%s%.4f,%.4f", str, TextDrawInfo[textid][tdLetterSize][0], TextDrawInfo[textid][tdLetterSize][1]);
+	strcat(str, "\n");  strtab(str, "TextSize",			17);	format(str, sizeof(str), "%s%.4f,%.4f", str, TextDrawInfo[textid][tdTextSize][0], TextDrawInfo[textid][tdTextSize][1]);
+	strcat(str, "\n");  strtab(str, "Alignment",		17);	strcat(str, valstr_(TextDrawInfo[textid][tdAlignment]));
+	strcat(str, "\n");  strtab(str, "Color",			17);	strcat(str, valstr_(TextDrawInfo[textid][tdColor]));
+	strcat(str, "\n");  strtab(str, "UseBox",			14);	strcat(str, valstr_(TextDrawInfo[textid][tdUseBox]));
+	strcat(str, "\n");  strtab(str, "BoxColor",			17);	strcat(str, valstr_(TextDrawInfo[textid][tdBoxColor]));
+	strcat(str, "\n");  strtab(str, "Shadow",			14);	strcat(str, valstr_(TextDrawInfo[textid][tdShadow]));
+	strcat(str, "\n");  strtab(str, "Outline", 			17);	strcat(str, valstr_(TextDrawInfo[textid][tdOutline]));
+	strcat(str, "\n");  strtab(str, "BackgroundColor",	17);	strcat(str, valstr_(TextDrawInfo[textid][tdBackgroundColor]));
+	strcat(str, "\n");  strtab(str, "Font",				17);	strcat(str, valstr_(TextDrawInfo[textid][tdFont]));
+	strcat(str, "\n");  strtab(str, "Proportional",		17);	strcat(str, valstr_(TextDrawInfo[textid][tdProportional]));
+	strcat(str, "\n");  strtab(str, "PreviewModel",		17);	strcat(str, valstr_(TextDrawInfo[textid][tdPreviewModel]));
+	strcat(str, "\n");  strtab(str, "PreviewRot",		17);	format(str, sizeof(str), "%s%d,%d,%d,%d", str, TextDrawInfo[textid][tdPreviewRot][0], TextDrawInfo[textid][tdPreviewRot][1], TextDrawInfo[textid][tdPreviewRot][2], TextDrawInfo[textid][tdPreviewRot][3]);
+	strcat(str, "\n");  strtab(str,	"PreviewVehCol",	17);	format(str, sizeof(str), "%s%d,%d", str, TextDrawInfo[textid][tdPreviewVehCol][0], TextDrawInfo[textid][tdPreviewVehCol][1]);
+	ShowPlayerDialog(playerid, dialogid, dialogstyle, "TextDraw", str, "확인", "뒤로");
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------
