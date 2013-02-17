@@ -755,7 +755,7 @@ stock GetPlayerItemsWeight(playerid, savetype[]="All")
 {
 	new returns;
 	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-		if (IsValidPlayerItemID(playerid, i) && (!strcmp(savetype, PlayerItemInfo[playerid][i][iSaveType], true) || !strcmp(savetype, "All", true)))
+		if (IsValidPlayerItemID(playerid, i) && (GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype) || !strcmp(savetype, "All", true)))
 			returns += ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imWeight];
 	return returns;
 }

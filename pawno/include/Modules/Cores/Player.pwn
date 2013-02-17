@@ -47,7 +47,8 @@
 
 //-----< Variables
 new ItemPickingTime[MAX_PLAYERS],
-	Float:ItemPickingPos[MAX_PLAYERS][3];
+	Float:ItemPickingPos[MAX_PLAYERS][3],
+	bool:HeavyWalking[MAX_PLAYERS];
 
 
 
@@ -78,6 +79,11 @@ public gInitHandler_Player()
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Player(playerid)
 {
+	ItemPickingTime[playerid] = 0;
+	ItemPickingPos[playerid][0] = ItemPickingPos[playerid][1] = ItemPickingPos[playerid][2] = 0.0;
+	HeavyWalking[playerid] = false;
+
+
 	new str[256];
 	for (new i; i < 20; i++)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
@@ -134,19 +140,13 @@ public pUpdateHandler_Player(playerid)
 		}
 		else if (ud != 0 || lr != 0)
 		{
-			if (bag > 75.0)
-			{
-				x -= (x / 100) * bag;
-				y -= (y / 100) * bag;
-			}
-			if (hand > 100.0)
-			{
-				x -= hand / 100;
-				y -= hand / 100;
-			}
-			x = (x < 0.0) ? 0.0 : x;
-			y = (y < 0.0) ? 0.0 : y;
-			SetPlayerVelocity(playerid, x, y, z);
+			HeavyWalking[playerid] = true;
+			ApplyAnimation(playerid, "PED", "WALK_fatold", 4.1, 1, 1, 1, 1, 1, 1);
+		}
+		else if (HeavyWalking[playerid])
+		{
+			HeavyWalking[playerid] = false;
+			ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, 1);
 		}
 	}
 	return 1;
@@ -279,8 +279,8 @@ public pTimerTickHandler_Player(nsec, playerid)
 		&& pos[0] == ItemPickingPos[playerid][0] && pos[1] == ItemPickingPos[playerid][1] && pos[2] == ItemPickingPos[playerid][2]
 		&& (GetPlayerAnimationIndex(playerid) == 1274 || GetPlayerAnimationIndex(playerid) == 1159))
 		{
-			ItemPickingTime[playerid] += GetPVarInt_(playerid, "pPower");
-			if (ItemPickingTime[playerid] > GetPVarInt_(playerid, "pPower") * 10)
+			ItemPickingTime[playerid] += GetPVarInt_(playerid, "pPower") / items;
+			if (ItemPickingTime[playerid] >= GetPVarInt_(playerid, "pPower") * 10)
 				ItemPickingTime[playerid] = GetPVarInt_(playerid, "pPower") * 10;
 		}
 		else if (items)
@@ -290,10 +290,6 @@ public pTimerTickHandler_Player(nsec, playerid)
 			{
 				SetPlayerVelocity(playerid, 0.0, 0.0, 0.0);
 			}
-		}
-		
-		if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 10)
-		{
 		}
 	}
 
