@@ -164,6 +164,18 @@ public pSpawnHandler_Item(playerid)
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Item(playerid)
 {
+	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+	{
+		PlayerItemInfo[playerid][i][iID] = 0;
+		PlayerItemInfo[playerid][i][iItemmodel] = 0;
+		strcpy(PlayerItemInfo[playerid][i][iOwnername], chNullString);
+		for (new j = 0; j < 4; j++)
+			PlayerItemInfo[playerid][i][iPos][j] = 0.0;
+		PlayerItemInfo[playerid][i][iInterior] = 0;
+		PlayerItemInfo[playerid][i][iVirtualWorld] = 0;
+		strcpy(PlayerItemInfo[playerid][i][iSaveType], chNullString);
+		strcpy(PlayerItemInfo[playerid][i][iMemo], chNullString);
+	}
 	PlunderId[playerid] = INVALID_PLAYER_ID;
 	PlunderTime[playerid] = 0;
 	Dead[playerid] = false;
@@ -625,6 +637,7 @@ stock CreatePlayerItemDataTable()
 stock SavePlayerItemDataById(playerid, itemid)
 {
 	new str[1024];
+	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
 	format(str, sizeof(str), "UPDATE playeritemdata SET");
 	format(str, sizeof(str), "%s Itemmodel=%d", str, PlayerItemInfo[playerid][itemid][iItemmodel]);
 	format(str, sizeof(str), "%s,Ownername='%s'", str, escape(PlayerItemInfo[playerid][itemid][iOwnername]));
@@ -860,7 +873,7 @@ stock ShowPlayerPlunderStatus(playerid)
 			%d초 후에 리스폰할 수 있습니다.\
 			", str, PlunderTime[playerid]);
 	else
-	    strcat(str, "\n\n"C_GREY"지금 리스폰할 수 있습니다.");
+		strcat(str, "\n\n"C_GREY"지금 리스폰할 수 있습니다.");
 	ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_MSGBOX, "알림", str, "리스폰", chNullString);
 	return 1;
 }
