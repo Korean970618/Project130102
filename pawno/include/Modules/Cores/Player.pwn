@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/06
+ *		Update:		2013/02/18
  *
  *
  */
@@ -48,7 +48,9 @@
 //-----< Variables
 new ItemPickingTime[MAX_PLAYERS],
 	Float:ItemPickingPos[MAX_PLAYERS][3],
-	bool:HeavyWalking[MAX_PLAYERS];
+	bool:HeavyWalking[MAX_PLAYERS],
+	bool:Tired[MAX_PLAYERS],
+	bool:TiredWalking[MAX_PLAYERS];
 
 
 
@@ -82,6 +84,8 @@ public pConnectHandler_Player(playerid)
 	ItemPickingTime[playerid] = 0;
 	ItemPickingPos[playerid][0] = ItemPickingPos[playerid][1] = ItemPickingPos[playerid][2] = 0.0;
 	HeavyWalking[playerid] = false;
+	Tired[playerid] = false;
+	TiredWalking[playerid] = false;
 
 
 	new str[256];
@@ -127,11 +131,41 @@ public pUpdateHandler_Player(playerid)
 {
 	new Float:x, Float:y, Float:z,
 		keys, ud, lr;
-	if (IsPlayerInAnyVehicle(playerid)) return 1;
+	if (IsPlayerInAnyVehicle(playerid) || !GetPVarInt_(playerid, "LoggedIn")) return 1;
+	
 	GetPlayerVelocity(playerid, x, y, z);
 	GetPlayerKeys(playerid, keys, ud, lr);
-	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100;
-	new Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt_(playerid, "pPower"))) * 100;
+	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100,
+		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt_(playerid, "pPower"))) * 100;
+	
+	if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 10)
+	{
+	    if (!TiredWalking[playerid] && (ud != 0 || lr != 0))
+	    {
+	        TiredWalking[playerid] = true;
+	        ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, 1);
+	        return 1;
+	    }
+	    else if (TiredWalking[playerid])
+	    {
+	        TiredWalking[playerid] = false;
+	        ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 1, 1, 0, 1, 1);
+	        return 1;
+	    }
+	}
+	else if (!ItemPickingTime[playerid])
+	{
+		Tired[playerid] = true;
+		ApplyAnimation(playerid, "SWEET", "Sweet_injuredloop", 4.1, 1, 1, 1, 0, 1, 1);
+		return 1;
+	}
+	else if (Tired[playerid])
+	{
+		Tired[playerid] = false;
+		ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, 1);
+		return 1;
+	}
+	
 	if (bag > 75.0 || hand > 100.0)
 	{
 		if (z > 0.0)
@@ -149,6 +183,7 @@ public pUpdateHandler_Player(playerid)
 			ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, 1);
 		}
 	}
+	
 	return 1;
 }
 //-----< pDeathHandler >--------------------------------------------------------
@@ -261,13 +296,16 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				SetPVarInt_(playerid, "RestoreSpawn", true);
 			SpawnPlayer_(playerid);
 		}
+		case 3:
+			if (!ItemPickingTime[playerid])
+				ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "경고", "당신은 쉬어야 합니다.", "확인", chNullString);
 	}
 	return 1;
 }
 //-----< pTimerTickHandler >----------------------------------------------------
 public pTimerTickHandler_Player(nsec, playerid)
 {
-	if(!IsPlayerConnected(playerid)) return 1;
+	if (!IsPlayerConnected(playerid) || !GetPVarInt_(playerid, "LoggedIn")) return 1;
 
 	else if (nsec == 100)
 	{
@@ -275,22 +313,23 @@ public pTimerTickHandler_Player(nsec, playerid)
 			Float:pos[3];
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 
-		if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 10
-		&& pos[0] == ItemPickingPos[playerid][0] && pos[1] == ItemPickingPos[playerid][1] && pos[2] == ItemPickingPos[playerid][2]
-		&& (GetPlayerAnimationIndex(playerid) == 1274 || GetPlayerAnimationIndex(playerid) == 1159))
+		if (pos[0] == ItemPickingPos[playerid][0] && pos[1] == ItemPickingPos[playerid][1] && pos[2] == ItemPickingPos[playerid][2])
 		{
-			ItemPickingTime[playerid] += GetPVarInt_(playerid, "pPower") / items;
+			ItemPickingTime[playerid] += floatround(float(items) / 100, floatround_ceil);
 			if (ItemPickingTime[playerid] >= GetPVarInt_(playerid, "pPower") * 10)
 				ItemPickingTime[playerid] = GetPVarInt_(playerid, "pPower") * 10;
 		}
 		else if (items)
 		{
-			ItemPickingTime[playerid] -= (GetPVarInt_(playerid, "pPower") / items) * 2;
-			if (!ItemPickingTime[playerid])
+			ItemPickingTime[playerid] -= floatround(float(items * 2) / 100, floatround_ceil);
+			if (ItemPickingTime[playerid] < 0)
 			{
-				SetPlayerVelocity(playerid, 0.0, 0.0, 0.0);
+				ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "경고", "당신은 쉬어야 합니다.", "확인", chNullString);
 			}
 		}
+		
+		for (new i = 0; i < 3; i++)
+			ItemPickingPos[playerid][i] = pos[i];
 	}
 
 	else if (nsec == 1000)
@@ -301,7 +340,7 @@ public pTimerTickHandler_Player(nsec, playerid)
 			str[64];
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 
-		if (GetPVarInt_(playerid, "Spawned") && GetPVarInt_(playerid, "LoggedIn"))
+		if (GetPVarInt_(playerid, "Spawned"))
 		{
 			GetPlayerFacingAngle(playerid, pos[3]);
 			format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);

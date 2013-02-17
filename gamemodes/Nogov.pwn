@@ -167,7 +167,7 @@ public OnGameModeInit()
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
 	
-	SetTimer("OnTimerTick", TimeFix(20), true);
+	SetTimer("OnTimerTick", TimeFix(100), true);
 	Timer_OneSecTimer = GetTickCount();
 
 	new funcstr[64];
@@ -716,14 +716,14 @@ public OnTimerTick()
 		if (CallbacksList[i][CBIndex][tTickHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "d", 20);
+			CallLocalFunction(funcstr, "d", 100);
 		}
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
 		for(new j = 0; j <= CallbacksIndex; j++)
 			if (CallbacksList[j][CBIndex][pTimerTickHandler])
 			{
 				format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
-				CallLocalFunction(funcstr, "dd", 20, i);
+				CallLocalFunction(funcstr, "dd", 100, i);
 			}
 	if ((GetTickCount() - Timer_OneSecTimer) / 1000)
 	{
