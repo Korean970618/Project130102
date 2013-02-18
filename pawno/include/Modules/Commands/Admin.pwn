@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/02/14
+ *		Update:		2013/02/18
  *
  *
  */
@@ -59,7 +59,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 		new help[2048];
-		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /텍스트드로우\n\n");
@@ -226,6 +226,34 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		format(str, sizeof(str), "%s님을 리스폰시켰습니다.", GetPlayerNameA(destid));
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 리스폰되었습니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/얼림", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /얼림 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		TogglePlayerControllable(playerid, 0);
+		format(str, sizeof(str), "%s님을 얼렸습니다.", GetPlayerNameA(destid));
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 얼었습니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/녹임", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /녹임 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		TogglePlayerControllable(playerid, 1);
+		format(str, sizeof(str), "%s님을 녹였습니다.", GetPlayerNameA(destid));
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 녹았습니다.");
 		return 1;
 	}
 	//
