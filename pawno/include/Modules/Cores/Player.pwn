@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/19
+ *		Update:		2013/02/20
  *
  *
  */
@@ -189,7 +189,7 @@ public pUpdateHandler_Player(playerid)
 		}
 	}
 	
-	if (bag > 75.0 || hand > 100.0)
+	if (bag > 75.0 || hand > 75.0)
 	{
 		if (z > 0.0)
 		{
@@ -528,7 +528,7 @@ stock CreateUserDataTable()
 	strcat(str, ",Toy5 varchar(256) NOT NULL  default ''");
 	strcat(str, ",Banned varchar(256) NOT NULL default ''");
 	strcat(str, ",Weight int(3) NOT NULL default '50'");
-	strcat(str, ",Power int(3) NOT NULL default '20'");
+	strcat(str, ",Power int(3) NOT NULL default '50'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
