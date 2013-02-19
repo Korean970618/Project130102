@@ -274,6 +274,16 @@ public OnPlayerConnect(playerid)
 		strcpy(ClientMessageInfo[playerid][i][cmMessage], chNullString);
 	}
 	
+	strcpy(AnimationInfo[playerid][aLib], chNullString);
+	strcpy(AnimationInfo[playerid][aName], chNullString);
+	AnimationInfo[playerid][aDelta] = 0.0;
+	AnimationInfo[playerid][aLoop] = 0;
+	AnimationInfo[playerid][aLockX] = 0;
+	AnimationInfo[playerid][aLockY] = 0;
+	AnimationInfo[playerid][aFreeze] = 0;
+	AnimationInfo[playerid][aTime] = 0;
+	AnimationInfo[playerid][ForceSync] = 0;
+	
 	return OnPlayerConnect_(playerid);
 }
 #if defined _ALS_OnPlayerConnect
@@ -307,11 +317,11 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
 //-----< OnPlayerStreamIn >-----------------------------------------------------
 public OnPlayerStreamIn(playerid, forplayerid)
 {
-	/*if (strlen(AnimationInfo[playerid][aLib]) && AnimationInfo[playerid][aForceSync])
+	if (strlen(AnimationInfo[forplayerid][aLib]) && AnimationInfo[forplayerid][aForceSync])
 	{
-		ApplyAnimation(playerid, AnimationInfo[playerid][aLib], AnimationInfo[playerid][aName], AnimationInfo[playerid][aDelta],
-			AnimationInfo[playerid][aLockX], AnimationInfo[playerid][aLockY], AnimationInfo[playerid][aFreeze], AnimationInfo[playerid][aTime], true);
-	}*/
+		ApplyAnimation(forplayerid, AnimationInfo[forplayerid][aLib], AnimationInfo[forplayerid][aName], AnimationInfo[forplayerid][aDelta],
+			AnimationInfo[forplayerid][aLockX], AnimationInfo[forplayerid][aLockY], AnimationInfo[forplayerid][aFreeze], AnimationInfo[forplayerid][aTime], true);
+	}
 	return OnPlayerStreamIn_(playerid, forplayerid);
 }
 #if defined _ALS_OnPlayerStreamIn
