@@ -430,7 +430,7 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 	
 	if (weaponid == 0)
 	{
-		damage = (amount / 50) * GetPVarInt_(issuerid, "pPower");
+		damage = (amount / 100) * GetPVarInt_(issuerid, "pPower");
 	}
 	
 	if (health - damage < 1)
