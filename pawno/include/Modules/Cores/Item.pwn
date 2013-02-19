@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/18
- *		Update:		2013/02/19
+ *		Update:		2013/02/20
  *
  *
  */
@@ -249,7 +249,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		{
 			new both[32], left[32], right[32], htext[32],
 				itemid = DialogData[playerid][0],
-				modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
+				modelid = PlayerItemInfo[playerid][itemid][iItemmodel],
+				items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
+				weight = ItemModelInfo[modelid][imWeight];
 			if (response)
 			{
 				for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
@@ -286,6 +288,18 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				{
 					format(str, sizeof(str), "오른손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", right);
 					SendClientMessage(playerid, COLOR_WHITE, str);
+					return 1;
+				}
+				weight = (listitem == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
+				if (items + weight > GetPVarInt_(playerid, "pPower"))
+				{
+				    if (items > weight)
+				    	SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
+					else
+					{
+					    format(str, sizeof(str), "%s은(는) 너무 무거워서 들 수 없습니다.", ItemModelInfo[modelid][imName]);
+					    SendClientMessage(playerid, COLOR_WHITE, str);
+					}
 					return 1;
 				}
 				switch (listitem)
