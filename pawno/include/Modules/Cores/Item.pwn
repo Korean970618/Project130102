@@ -293,12 +293,12 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				weight = (listitem == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
 				if (items + weight > GetPVarInt_(playerid, "pPower"))
 				{
-				    if (items > weight)
-				    	SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
+					if (items > weight)
+						SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
 					else
 					{
-					    format(str, sizeof(str), "%s은(는) 너무 무거워서 들 수 없습니다.", ItemModelInfo[modelid][imName]);
-					    SendClientMessage(playerid, COLOR_WHITE, str);
+						format(str, sizeof(str), "%s은(는) 너무 무거워서 들 수 없습니다.", ItemModelInfo[modelid][imName]);
+						SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					return 1;
 				}
