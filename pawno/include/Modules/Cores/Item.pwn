@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/18
- *		Update:		2013/02/05
+ *		Update:		2013/02/19
  *
  *
  */
@@ -22,9 +22,6 @@
 	gInitHandler_Item()
 	pSpawnHandler_Item(playerid)
 	pConnectHandler_Item(playerid)
-	pDisconnectHandler_Item(playerid, reason)
-	pDeathHandler_Item(playerid, killerid, reason)
-	pTimerTickHandler_Item(nsec, playerid)
 	pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 	pCommandHandler_Item(playerid, cmdtext[])
 	dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
@@ -48,13 +45,13 @@
 	CreatePlayerItem(playerid, itemmodel)
 	
 	GivePlayerItem(playerid, itemid, savetype[]="가방")
+	GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
 	GetPlayerItemsWeight(playerid, savetype[]="All")
 	ShowPlayerItemList(playerid, destid, dialogid, savetyoe[]="All")
 	ShowPlayerItemInfo(playerid, playerid, itemid)
 	ShowItemModelList(playerid, dialogid)
 	GetPlayerNearestItem(playerid, Float:distance=1.0)
 	GetItemSaveTypeCode(savetype[])
-	ShowPlayerPlunderStatus(playerid)
 	IsValidItemID(itemid)
 	GetMaxItems()
 	IsValidPlayerItemID(playerid, itemid)
@@ -114,12 +111,7 @@ new ItemModelInfo[2][eItemModelInfo] =
 		{ 0.3, 0.1, 0.1 }, { 100.0, 0.0, 75.0 }, { 1.0, 1.0, 1.0 }
 	}
 };
-new PlunderId[MAX_PLAYERS],
-	PlunderTime[MAX_PLAYERS],
-	bool:Dead[MAX_PLAYERS],
-	Float:DeadPos[MAX_PLAYERS][4],
-	DeadInterior[MAX_PLAYERS],
-	DeadVirtualWorld[MAX_PLAYERS];
+
 
 
 //-----< Defines
@@ -132,8 +124,6 @@ forward gInitHandler_Item();
 forward pSpawnHandler_Item(playerid);
 forward pConnectHandler_Item(playerid);
 forward pDisconnectHandler_Item(playerid, reason);
-forward pDeathHandler_Item(playerid, killerid, reason);
-forward pTimerTickHandler_Item(nsec, playerid);
 forward pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys);
 forward pCommandTextHandler_Item(playerid, cmdtext[]);
 forward dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]);
@@ -150,15 +140,6 @@ public gInitHandler_Item()
 public pSpawnHandler_Item(playerid)
 {
 	LoadPlayerItemData(playerid);
-	if (Dead[playerid])
-	{
-		Dead[playerid] = false;
-		SetPlayerPos(playerid, DeadPos[playerid][0], DeadPos[playerid][1], DeadPos[playerid][2]);
-		SetPlayerFacingAngle(playerid, DeadPos[playerid][3]);
-		SetCameraBehindPlayer(playerid);
-		SetPlayerInterior(playerid, DeadInterior[playerid]);
-		SetPlayerVirtualWorld(playerid, DeadVirtualWorld[playerid]);
-	}
 	return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
@@ -175,56 +156,6 @@ public pConnectHandler_Item(playerid)
 		PlayerItemInfo[playerid][i][iVirtualWorld] = 0;
 		strcpy(PlayerItemInfo[playerid][i][iSaveType], chNullString);
 		strcpy(PlayerItemInfo[playerid][i][iMemo], chNullString);
-	}
-	PlunderId[playerid] = INVALID_PLAYER_ID;
-	PlunderTime[playerid] = 0;
-	Dead[playerid] = false;
-	for (new i = 0; i < 3; i++)
-		DeadPos[playerid][0] = 0.0;
-	DeadInterior[playerid] = 0;
-	DeadInterior[playerid] = 0;
-	return 1;
-}
-//-----< pDisconnectHandler >---------------------------------------------------
-public pDisconnectHandler_Item(playerid)
-{
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		if (PlunderId[i] == playerid)
-		{
-			PlunderId[i] = INVALID_PLAYER_ID;
-			for (new j = 0, u = GetMaxPlayerItems(); j < u; j++)
-				if (IsValidPlayerItemID(playerid, j))
-					DestroyPlayerItem(playerid, j);
-			ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "알림", "사자가 게임을 종료했습니다.\n사자는 모든 아이템을 잃게 됩니다.", "확인", chNullString);
-		}
-	return 1;
-}
-//-----< pDeathHandler >--------------------------------------------------------
-public pDeathHandler_Item(playerid, killerid, reason)
-{
-	PlunderTime[playerid] = 60;
-	Dead[playerid] = true;
-	GetPlayerPos(playerid, DeadPos[playerid][0], DeadPos[playerid][1], DeadPos[playerid][2]);
-	GetPlayerFacingAngle(playerid, DeadPos[playerid][3]);
-	DeadInterior[playerid] = GetPlayerInterior(playerid);
-	DeadVirtualWorld[playerid] = GetPlayerVirtualWorld(playerid);
-	if (IsPlayerConnected(killerid))
-	{
-		PlunderId[killerid] = playerid;
-		ShowPlayerItemList(killerid, playerid, DialogId_Item(7));
-		SendClientMessage(killerid, COLOR_WHITE, "시체 주변에서 "C_YELLOW"F키"C_WHITE"를 눌러 아이템을 탈취할 수 있습니다.");
-	}
-	ShowPlayerPlunderStatus(playerid);
-	return 1;
-}
-//-----< pTimerTickHandler >----------------------------------------------------
-public pTimerTickHandler_Item(nsec, playerid)
-{
-	if (nsec != 1000) return 1;
-	else if (PlunderTime[playerid])
-	{
-		PlunderTime[playerid]--;
-		ShowPlayerPlunderStatus(playerid);
 	}
 	return 1;
 }
@@ -475,32 +406,6 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
 					"가방에 넣는다.\n확인한다\n버린다.", "선택", "뒤로");
 			}
-		case 7:
-			if (response)
-			{
-				if (!listitem) ShowPlayerItemList(playerid, PlunderId[playerid], DialogId_Item(7));
-				new itemid = DialogData[playerid][listitem],
-					plunderid = PlunderId[playerid];
-				if (!IsPlayerConnected(plunderid)) return 1;
-				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 빼앗아 가방에 넣었습니다.", ItemModelInfo[PlayerItemInfo[plunderid][itemid][iItemmodel]][imName]);
-				SendClientMessage(playerid, COLOR_WHITE, str);
-				CreatePlayerItem(playerid, PlayerItemInfo[plunderid][itemid][iItemmodel], "가방", PlayerItemInfo[plunderid][itemid][iMemo]);
-				DestroyPlayerItem(plunderid, itemid);
-			}
-		case 8:
-		{
-			if (PlunderTime[playerid] && !GetPVarInt_(playerid, "pAdmin") || Dead[playerid])
-				return ShowPlayerPlunderStatus(playerid);
-			PlunderTime[playerid] = 0;
-			SpawnPlayer_(playerid);
-			ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "리스폰되었습니다.", "확인", chNullString);
-			for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-				if (PlunderId[i] == playerid)
-				{
-					PlunderId[i] = INVALID_PLAYER_ID;
-					ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "알림", "사자가 리스폰되었습니다.", "확인", chNullString);
-				}
-		}
 	}
 	return 1;
 }
@@ -747,6 +652,13 @@ stock GivePlayerItem(playerid, itemid, savetype[]="가방")
 	DestroyItem(itemid);
 	return 1;
 }
+//-----< GivePlayerItemToPlayer >-----------------------------------------------
+stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
+{
+	CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo]);
+	DestroyPlayerItem(playerid, itemid);
+	return 1;
+}
 //-----< DropPlayerItem >-------------------------------------------------------
 stock DropPlayerItem(playerid, itemid)
 {
@@ -859,23 +771,6 @@ stock GetItemSaveTypeCode(savetype[])
 	else if (!strcmp(savetype, "오른손", true)) code = 2;
 	else if (!strcmp(savetype, "양손", true))   code = 2;
 	return code;
-}
-//-----< ShowPlayerPlunderStatus >----------------------------------------------
-stock ShowPlayerPlunderStatus(playerid)
-{
-	new str[256];
-	strcpy(str, "\
-		당신은 죽었습니다.\n\
-		리스폰하지 않고 접속을 종료하면 모든 아이템을 잃게 됩니다.\
-		");
-	if (PlunderTime[playerid])
-		format(str, sizeof(str), "%s\n\n"C_GREY"\
-			%d초 후에 리스폰할 수 있습니다.\
-			", str, PlunderTime[playerid]);
-	else
-		strcat(str, "\n\n"C_GREY"지금 리스폰할 수 있습니다.");
-	ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_MSGBOX, "알림", str, "리스폰", chNullString);
-	return 1;
 }
 //-----< IsValidItemID >--------------------------------------------------------
 stock IsValidItemID(itemid)
