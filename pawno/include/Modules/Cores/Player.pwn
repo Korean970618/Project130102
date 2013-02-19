@@ -39,6 +39,7 @@
 	ShowPlayerLoginDialog(playerid, bool:wrong)
 	SpawnPlayer_(playerid)
 	ShowPlayerPlunderStatus(playerid)
+	IsMeleeWeapon(weaponid)
 
 */
 
@@ -428,10 +429,12 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 		Float:health;
 	GetPlayerHealth(playerid, health);
 	
-	if (weaponid == 0)
-	{
+	if (weaponid == 14)
+		damage = 0.0;
+	else if (weaponid == 34)
+		damage = health;
+	else if (IsMeleeWeapon(weaponid))
 		damage = (amount / 100) * GetPVarInt_(issuerid, "pPower");
-	}
 	
 	if (health - damage < 1)
 		KillerId[playerid] = issuerid;
@@ -639,5 +642,11 @@ stock ShowPlayerPlunderStatus(playerid)
 		strcat(str, "\n\n"C_GREY"지금 리스폰할 수 있습니다.");
 	ShowPlayerDialog(playerid, DialogId_Player(5), DIALOG_STYLE_MSGBOX, "알림", str, "리스폰", chNullString);
 	return 1;
+}
+//-----< IsMeleeWeapon >--------------------------------------------------------
+stock IsMeleeWeapon(weaponid)
+{
+	if (weaponid >= 0 && weaponid <= 15) return true;
+	return false;
 }
 //-----<  >---------------------------------------------------------------------
