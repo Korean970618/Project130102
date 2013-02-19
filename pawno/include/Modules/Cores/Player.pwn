@@ -49,8 +49,7 @@
 
 
 //-----< Variables
-new ItemPickingTime[MAX_PLAYERS],
-	bool:HeavyWalking[MAX_PLAYERS],
+new bool:HeavyWalking[MAX_PLAYERS],
 	bool:Tired[MAX_PLAYERS],
 	bool:TiredWalking[MAX_PLAYERS],
 	PlunderId[MAX_PLAYERS],
@@ -94,7 +93,6 @@ public gInitHandler_Player()
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Player(playerid)
 {
-	ItemPickingTime[playerid] = 0;
 	HeavyWalking[playerid] = false;
 	Tired[playerid] = false;
 	TiredWalking[playerid] = false;
@@ -172,23 +170,6 @@ public pUpdateHandler_Player(playerid)
 	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100,
 		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt_(playerid, "pPower"))) * 100;
 	
-	if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 50)
-	{
-		if (ud != 0 || lr != 0)
-		{
-			if (!TiredWalking[playerid])
-			{
-				TiredWalking[playerid] = true;
-				ClearAnimations(playerid, true);
-			}
-		}
-		else if (TiredWalking[playerid])
-		{
-			TiredWalking[playerid] = false;
-			ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 1, 1, 1, 1, true);
-		}
-	}
-	
 	if (bag > 75.0 || hand > 75.0)
 	{
 		if (z > 0.0)
@@ -259,7 +240,6 @@ public pSpawnHandler_Player(playerid)
 	StopAudioStreamForPlayer(playerid);
 	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	SetPlayerTeam(playerid, 0);
-	ItemPickingTime[playerid] = GetPVarInt_(playerid, "pPower") * 100;
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
@@ -373,16 +353,6 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				SetPVarInt_(playerid, "RestoreSpawn", true);
 			SpawnPlayer_(playerid);
 		}
-		case 3:
-		{
-			if (ItemPickingTime[playerid] < GetPVarInt_(playerid, "pPower") * 50)
-				ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "경고", "당신은 쉬어야 합니다.", "확인", chNullString);
-			else
-			{
-				Tired[playerid] = false;
-				ClearAnimations(playerid, true);
-			}
-		}
 		case 4:
 		{
 			if (response)
@@ -418,32 +388,6 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 public pTimerTickHandler_Player(nsec, playerid)
 {
 	if (!IsPlayerConnected(playerid) || !GetPVarInt_(playerid, "LoggedIn")) return 1;
-
-	/*else if (nsec == 100)
-	{
-		new items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
-			keys, ud, lr;
-		GetPlayerKeys(playerid, keys, ud, lr);
-
-		if (ud == 0 && lr == 0)
-		{
-			ItemPickingTime[playerid] += floatround(float(items) / 10, floatround_ceil);
-			if (ItemPickingTime[playerid] >= GetPVarInt_(playerid, "pPower") * 100)
-				ItemPickingTime[playerid] = GetPVarInt_(playerid, "pPower") * 100;
-		}
-		else if (items)
-		{
-			ItemPickingTime[playerid] -= floatround(float(items * 2) / 10, floatround_ceil);
-			if (ItemPickingTime[playerid] < 0)
-			{
-				ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "경고", "당신은 쉬어야 합니다.", "확인", chNullString);
-				Tired[playerid] = true;
-				TogglePlayerControllable(playerid, 0);
-				TogglePlayerControllable(playerid, 1);
-				ApplyAnimation(playerid, "SWEET", "Sweet_injuredloop", 4.1, 1, 1, 1, 1, 1, 1);
-			}
-		}
-	}*/
 
 	if (nsec == 1000)
 	{
