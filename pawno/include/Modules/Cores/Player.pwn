@@ -177,7 +177,7 @@ public pUpdateHandler_Player(playerid)
 			if (!TiredWalking[playerid])
 			{
 				TiredWalking[playerid] = true;
-				ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, true);
+				ClearAnimations(playerid, true);
 			}
 		}
 		else if (TiredWalking[playerid])
@@ -201,7 +201,7 @@ public pUpdateHandler_Player(playerid)
 		else if (HeavyWalking[playerid])
 		{
 			HeavyWalking[playerid] = false;
-			ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, true);
+			ClearAnimations(playerid, true);
 		}
 	}
 	
@@ -235,18 +235,18 @@ public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 	if (IsPlayerInAnyVehicle(playerid)) return 1;
 	if (newkeys == KEY_SECONDARY_ATTACK)
 	{
-	    for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-	        if (IsPlayerConnected(i) && GetPVarInt_(i, "LoggedIn") && Dead[i])
-	        {
-	            new Float:x, Float:y, Float:z;
-	            GetPlayerPos(i, x, y, z);
-		        if (IsPlayerInRangeOfPoint(playerid, 2.0, x, y, z) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i))
-		        {
-		            PlunderId[playerid] = i;
-		            ShowPlayerItemList(playerid, i, DialogId_Player(4), "All");
-		            break;
-		        }
-	        }
+		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+			if (IsPlayerConnected(i) && GetPVarInt_(i, "LoggedIn") && Dead[i])
+			{
+				new Float:x, Float:y, Float:z;
+				GetPlayerPos(i, x, y, z);
+				if (IsPlayerInRangeOfPoint(playerid, 2.0, x, y, z) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i))
+				{
+					PlunderId[playerid] = i;
+					ShowPlayerItemList(playerid, i, DialogId_Player(4), "All");
+					break;
+				}
+			}
 	}
 	return 1;
 }
@@ -371,7 +371,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			else
 			{
 				Tired[playerid] = false;
-				ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, true);
+				ClearAnimations(playerid, true);
 			}
 		}
 		case 4:
@@ -391,7 +391,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 		{
 			if (PlunderTime[playerid] && !GetPVarInt_(playerid, "pAdmin") || !GetPVarInt_(playerid, "Spawned"))
 				return ShowPlayerPlunderStatus(playerid);
-            Dead[playerid] = false;
+			Dead[playerid] = false;
 			PlunderTime[playerid] = 0;
 			SpawnPlayer_(playerid);
 			ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "리스폰되었습니다.", "확인", chNullString);

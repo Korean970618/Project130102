@@ -22,10 +22,10 @@
 	OnGameModeInit()
 	OnPlayerConnect(playerid)
 	OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
+	OnPlayerStreamIn(playerid, forplayerid)
 
   < Hook Functions >
 	ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
-
 	SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
 
 	PlayAudioStreamForPlayer(playerid, url[], Float:posX = 0.0, Float:posY = 0.0, Float:posZ = 0.0, Float:distance = 50.0, usepos = 0)
@@ -55,6 +55,9 @@
 	TextDrawSetPreviewModel(text, modelindex)
 	TextDrawSetPreviewRot(text, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fZoom = 1.0)
 	TextDrawSetPreviewVehCol(text, color1, color2)
+	
+	ApplyAnimation(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync = 0)
+	ClearAnimations(playerid, forcesync = 0)
 
   < Functions >
 	native strcpy(dest[], src[]);
@@ -134,11 +137,24 @@ enum eTextDrawInfo
 	Float:tdPreviewRot[4],
 	tdPreviewVehCol[2]
 }
+enum eAnimationInfo
+{
+	aLib[32],
+	aName[64],
+	Float:aDelta,
+	aLoop,
+	aLockX,
+	aLockY,
+	aFreeze,
+	aTime,
+	aForceSync
+}
 new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo],
 	Audio_MainStreamIndex[MAX_PLAYERS],
 	ClientMessages[MAX_PLAYERS],
 	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo],
-	TextDrawInfo[MAX_TEXT_DRAWS][eTextDrawInfo];
+	TextDrawInfo[MAX_TEXT_DRAWS][eTextDrawInfo],
+	AnimationInfo[MAX_PLAYERS][eAnimationInfo];
 
 
 
@@ -216,6 +232,7 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 forward OnGameModeInit_();
 forward OnPlayerConnect_(playerid);
 forward OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ);
+forward OnPlayerStreamIn_(playerid, forplayerid);
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
@@ -287,6 +304,22 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
 	#define _ALS_OnPlayerEditAttachedObject
 #endif
 #define OnPlayerEditAttachedObject OnPlayerEditAttachedObject_
+//-----< OnPlayerStreamIn >-----------------------------------------------------
+public OnPlayerStreamIn(playerid, forplayerid)
+{
+	/*if (strlen(AnimationInfo[playerid][aLib]) && AnimationInfo[playerid][aForceSync])
+	{
+		ApplyAnimation(playerid, AnimationInfo[playerid][aLib], AnimationInfo[playerid][aName], AnimationInfo[playerid][aDelta],
+			AnimationInfo[playerid][aLockX], AnimationInfo[playerid][aLockY], AnimationInfo[playerid][aFreeze], AnimationInfo[playerid][aTime], true);
+	}*/
+	return OnPlayerStreamIn_(playerid, forplayerid);
+}
+#if defined _ALS_OnPlayerStreamIn
+	#undef OnPlayerStreamIn
+#else
+	#define _ALS_OnPlayerStreamIn
+#endif
+#define OnPlayerStreamIn OnPlayerStreamIn_
 //-----<  >---------------------------------------------------------------------
 
 
@@ -309,7 +342,6 @@ stock _ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[],
 	#define _ALS_ShowPlayerDialog
 #endif
 #define ShowPlayerDialog ShowPlayerDialog_
-//-----<  >---------------------------------------------------------------------
 //-----< SetPlayerAttachedObject >----------------------------------------------
 stock SetPlayerAttachedObject_(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
 {
@@ -788,6 +820,45 @@ stock _TextDrawSetPreviewVehCol(Text:text, color1, color2)
 #endif
 #define TextDrawSetPreviewVehCol TextDrawSetPreviewVehCol_
 //-----<  >---------------------------------------------------------------------
+//-----< ApplyAnimation >-------------------------------------------------------
+stock ApplyAnimation_(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync = 0)
+{
+	strcpy(AnimationInfo[playerid][aLib], animlib);
+	strcpy(AnimationInfo[playerid][aName], animname);
+	AnimationInfo[playerid][aDelta] = fDelta;
+	AnimationInfo[playerid][aLoop] = loop;
+	AnimationInfo[playerid][aLockX] = lockx;
+	AnimationInfo[playerid][aLockY] = locky;
+	AnimationInfo[playerid][aFreeze] = freeze;
+	AnimationInfo[playerid][aTime] = time;
+	AnimationInfo[playerid][aForceSync] = forcesync;
+	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
+	return 1;
+}
+stock _ApplyAnimation(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync = 0)
+	return ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
+#if defined _ALS_ApplyAnimation
+	#undef ApplyAnimation
+#else
+	#define _ALS_ApplyAnimation
+#endif
+#define ApplyAnimation ApplyAnimation_
+//-----< ClearAnimations >------------------------------------------------------
+stock ClearAnimations_(playerid, forcesync = 0)
+{
+	_ApplyAnimation(playerid, "PED", "facgum", 4.1, 0, 1, 1, 1, 1, forcesync);
+	strcpy(AnimationInfo[playerid][aLib], chNullString);
+	return 1;
+}
+stock _ClearAnimations(playerid, forcesync = 0)
+	return ClearAnimations(playerid, forcesync);
+#if defined _ALS_ClearAnimations
+	#undef ClearAnimations
+#else
+	#define _ALS_ClearAnimations
+#endif
+#define ClearAnimations ClearAnimations_
+//-----<  >---------------------------------------------------------------------
 
 
 
@@ -1166,8 +1237,8 @@ stock TextDrawUpdate(text)
 {
 	_TextDrawHideForAll(TextDrawInfo[text][tdID]);
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-	    if (TextDrawInfo[text][tdShowPlayer][i])
-	        _TextDrawShowForPlayer(i, TextDrawInfo[text][tdID]);
+		if (TextDrawInfo[text][tdShowPlayer][i])
+			_TextDrawShowForPlayer(i, TextDrawInfo[text][tdID]);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
