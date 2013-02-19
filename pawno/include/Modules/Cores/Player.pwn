@@ -27,6 +27,7 @@
 	pUpdateHandler_Player(playerid)
 	pDeathHandler_Player(playerid, killerid, reason)
 	pSpawnHandler_Player(playerid)
+	dRequestHandler_Player(playerid, dialogid)
 	dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
 	pTimerTickHandler_Player(nsec, playerid)
 	pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
@@ -80,6 +81,7 @@ forward pDeathHandler_Player(playerid, killerid, reason);
 forward pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys);
 forward pSpawnHandler_Player(playerid);
 forward pCommandTextHandler_Player(playerid, cmdtext[]);
+forward dRequestHandler_Player(playerid, dialogid);
 forward dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[]);
 forward pTimerTickHandler_Player(nsec, playerid);
 forward pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid);
@@ -299,6 +301,13 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 		return 1;
 	}
 	return 0;
+}
+//-----< dRequestHandler >------------------------------------------------------
+public dRequestHandler_Player(playerid, dialogid)
+{
+	if (dialogid != DialogId_Player(4))
+		PlunderId[playerid] = INVALID_PLAYER_ID;
+	return 1;
 }
 //-----< dResponseHandler >-----------------------------------------------------
 public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
