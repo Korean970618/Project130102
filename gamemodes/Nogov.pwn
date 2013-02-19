@@ -119,8 +119,9 @@
 #define aTrackChangeHandler				53
 #define aRadioStationChangeHandler		54
 #define aGetPositionHandler				55
+#define dRequestHandler					56
 
-#define MAX_CALLBACKS					55
+#define MAX_CALLBACKS					56
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -158,7 +159,7 @@ public OnGameModeInit()
 	// Cores
 	AddHandler("MySQL",			 	gInitHandler);
 	AddHandler("InitExit",			gInitHandler, gExitHandler);
-	AddHandler("Player",			gInitHandler, pConnectHandler, pDisconnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pUpdateHandler, pDeathHandler, pKeyStateChangeHandler, pSpawnHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
+	AddHandler("Player",			gInitHandler, pConnectHandler, pDisconnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pUpdateHandler, pDeathHandler, pKeyStateChangeHandler, pSpawnHandler, pCommandTextHandler, dRequestHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",		   	gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
@@ -837,6 +838,18 @@ public Audio_OnGetPosition(playerid, handleid, seconds)
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aGetPositionHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, handleid, seconds);
+		}
+	return 1;
+}
+//-----< OnDialogRequest >------------------------------------------------------
+public OnDialogRequest(playerid, dialogid)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][dRequestHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "dRequestHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, dialogid);
 		}
 	return 1;
 }

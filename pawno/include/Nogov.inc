@@ -158,6 +158,11 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 
 
 
+//-----< Forwards
+forward OnDialogRequest(playerid, dialogid);
+
+
+
 //-----< Defines
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
@@ -282,7 +287,7 @@ public OnPlayerConnect(playerid)
 	AnimationInfo[playerid][aLockY] = 0;
 	AnimationInfo[playerid][aFreeze] = 0;
 	AnimationInfo[playerid][aTime] = 0;
-	AnimationInfo[playerid][ForceSync] = 0;
+	AnimationInfo[playerid][aForceSync] = 0;
 	
 	return OnPlayerConnect_(playerid);
 }
@@ -342,6 +347,8 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 		info_[10240];
 	format(caption_, sizeof(caption_), "%s[Nogov] %s%s", C_PASTEL_BLUE, C_WHITE, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
+	
+	OnDialogRequest(playerid, dialogid);
 	return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 }
 stock _ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
