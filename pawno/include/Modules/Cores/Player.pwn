@@ -112,7 +112,7 @@ public pConnectHandler_Player(playerid)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-		format(str, sizeof(str), "SELECT Password From PlayerData WHERE Username='%s'", GetPlayerNameA(playerid));
+		format(str, sizeof(str), "SELECT Password From playerdata WHERE Username='%s'", GetPlayerNameA(playerid));
 		mysql_query(str);
 		mysql_store_result();
 		if (mysql_num_rows() > 0)
@@ -310,7 +310,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					getdate(year, month, day);
 					format(str, sizeof(str), "%04d%02d%02d", year, month, day);
 					SetPVarInt_(playerid, "pRegDate", strval(str));
-					format(str, sizeof(str), "INSERT INTO PlayerData (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
+					format(str, sizeof(str), "INSERT INTO playerdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 					mysql_query(str);
 					SetPVarInt_(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
@@ -320,7 +320,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			}
 			else if (!GetPVarInt_(playerid, "LoggedIn"))
 			{
-				format(str, sizeof(str), "SELECT ID FROM PlayerData WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
+				format(str, sizeof(str), "SELECT ID FROM playerdata WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
 				mysql_query(str);
 				mysql_store_result();
 				if (mysql_num_rows() == 1)
@@ -339,7 +339,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			if (response)
 				if (strlen(inputtext) >= 8)
 				{
-					format(str, sizeof(str), "UPDATE PlayerData SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
+					format(str, sizeof(str), "UPDATE playerdata SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
 					mysql_query(str);
 					SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
 				}
