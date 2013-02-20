@@ -199,6 +199,7 @@ public pDeathHandler_Player(playerid, killerid, reason)
 	SetPVarInt_(playerid, "Spawned", false);
 	killerid = KillerId[playerid];
 	KillerId[playerid] = INVALID_PLAYER_ID;
+	if (!GetPVarInt_(playerid, "LoggedIn")) return 0;
 	
 	PlunderTime[playerid] = 60;
 	Dead[playerid] = true;
@@ -243,6 +244,8 @@ public pSpawnHandler_Player(playerid)
 	StopAudioStreamForPlayer(playerid);
 	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
 	SetPlayerTeam(playerid, 0);
+	SetPlayerHealth(playerid, GetPVarFloat_(playerid, "pHealth"));
+	SetPlayerArmour(playerid, GetPVarFloat_(playerid, "pArmour"));
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
@@ -397,14 +400,19 @@ public pTimerTickHandler_Player(nsec, playerid)
 		new Float:pos[4],
 			interior = GetPlayerInterior(playerid),
 			virtualworld = GetPlayerVirtualWorld(playerid),
+			Float:health, Float:armour,
 			str[64];
-		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 
 		if (GetPVarInt_(playerid, "Spawned"))
 		{
+		    GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 			GetPlayerFacingAngle(playerid, pos[3]);
 			format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
 			SetPVarString_(playerid, "pLastPos", str);
+			GetPlayerHealth(playerid, health);
+			SetPVarFloat_(playerid, "pHealth", health);
+			GetPlayerArmour(playerid, armour);
+			SetPVarFloat_(playerid, "pArmour", armour);
 		}
 		
 		if (PlunderTime[playerid])
@@ -478,6 +486,8 @@ stock CreateUserDataTable()
 	strcat(str, ",Banned varchar(256) NOT NULL default ''");
 	strcat(str, ",Weight int(3) NOT NULL default '50'");
 	strcat(str, ",Power int(3) NOT NULL default '50'");
+	strcat(str, ",Health float NOT NULL default '100.0'");
+	strcat(str, ",Armour float NOT NULL default '0.0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
@@ -521,6 +531,8 @@ stock SaveUserData(playerid)
 	format(str, sizeof(str), "%s,Banned='%s'", str, GetPVarString_(playerid, "pBanned"));
 	format(str, sizeof(str), "%s,Weight=%d", str, GetPVarInt_(playerid, "pWeight"));
 	format(str, sizeof(str), "%s,Power=%d", str, GetPVarInt_(playerid, "pPower"));
+	format(str, sizeof(str), "%s,Health=%f", str, GetPVarFloat_(playerid, "pHealth"));
+	format(str, sizeof(str), "%s,Armour=%f", str, GetPVarFloat_(playerid, "pArmour"));
 	format(str, sizeof(str), "%s WHERE Username='%s'", str, GetPlayerNameA(playerid));
 	mysql_query(str);
 	return 1;
@@ -565,6 +577,8 @@ stock LoadUserData(playerid)
 	SetPVarString_(playerid, "pBanned", receive[idx++]);
 	SetPVarInt_(playerid, "pWeight", strval(receive[idx++]));
 	SetPVarInt_(playerid, "pPower", strval(receive[idx++]));
+	SetPVarFloat_(playerid, "pHealth", floatstr(receive[idx++]));
+	SetPVarFloat_(playerid, "pArmour", floatstr(receive[idx++]));
 	
 	if (!GetPVarInt_(playerid, "pRegDate"))
 	{
@@ -624,6 +638,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 //-----< SpawnPlayer_ >---------------------------------------------------------
 stock SpawnPlayer_(playerid)
 {
+	SetPlayerHealth(playerid, 100.0);
 	SetSpawnInfo(playerid, 0, GetPVarInt_(playerid, "pSkin"), -1422.2572, -289.8291, 14.1484, 270.0, 0, 0, 0, 0, 0, 0);
 	SpawnPlayer(playerid);
 	return 1;
