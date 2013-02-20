@@ -243,10 +243,16 @@ public pSpawnHandler_Player(playerid)
 {
 	SetPVarInt_(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
-	SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
-	SetPlayerTeam(playerid, 0);
-	SetPlayerHealth(playerid, GetPVarFloat_(playerid, "pHealth"));
-	SetPlayerArmour(playerid, GetPVarFloat_(playerid, "pArmour"));
+	
+	if (!GetPVarInt_(playerid, "FirstSpawn"))
+	{
+		SetPVarInt_(playerid, "FirstSpawn", true);
+		SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
+		SetPlayerTeam(playerid, 0);
+		SetPlayerHealth(playerid, GetPVarFloat_(playerid, "pHealth"));
+		SetPlayerArmour(playerid, GetPVarFloat_(playerid, "pArmour"));
+	}
+	
 	if (GetPVarInt_(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
@@ -429,9 +435,9 @@ public pTimerTickHandler_Player(nsec, playerid)
 				default: ApplyAnimation(playerid, "CRACK", "crckidle4", 4.1, 0, 1, 1, 1, 1, true);
 			}
 		}
+		
+		SavePlayerData(playerid);
 	}
-	
-	SavePlayerData(playerid);
 	return 1;
 }
 //-----< pTakeDamageHandler >---------------------------------------------------
