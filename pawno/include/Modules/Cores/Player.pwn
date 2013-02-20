@@ -112,13 +112,14 @@ public pConnectHandler_Player(playerid)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-		format(str, sizeof(str), "SELECT Password From playerdata WHERE Username='%s'", GetPlayerNameA(playerid));
+		format(str, sizeof(str), "SELECT Password From playerdata WHERE Name='%s'", GetPlayerNameA(playerid));
 		mysql_query(str);
 		mysql_store_result();
 		if (mysql_num_rows() > 0)
 		{
 			SetPVarInt_(playerid, "Registered", true);
 		}
+		mysql_free_result();
 	}
 	return 1;
 }
@@ -310,7 +311,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					getdate(year, month, day);
 					format(str, sizeof(str), "%04d%02d%02d", year, month, day);
 					SetPVarInt_(playerid, "pRegDate", strval(str));
-					format(str, sizeof(str), "INSERT INTO playerdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
+					format(str, sizeof(str), "INSERT INTO playerdata (Name,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 					mysql_query(str);
 					SetPVarInt_(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
@@ -320,7 +321,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			}
 			else if (!GetPVarInt_(playerid, "LoggedIn"))
 			{
-				format(str, sizeof(str), "SELECT ID FROM playerdata WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
+				format(str, sizeof(str), "SELECT ID FROM playerdata WHERE Name='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
 				mysql_query(str);
 				mysql_store_result();
 				if (mysql_num_rows() == 1)
@@ -334,12 +335,13 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				}
 				else
 					ShowPlayerLoginDialog(playerid, true);
+				mysql_free_result();
 			}
 		case 1:
 			if (response)
 				if (strlen(inputtext) >= 8)
 				{
-					format(str, sizeof(str), "UPDATE playerdata SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
+					format(str, sizeof(str), "UPDATE playerdata SET Password=SHA1('%s') WHERE Name='%s'", inputtext, GetPlayerNameA(playerid));
 					mysql_query(str);
 					SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
 				}
@@ -462,39 +464,39 @@ stock CreatePlayerDataTable()
 	new str[3840];
 	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS playerdata (");
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
-	strcat(str, ",Username varchar(32) NOT NULL default ''");
-	strcat(str, ",Password varchar(128) NOT NULL  default ''");
+	strcat(str, ",Name varchar(32) NOT NULL default ' '");
+	strcat(str, ",Password varchar(128) NOT NULL  default ' '");
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",RegDate int(8) NOT NULL default '0'");
 	strcat(str, ",Level int(5) NOT NULL default '0'");
 	strcat(str, ",Radio int(5) NOT NULL default '0'");
-	strcat(str, ",Origin varchar(64) NOT NULL  default ''");
+	strcat(str, ",Origin varchar(64) NOT NULL  default ' '");
 	strcat(str, ",Money int(10) NOT NULL default '0'");
 	strcat(str, ",Skin int(3) NOT NULL default '29'");
 	strcat(str, ",Deaths int(5) NOT NULL default '0'");
 	strcat(str, ",LastQuit int(1) NOT NULL default '0'");
-	strcat(str, ",LastPos varchar(64) NOT NULL  default ''");
+	strcat(str, ",LastPos varchar(64) NOT NULL  default ' '");
 	strcat(str, ",Tutorial int(1) NOT NULL default '0'");
 	strcat(str, ",Admin int(5) NOT NULL default '0'");
 	strcat(str, ",Warns int(5) NOT NULL default '0'");
 	strcat(str, ",Praises int(5) NOT NULL default '0'");
-	strcat(str, ",Toy1 varchar(256) NOT NULL  default ''");
-	strcat(str, ",Toy2 varchar(256) NOT NULL  default ''");
-	strcat(str, ",Toy3 varchar(256) NOT NULL  default ''");
-	strcat(str, ",Toy4 varchar(256) NOT NULL  default ''");
-	strcat(str, ",Toy5 varchar(256) NOT NULL  default ''");
-	strcat(str, ",Banned varchar(256) NOT NULL default ''");
+	strcat(str, ",Toy1 varchar(256) NOT NULL  default ' '");
+	strcat(str, ",Toy2 varchar(256) NOT NULL  default ' '");
+	strcat(str, ",Toy3 varchar(256) NOT NULL  default ' '");
+	strcat(str, ",Toy4 varchar(256) NOT NULL  default ' '");
+	strcat(str, ",Toy5 varchar(256) NOT NULL  default ' '");
+	strcat(str, ",Banned varchar(256) NOT NULL default ' '");
 	strcat(str, ",Weight int(3) NOT NULL default '50'");
 	strcat(str, ",Power int(3) NOT NULL default '50'");
-	strcat(str, ",Health float NOT NULL default '100.0'");
-	strcat(str, ",Armour float NOT NULL default '0.0'");
+	strcat(str, ",Health float(16,4) NOT NULL default '100.0'");
+	strcat(str, ",Armour float(16,4) NOT NULL default '0.0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
 	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS bandata (");
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
-	strcat(str, ",Username varchar(32) NOT NULL  default ''");
+	strcat(str, ",Name varchar(32) NOT NULL  default ' '");
 	strcat(str, ",Date int(8) NOT NULL default '0'");
 	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
@@ -531,9 +533,9 @@ stock SavePlayerData(playerid)
 	format(str, sizeof(str), "%s,Banned='%s'", str, GetPVarString_(playerid, "pBanned"));
 	format(str, sizeof(str), "%s,Weight=%d", str, GetPVarInt_(playerid, "pWeight"));
 	format(str, sizeof(str), "%s,Power=%d", str, GetPVarInt_(playerid, "pPower"));
-	format(str, sizeof(str), "%s,Health=%f", str, GetPVarFloat_(playerid, "pHealth"));
-	format(str, sizeof(str), "%s,Armour=%f", str, GetPVarFloat_(playerid, "pArmour"));
-	format(str, sizeof(str), "%s WHERE Username='%s'", str, GetPlayerNameA(playerid));
+	format(str, sizeof(str), "%s,Health=%.4f", str, GetPVarFloat_(playerid, "pHealth"));
+	format(str, sizeof(str), "%s,Armour=%.4f", str, GetPVarFloat_(playerid, "pArmour"));
+	format(str, sizeof(str), "%s WHERE Name='%s'", str, GetPlayerNameA(playerid));
 	mysql_query(str);
 	return 1;
 }
@@ -541,44 +543,39 @@ stock SavePlayerData(playerid)
 stock LoadPlayerData(playerid)
 {
 	new str[256],
-		receive[26][256],
-		idx;
+		receive[512];
 	if (IsPlayerNPC(playerid)) return 1;
 	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
 	
-	format(str, sizeof(str), "SELECT * FROM playerdata WHERE Username='%s'", GetPlayerNameA(playerid));
+	format(str, sizeof(str), "SELECT * FROM playerdata WHERE Name='%s'", GetPlayerNameA(playerid));
 	mysql_query(str);
 	mysql_store_result();
-	mysql_fetch_row(str, "|");
-	split(str, receive, '|');
 	
-	SetPVarInt_(playerid, "pID", strval(receive[idx++]));
-	SetPVarString_(playerid, "pName", receive[idx++]);
-	SetPVarString_(playerid, "pPassword", receive[idx++]);
-	SetPVarString_(playerid, "pIP", receive[idx++]);
-	SetPVarInt_(playerid, "pRegDate", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pLevel", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pRadio", strval(receive[idx++]));
-	SetPVarString_(playerid, "pOrigin", receive[idx++]);
-	SetPVarInt_(playerid, "pMoney", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pSkin", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pDeaths", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pLastQuit", strval(receive[idx++]));
-	SetPVarString_(playerid, "pLastPos", receive[idx++]);
-	SetPVarInt_(playerid, "pTutorial", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pAdmin", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pWarns", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pPraises", strval(receive[idx++]));
-	SetPVarString_(playerid, "pToy1", receive[idx++]);
-	SetPVarString_(playerid, "pToy2", receive[idx++]);
-	SetPVarString_(playerid, "pToy3", receive[idx++]);
-	SetPVarString_(playerid, "pToy4", receive[idx++]);
-	SetPVarString_(playerid, "pToy5", receive[idx++]);
-	SetPVarString_(playerid, "pBanned", receive[idx++]);
-	SetPVarInt_(playerid, "pWeight", strval(receive[idx++]));
-	SetPVarInt_(playerid, "pPower", strval(receive[idx++]));
-	SetPVarFloat_(playerid, "pHealth", floatstr(receive[idx++]));
-	SetPVarFloat_(playerid, "pArmour", floatstr(receive[idx++]));
+	mysql_fetch_field("RegDate",	receive); SetPVarInt_(playerid, "pRegDate", strval(receive));
+	mysql_fetch_field("Level",		receive); SetPVarInt_(playerid, "pLevel", strval(receive));
+	mysql_fetch_field("Radio",		receive); SetPVarInt_(playerid, "pRadio", strval(receive));
+	mysql_fetch_field("Origin",		receive); SetPVarString_(playerid, "pOrigin", receive);
+	mysql_fetch_field("Money",		receive); SetPVarInt_(playerid, "pMoney", strval(receive));
+	mysql_fetch_field("Skin",		receive); SetPVarInt_(playerid, "pSkin", strval(receive));
+	mysql_fetch_field("Deaths",		receive); SetPVarInt_(playerid, "pDeaths", strval(receive));
+	mysql_fetch_field("LastQuit",	receive); SetPVarInt_(playerid, "pLastQuit", strval(receive));
+	mysql_fetch_field("LastPos",	receive); SetPVarString_(playerid, "pLastPos", receive);
+	mysql_fetch_field("Tutorial",	receive); SetPVarInt_(playerid, "pTutorial", strval(receive));
+	mysql_fetch_field("Admin",		receive); SetPVarInt_(playerid, "pAdmin", strval(receive));
+	mysql_fetch_field("Warns",		receive); SetPVarInt_(playerid, "pWarns", strval(receive));
+	mysql_fetch_field("Praises",	receive); SetPVarInt_(playerid, "pPraises", strval(receive));
+	mysql_fetch_field("Toy1",		receive); SetPVarString_(playerid, "pToy1", receive);
+	mysql_fetch_field("Toy2",		receive); SetPVarString_(playerid, "pToy2", receive);
+	mysql_fetch_field("Toy3",		receive); SetPVarString_(playerid, "pToy3", receive);
+	mysql_fetch_field("Toy4",		receive); SetPVarString_(playerid, "pToy4", receive);
+	mysql_fetch_field("Toy5",		receive); SetPVarString_(playerid, "pToy5", receive);
+	mysql_fetch_field("Banned",		receive); SetPVarString_(playerid, "pBanned", receive);
+	mysql_fetch_field("Weight",		receive); SetPVarInt_(playerid, "pWeight", strval(receive));
+	mysql_fetch_field("Power",		receive); SetPVarInt_(playerid, "pPower", strval(receive));
+	mysql_fetch_field("Health",		receive); SetPVarFloat_(playerid, "pHealth", floatstr(receive));
+	mysql_fetch_field("Armour",		receive); SetPVarFloat_(playerid, "pArmour", floatstr(receive));
+	
+	mysql_free_result();
 	
 	if (!GetPVarInt_(playerid, "pRegDate"))
 	{

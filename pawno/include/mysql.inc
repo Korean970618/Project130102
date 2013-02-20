@@ -1,6 +1,6 @@
 /**
- *     SA:MP MySQL v2.0 Functions
- *  (c) Copyright 2010, <__Ethan__>
+ *     SA:MP MySQL v2.1 Functions
+ *  (c) Copyright 2011, StrickenKid
  *
  **/
 
@@ -156,7 +156,6 @@ native mysql_fetch_string(dest[], MySQL:handle = (MySQL:0));
 
 #if !defined split
 // split function - thanks to Blacklite
-/*
 stock split(const strsrc[], strdest[][], delimiter = '|')
 {
 	new i, li, aNum, len, srclen = strlen(strsrc);
@@ -172,5 +171,4 @@ stock split(const strsrc[], strdest[][], delimiter = '|')
 		i++;
 	}
 }
-*/
 #endif
