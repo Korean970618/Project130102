@@ -528,12 +528,12 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/오브젝트선택", true))
 	{
-	    cmd = strtok(cmdtext, idx);
-	    if (!strlen(cmd))
-	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /오브젝트선택 [플레이어]");
-	    destid = ReturnUser(cmd);
-	    if (!IsPlayerConnected(destid))
-	        return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /오브젝트선택 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		SelectObject(destid);
 		return 1;
 	}
