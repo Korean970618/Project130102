@@ -33,9 +33,9 @@
 	pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 	
   < Functions >
-	CreateUserDataTable()
-	SaveUserData(playerid)
-	LoadUserData(playerid)
+	CreatePlayerDataTable()
+	SavePlayerData(playerid)
+	LoadPlayerData(playerid)
 	ShowPlayerLoginDialog(playerid, bool:wrong)
 	SpawnPlayer_(playerid)
 	ShowPlayerPlunderStatus(playerid)
@@ -88,7 +88,7 @@ forward pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Player()
 {
-	CreateUserDataTable();
+	CreatePlayerDataTable();
 	return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
@@ -112,7 +112,7 @@ public pConnectHandler_Player(playerid)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-		format(str, sizeof(str), "SELECT Password From userdata WHERE Username='%s'", GetPlayerNameA(playerid));
+		format(str, sizeof(str), "SELECT Password From PlayerData WHERE Username='%s'", GetPlayerNameA(playerid));
 		mysql_query(str);
 		mysql_store_result();
 		if (mysql_num_rows() > 0)
@@ -310,7 +310,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					getdate(year, month, day);
 					format(str, sizeof(str), "%04d%02d%02d", year, month, day);
 					SetPVarInt_(playerid, "pRegDate", strval(str));
-					format(str, sizeof(str), "INSERT INTO userdata (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
+					format(str, sizeof(str), "INSERT INTO PlayerData (Username,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
 					mysql_query(str);
 					SetPVarInt_(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
@@ -320,13 +320,13 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			}
 			else if (!GetPVarInt_(playerid, "LoggedIn"))
 			{
-				format(str, sizeof(str), "SELECT ID FROM userdata WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
+				format(str, sizeof(str), "SELECT ID FROM PlayerData WHERE Username='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
 				mysql_query(str);
 				mysql_store_result();
 				if (mysql_num_rows() == 1)
 				{
 					SetPVarInt_(playerid, "LoggedIn", true);
-					LoadUserData(playerid);
+					LoadPlayerData(playerid);
 					if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
 						ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 					else
@@ -339,7 +339,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			if (response)
 				if (strlen(inputtext) >= 8)
 				{
-					format(str, sizeof(str), "UPDATE userdata SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
+					format(str, sizeof(str), "UPDATE PlayerData SET Password=SHA1('%s') WHERE Username='%s'", inputtext, GetPlayerNameA(playerid));
 					mysql_query(str);
 					SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
 				}
@@ -405,7 +405,7 @@ public pTimerTickHandler_Player(nsec, playerid)
 
 		if (GetPVarInt_(playerid, "Spawned"))
 		{
-		    GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+			GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 			GetPlayerFacingAngle(playerid, pos[3]);
 			format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
 			SetPVarString_(playerid, "pLastPos", str);
@@ -429,7 +429,7 @@ public pTimerTickHandler_Player(nsec, playerid)
 		}
 	}
 	
-	SaveUserData(playerid);
+	SavePlayerData(playerid);
 	return 1;
 }
 //-----< pTakeDamageHandler >---------------------------------------------------
@@ -456,11 +456,11 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 
 
 //-----< Functions
-//-----< CreateUserDataTable >--------------------------------------------------
-stock CreateUserDataTable()
+//-----< CreatePlayerDataTable >------------------------------------------------
+stock CreatePlayerDataTable()
 {
 	new str[3840];
-	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS userdata (");
+	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS playerdata (");
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",Username varchar(32) NOT NULL default ''");
 	strcat(str, ",Password varchar(128) NOT NULL  default ''");
@@ -501,14 +501,14 @@ stock CreateUserDataTable()
 	mysql_query(str);
 	return 1;
 }
-//-----< SaveUserData >---------------------------------------------------------
-stock SaveUserData(playerid)
+//-----< SavePlayerData >-------------------------------------------------------
+stock SavePlayerData(playerid)
 {
 	new str[3840];
 	if (IsPlayerNPC(playerid)) return 1;
 	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
 
-	format(str, sizeof(str), "UPDATE userdata SET");
+	format(str, sizeof(str), "UPDATE playerdata SET");
 	format(str, sizeof(str), "%s IP='%s'", str, GetPlayerIpA(playerid));
 	format(str, sizeof(str), "%s,RegDate=%d", str, GetPVarInt_(playerid, "pRegDate"));
 	format(str, sizeof(str), "%s,Level=%d", str, GetPVarInt_(playerid, "pLevel"));
@@ -537,8 +537,8 @@ stock SaveUserData(playerid)
 	mysql_query(str);
 	return 1;
 }
-//-----< LoadUserData >---------------------------------------------------------
-stock LoadUserData(playerid)
+//-----< LoadPlayerData >-------------------------------------------------------
+stock LoadPlayerData(playerid)
 {
 	new str[256],
 		receive[26][256],
@@ -546,7 +546,7 @@ stock LoadUserData(playerid)
 	if (IsPlayerNPC(playerid)) return 1;
 	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
 	
-	format(str, sizeof(str), "SELECT * FROM userdata WHERE Username='%s'", GetPlayerNameA(playerid));
+	format(str, sizeof(str), "SELECT * FROM playerdata WHERE Username='%s'", GetPlayerNameA(playerid));
 	mysql_query(str);
 	mysql_store_result();
 	mysql_fetch_row(str, "|");
