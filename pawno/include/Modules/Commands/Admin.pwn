@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/02/18
+ *		Update:		2013/02/20
  *
  *
  */
@@ -62,7 +62,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /텍스트드로우\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /텍스트드로우, /오브젝트선택\n\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 		return 1;
 	}
@@ -524,6 +524,17 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/텍스트드로우", true))
 	{
 		ShowPlayerDialog(playerid, DialogId_Admin(10), DIALOG_STYLE_LIST, "TextDraw", "목록\n편집\n제거\n보이기\n숨기기\n추가", "확인", "취소");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/오브젝트선택", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /오브젝트선택 [플레이어]");
+	    destid = ReturnUser(cmd);
+	    if (!IsPlayerConnected(destid))
+	        return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		SelectObject(destid);
 		return 1;
 	}
 	return 0;
