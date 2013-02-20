@@ -120,8 +120,9 @@
 #define aRadioStationChangeHandler		54
 #define aGetPositionHandler				55
 #define dRequestHandler					56
+#define pSelectObjectHandler			57
 
-#define MAX_CALLBACKS					56
+#define MAX_CALLBACKS					57
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -162,7 +163,7 @@ public OnGameModeInit()
 	AddHandler("Player",			gInitHandler, pConnectHandler, pDisconnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, pUpdateHandler, pDeathHandler, pKeyStateChangeHandler, pSpawnHandler, pCommandTextHandler, dRequestHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",		   	gInitHandler);
-	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pSelectObjectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
@@ -850,6 +851,18 @@ public OnDialogRequest(playerid, dialogid)
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "dRequestHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, dialogid);
+		}
+	return 1;
+}
+//-----< OnPlayerSelectObject >-------------------------------------------------
+public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][pSelectObjectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pSelectObjectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "ddddfff", playerid, type, objectid, modelid, fX, fY, fZ);
 		}
 	return 1;
 }
