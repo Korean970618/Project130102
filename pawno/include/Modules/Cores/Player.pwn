@@ -162,6 +162,8 @@ public pRequestSpawnHandler_Player(playerid)
 //-----< pUpdateHandler >-------------------------------------------------------
 public pUpdateHandler_Player(playerid)
 {
+	Streamer_Update(playerid);
+
 	new Float:x, Float:y, Float:z,
 		keys, ud, lr;
 	if (IsPlayerInAnyVehicle(playerid) || !GetPVarInt_(playerid, "LoggedIn")) return 1;
