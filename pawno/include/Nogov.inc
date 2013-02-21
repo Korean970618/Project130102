@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/14
+ *		Update:		2013/02/21
  *
  *
  */
@@ -154,12 +154,13 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 	ClientMessages[MAX_PLAYERS],
 	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo],
 	TextDrawInfo[MAX_TEXT_DRAWS][eTextDrawInfo],
-	AnimationInfo[MAX_PLAYERS][eAnimationInfo];
+	AnimationInfo[MAX_PLAYERS][eAnimationInfo],
+	DialogInfo[MAX_PLAYERS];
 
 
 
 //-----< Forwards
-forward OnDialogRequest(playerid, dialogid);
+forward OnDialogRequest(playerid, dialogid, olddialogid);
 
 
 
@@ -345,11 +346,15 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 {
 	new caption_[128],
 		info_[10240];
-	format(caption_, sizeof(caption_), "%s[Nogov] %s%s", C_PASTEL_BLUE, C_WHITE, caption);
+	format(caption_, sizeof(caption_), "%s%s", C_DIALOG, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	
-	OnDialogRequest(playerid, dialogid);
-	return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
+	if (OnDialogRequest(playerid, dialogid, DialogInfo[playerid]))
+	{
+		DialogInfo[playerid] = dialogid;
+		return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
+	}
+	return 0;
 }
 stock _ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
 	return ShowPlayerDialog(playerid, dialogid, style, caption, info, button, button2);

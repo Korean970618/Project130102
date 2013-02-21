@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/20
+ *		Update:		2013/02/21
  *
  *
  */
@@ -27,7 +27,7 @@
 	pUpdateHandler_Player(playerid)
 	pDeathHandler_Player(playerid, killerid, reason)
 	pSpawnHandler_Player(playerid)
-	dRequestHandler_Player(playerid, dialogid)
+	dRequestHandler_Player(playerid, dialogid, olddialogid)
 	dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
 	pTimerTickHandler_Player(nsec, playerid)
 	pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
@@ -81,7 +81,7 @@ forward pDeathHandler_Player(playerid, killerid, reason);
 forward pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys);
 forward pSpawnHandler_Player(playerid);
 forward pCommandTextHandler_Player(playerid, cmdtext[]);
-forward dRequestHandler_Player(playerid, dialogid);
+forward dRequestHandler_Player(playerid, dialogid, olddialogid);
 forward dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[]);
 forward pTimerTickHandler_Player(nsec, playerid);
 forward pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid);
@@ -107,7 +107,7 @@ public pConnectHandler_Player(playerid)
 	DeadAnim[playerid] = 0;
 	KillerId[playerid] = INVALID_PLAYER_ID;
 
-	new str[256];
+	new str[512], receive[3][128];
 	for (new i; i < 20; i++)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
 	if (!GetPVarInt_(playerid, "LoggedIn"))
@@ -121,6 +121,30 @@ public pConnectHandler_Player(playerid)
 		}
 		mysql_free_result();
 	}
+	
+	format(str, sizeof(str), "SELECT * FROM bandata WHERE IP='%s'", GetPlayerIpA(playerid));
+	mysql_query(str);
+	mysql_store_result();
+	if (mysql_num_rows() > 0)
+	{
+		mysql_fetch_field("Name", receive[0]);
+		mysql_fetch_field("Reason", receive[1]);
+		mysql_fetch_field("Date", receive[2]);
+		mysql_free_result();
+		format(str, sizeof(str), "\
+		사용중인 IP는 다음과 같은 이유로 차단되어 있습니다.\n\
+		\n\
+		"C_PASTEL_BLUE"이름: "C_WHITE"%s\n\
+		"C_PASTEL_BLUE"이유: "C_WHITE"%s\n\
+		"C_PASTEL_BLUE"일시: "C_WHITE"%s\n\
+		\n\
+		차단 해제를 원하신다면 저희 포럼에 문의해 주십시오.\n\
+		Nogov - "C_ORANGE"http://cafe.daum.net/Nogov\
+		", receive[0], receive[1], receive[2]);
+		ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "알림", str, "확인", chNullString);
+	}
+	mysql_free_result();
+	
 	return 1;
 }
 //-----< pDisconnectHandler >---------------------------------------------------
@@ -296,10 +320,15 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 	return 0;
 }
 //-----< dRequestHandler >------------------------------------------------------
-public dRequestHandler_Player(playerid, dialogid)
+public dRequestHandler_Player(playerid, dialogid, olddialogid)
 {
 	if (dialogid != DialogId_Player(4))
 		PlunderId[playerid] = INVALID_PLAYER_ID;
+	if (olddialogid == DialogId_Player(3))
+	{
+		Kick(playerid);
+		return 0;
+	}
 	return 1;
 }
 //-----< dResponseHandler >-----------------------------------------------------
@@ -367,6 +396,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				SetPVarInt_(playerid, "RestoreSpawn", true);
 			SpawnPlayer_(playerid);
 		}
+		case 3: return Kick(playerid);
 		case 4:
 		{
 			if (response)
@@ -503,6 +533,7 @@ stock CreatePlayerDataTable()
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",Name varchar(32) NOT NULL  default ' '");
+	strcat(str, ",Reason varchar(128) NOT NULL default ' '");
 	strcat(str, ",Date int(8) NOT NULL default '0'");
 	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");

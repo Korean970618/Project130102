@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/19
+ *		Update:		2013/02/21
  *
  *
  */
@@ -843,14 +843,14 @@ public Audio_OnGetPosition(playerid, handleid, seconds)
 	return 1;
 }
 //-----< OnDialogRequest >------------------------------------------------------
-public OnDialogRequest(playerid, dialogid)
+public OnDialogRequest(playerid, dialogid, olddialogid)
 {
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
 		if (CallbacksList[i][CBIndex][dRequestHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "dRequestHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "dd", playerid, dialogid);
+			if (!CallLocalFunction(funcstr, "ddd", playerid, dialogid, olddialogid)) return 0;
 		}
 	return 1;
 }
