@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/21
+ *		Update:		2013/02/25
  *
  *
  */
@@ -40,6 +40,9 @@
 	SpawnPlayer_(playerid)
 	ShowPlayerPlunderStatus(playerid)
 	IsMeleeWeapon(weaponid)
+	IdBan(playerid, reason[])
+	IpBan(playerid, reason[])
+	ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 
 */
 
@@ -107,7 +110,7 @@ public pConnectHandler_Player(playerid)
 	DeadAnim[playerid] = 0;
 	KillerId[playerid] = INVALID_PLAYER_ID;
 
-	new str[512], receive[3][128];
+	new str[512], receive[4][128];
 	for (new i; i < 20; i++)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
 	if (!GetPVarInt_(playerid, "LoggedIn"))
@@ -122,7 +125,7 @@ public pConnectHandler_Player(playerid)
 		mysql_free_result();
 	}
 	
-	format(str, sizeof(str), "SELECT * FROM bandata WHERE IP='%s'", GetPlayerIpA(playerid));
+	format(str, sizeof(str), "SELECT * FROM bandata WHERE (Name='%s' AND IP=' ') OR IP='%s'", GetPlayerNameA(playerid), GetPlayerIpA(playerid));
 	mysql_query(str);
 	mysql_store_result();
 	if (mysql_num_rows() > 0)
@@ -130,18 +133,9 @@ public pConnectHandler_Player(playerid)
 		mysql_fetch_field("Name", receive[0]);
 		mysql_fetch_field("Reason", receive[1]);
 		mysql_fetch_field("Date", receive[2]);
+		mysql_fetch_field("Type", receive[3]);
 		mysql_free_result();
-		format(str, sizeof(str), "\
-		사용중인 IP는 다음과 같은 이유로 차단되어 있습니다.\n\
-		\n\
-		"C_PASTEL_BLUE"이름: "C_WHITE"%s\n\
-		"C_PASTEL_BLUE"이유: "C_WHITE"%s\n\
-		"C_PASTEL_BLUE"일시: "C_WHITE"%s\n\
-		\n\
-		차단 해제를 원하신다면 저희 포럼에 문의해 주십시오.\n\
-		Nogov - "C_ORANGE"http://cafe.daum.net/Nogov\
-		", receive[0], receive[1], receive[2]);
-		ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "알림", str, "확인", chNullString);
+		ShowPlayerBanDialog(playerid, receive[0], receive[1], receive[2], strval(receive[3]));
 	}
 	mysql_free_result();
 	
@@ -521,7 +515,6 @@ stock CreatePlayerDataTable()
 	strcat(str, ",Toy3 varchar(256) NOT NULL  default ' '");
 	strcat(str, ",Toy4 varchar(256) NOT NULL  default ' '");
 	strcat(str, ",Toy5 varchar(256) NOT NULL  default ' '");
-	strcat(str, ",Banned varchar(256) NOT NULL default ' '");
 	strcat(str, ",Weight int(3) NOT NULL default '50'");
 	strcat(str, ",Power int(3) NOT NULL default '50'");
 	strcat(str, ",Health float(16,4) NOT NULL default '100.0'");
@@ -534,7 +527,8 @@ stock CreatePlayerDataTable()
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",Name varchar(32) NOT NULL  default ' '");
 	strcat(str, ",Reason varchar(128) NOT NULL default ' '");
-	strcat(str, ",Date int(8) NOT NULL default '0'");
+	strcat(str, ",Date varchar(16) NOT NULL default ' '");
+	strcat(str, ",Type int(1) NOT NULL default '0'");
 	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
@@ -567,7 +561,6 @@ stock SavePlayerData(playerid)
 	format(str, sizeof(str), "%s,Toy3='%s'", str, GetPVarString_(playerid, "pToy3"));
 	format(str, sizeof(str), "%s,Toy4='%s'", str, GetPVarString_(playerid, "pToy4"));
 	format(str, sizeof(str), "%s,Toy5='%s'", str, GetPVarString_(playerid, "pToy5"));
-	format(str, sizeof(str), "%s,Banned='%s'", str, GetPVarString_(playerid, "pBanned"));
 	format(str, sizeof(str), "%s,Weight=%d", str, GetPVarInt_(playerid, "pWeight"));
 	format(str, sizeof(str), "%s,Power=%d", str, GetPVarInt_(playerid, "pPower"));
 	format(str, sizeof(str), "%s,Health=%.4f", str, GetPVarFloat_(playerid, "pHealth"));
@@ -606,7 +599,6 @@ stock LoadPlayerData(playerid)
 	mysql_fetch_field("Toy3",		receive); SetPVarString_(playerid, "pToy3", receive);
 	mysql_fetch_field("Toy4",		receive); SetPVarString_(playerid, "pToy4", receive);
 	mysql_fetch_field("Toy5",		receive); SetPVarString_(playerid, "pToy5", receive);
-	mysql_fetch_field("Banned",		receive); SetPVarString_(playerid, "pBanned", receive);
 	mysql_fetch_field("Weight",		receive); SetPVarInt_(playerid, "pWeight", strval(receive));
 	mysql_fetch_field("Power",		receive); SetPVarInt_(playerid, "pPower", strval(receive));
 	mysql_fetch_field("Health",		receive); SetPVarFloat_(playerid, "pHealth", floatstr(receive));
@@ -699,5 +691,51 @@ stock IsMeleeWeapon(weaponid)
 {
 	if (weaponid >= 0 && weaponid <= 15) return true;
 	return false;
+}
+//-----< IdBan >----------------------------------------------------------------
+stock IdBan(playerid, reason[])
+{
+	new string[256],
+		year, month, day;
+	getdate(year, month, day);
+	format(str, sizeof(str), "INSERT INTO bandata (ID,IP,Name,Reason,Date,Type)");
+	format(str, sizeof(str), "%s VALUES ('%s',' ','%s','%d년 %d월 %d일',1)", str, GetPlayerNameA(playerid), escape(reason), year, month, day);
+	mysql_query(str);
+    format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
+    ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 1);
+	Kick(playerid);
+	return 1;
+}
+//-----< IpBan >----------------------------------------------------------------
+stock IpBan(playerid, reason[])
+{
+	new string[256],
+		year, month, day;
+	getdate(year, month, day);
+	format(str, sizeof(str), "INSERT INTO bandata (ID,IP,Name,Reason,Date,Type)");
+	format(str, sizeof(str), "%s VALUES ('%s','%s','%s','%d년 %d월 %d일',2)", str, GetPlayerNameA(playerid), GetPlayerIpA(playerid), escape(reason), year, month, day);
+	mysql_query(str);
+	format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
+    ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 2);
+	Kick(playerid);
+	return 1;
+}
+//-----< ShowPlayerBanDialog >--------------------------------------------------
+stock ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
+{
+	new str[256], typetext[64];
+	if (type == 1) typetext = "ID";
+	else if (type == 2) typetext = "IP";
+    format(str, sizeof(str), "\
+	사용중인 "C_RED"I%s"C_WHITE"는 다음과 같은 이유로 차단되어 있습니다.\n\
+	\n\
+	"C_PASTEL_BLUE"이름: "C_WHITE"%s\n\
+	"C_PASTEL_BLUE"이유: "C_WHITE"%s\n\
+	"C_PASTEL_BLUE"일시: "C_WHITE"%s\n\
+	\n\
+	차단 해제를 원하신다면 저희 포럼에 문의해 주십시오.\n\
+	Nogov - "C_ORANGE"http://cafe.daum.net/Nogov\
+	", typetext, name, reason, date);
+	ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "알림", str, "확인", chNullString);
 }
 //-----<  >---------------------------------------------------------------------
