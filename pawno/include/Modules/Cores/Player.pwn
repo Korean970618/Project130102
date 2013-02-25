@@ -723,11 +723,11 @@ stock IpBan(playerid, reason[])
 //-----< ShowPlayerBanDialog >--------------------------------------------------
 stock ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 {
-	new str[256], typetext[64];
+	new str[512], typetext[64];
 	if (type == 1) typetext = "ID";
 	else if (type == 2) typetext = "IP";
     format(str, sizeof(str), "\
-	사용중인 "C_RED"I%s"C_WHITE"는 다음과 같은 이유로 차단되어 있습니다.\n\
+	사용중인 "C_RED"%s"C_WHITE"는 다음과 같은 이유로 차단되어 있습니다.\n\
 	\n\
 	"C_PASTEL_BLUE"이름: "C_WHITE"%s\n\
 	"C_PASTEL_BLUE"이유: "C_WHITE"%s\n\
