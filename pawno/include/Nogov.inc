@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/21
+ *		Update:		2013/02/25
  *
  *
  */
@@ -239,6 +239,7 @@ forward OnGameModeInit_();
 forward OnPlayerConnect_(playerid);
 forward OnPlayerEditAttachedObject_(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ);
 forward OnPlayerStreamIn_(playerid, forplayerid);
+forward OnPlayerKeyStateChange_(playerid, newkeys, oldkeys);
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
@@ -290,6 +291,8 @@ public OnPlayerConnect(playerid)
 	AnimationInfo[playerid][aTime] = 0;
 	AnimationInfo[playerid][aForceSync] = 0;
 	
+	DialogInfo[playerid] = 0;
+	
 	return OnPlayerConnect_(playerid);
 }
 #if defined _ALS_OnPlayerConnect
@@ -336,6 +339,20 @@ public OnPlayerStreamIn(playerid, forplayerid)
 	#define _ALS_OnPlayerStreamIn
 #endif
 #define OnPlayerStreamIn OnPlayerStreamIn_
+//-----< OnPlayerKeyStateChange >-----------------------------------------------
+public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
+{
+	if (strlen(AnimationInfo[playerid][aLib]) && AnimationInfo[playerid][aForceSync]
+	&& (newkeys & KEY_JUMP || newkeys & KEY_FIRE || newkeys & KEY_SECONDARY_ATTACK))
+		ClearAnimations_(playerid, true);
+	return OnPlayerKeyStateChange_(playerid, newkeys, oldkeys);
+}
+#if defined _ALS_OnPlayerKeyStateChange
+	#undef OnPlayerKeyStateChange
+#else
+	#define _ALS_OnPlayerKeyStateChange
+#endif
+#define OnPlayerKeyStateChange OnPlayerKeyStateChange_
 //-----<  >---------------------------------------------------------------------
 
 
