@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/21
+ *		Update:		2013/02/26
  *
  *
  */
@@ -25,6 +25,11 @@
 	50: Admin Command
 	75: PropertyData Core
 	100: Item Core
+	125: Agent Core
+
+  < VirtualWorld List >
+	0: Nogov Main Script
+	25: Agent Core
 
   < Attached Object Slots (0~9) >
 	0: Item Core
@@ -57,6 +62,7 @@
 #include "Modules/Cores/Vehicle.pwn"
 #include "Modules/Cores/Item.pwn"
 #include "Modules/Cores/Fly.pwn"
+#include "Modules/Cores/Agent.pwn"
 #include "Modules/Commands/Admin.pwn"
 #include "Modules/Commands/Animation.pwn"
 
@@ -165,6 +171,7 @@ public OnGameModeInit()
 	AddHandler("Vehicle",		   	gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pSelectObjectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
+	AddHandler("Agent",             gInitHandler, pConnectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);

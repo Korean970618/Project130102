@@ -605,7 +605,7 @@ stock LoadPlayerData(playerid)
 	mysql_fetch_field("Power",		receive); SetPVarInt_(playerid, "pPower", strval(receive));
 	mysql_fetch_field("Health",		receive); SetPVarFloat_(playerid, "pHealth", floatstr(receive));
 	mysql_fetch_field("Armour",		receive); SetPVarFloat_(playerid, "pArmour", floatstr(receive));
-	mysql_fetch_field("Agent",      receive); SetPVarInt_(playerid, "pAgent", strval(receive));t
+	mysql_fetch_field("Agent",      receive); SetPVarInt_(playerid, "pAgent", strval(receive));
 	
 	mysql_free_result();
 	
