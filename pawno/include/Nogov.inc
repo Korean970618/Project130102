@@ -90,6 +90,7 @@
 	native valstr_(value);
 	native GivePlayerDamage(playerid, Float:amount);
 	native TextDrawSetPosition(text, Float:x, Float:y);
+	native Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 
 */
 
@@ -1279,5 +1280,10 @@ stock TextDrawUpdate(text)
 		if (TextDrawInfo[text][tdShowPlayer][i])
 			_TextDrawShowForPlayer(i, TextDrawInfo[text][tdID]);
 	return 1;
+}
+//-----< GetDistanceBetweenPoints >---------------------------------------------
+stock Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2)
+{
+	return floatadd(floatadd(floatsqroot(floatpower(floatsub(x1, x2), 2)), floatsqroot(floatpower(floatsub(y1, y2), 2))), floatsqroot(floatpower(floatsub(z1, z2), 2)));
 }
 //-----<  >---------------------------------------------------------------------
