@@ -108,7 +108,7 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		return 1;
 	}
 	
-	if (!GetPVarInt_(playerid, "AgentMode")) return 0;
+	if (!AgentMode[playerid]) return 0;
 	else if (!strcmp(cmd, "/≈¨∑Œ≈∑", true) || !strcmp(cmd, "/cloaking", true))
 	{
 		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
