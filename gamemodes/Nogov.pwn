@@ -171,7 +171,7 @@ public OnGameModeInit()
 	AddHandler("Vehicle",		   	gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pSelectObjectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
-	AddHandler("Agent",             gInitHandler, pConnectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Agent",             gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);

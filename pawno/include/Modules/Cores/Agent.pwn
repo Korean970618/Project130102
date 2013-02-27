@@ -22,6 +22,7 @@
 	gInitHandler_Agent()
 	pConnectHandler_Agent(playerid)
 	pUpdateHandler_Agent(playerid)
+	pTimerTickHandler_Agent(nsec, playerid)
 	pCommandTextHandler_Agent(playerid, cmdtext[])
 	dResponseHandler_Agent(playerid, dialogid, response, listitem, inputtext[])
 	
@@ -34,8 +35,6 @@
 //-----< Variables
 new PositionObject[MAX_PLAYERS],
 	bool:AgentMode[MAX_PLAYERS],
-	Float:AgentMarkPos[MAX_PLAYERS][3],
-	AgentMarkInterior[MAX_PLAYERS],
 	AgentMarkVirtualWorld[MAX_PLAYERS];
 
 
@@ -50,40 +49,50 @@ new PositionObject[MAX_PLAYERS],
 forward gInitHandler_Agent();
 forward pConnectHandler_Agent(playerid);
 forward pUpdateHandler_Agent(playerid);
+forward pTimerTickHandler_Agent(nsec, playerid);
 forward pCommandTextHandler_Agent(playerid, cmdtext[]);
 forward dResponseHandler_Agent(playerid, dialogid, response, listitem, inputtext[]);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Agent()
 {
 	for (new i = 0; i < sizeof(PositionObject); i++)
-		PositionObject[i] = CreateDynamicObject(1239, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, VirtualWorld_Agent(0));
+		PositionObject[i] = CreateDynamicObject(19133, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, VirtualWorld_Agent(0));
 	return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Agent(playerid)
 {
 	AgentMode[playerid] = false;
-	for (new i = 0; i < 3; i++)
-		AgentMarkPos[playerid][i] = 0.0;
-	AgentMarkInterior[playerid] = 0;
 	AgentMarkVirtualWorld[playerid] = 0;
 	return 1;
 }
 //-----< pUpdateHandler >-------------------------------------------------------
 public pUpdateHandler_Agent(playerid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn") || !GetPVarInt_(playerid, "AgentMode")) return 1;
+	if (!GetPVarInt_(playerid, "LoggedIn") || AgentMode[playerid]) return 1;
 	new Float:ppos[3], Float:opos[3], Float:speed;
 	GetPlayerPos(playerid, ppos[0], ppos[1], ppos[2]);
 	GetDynamicObjectPos(PositionObject[playerid], opos[0], opos[1], opos[2]);
 	speed = GetDistanceBetweenPoints(ppos[0], ppos[1], ppos[2], opos[0], opos[1], opos[2]);
-	MoveDynamicObject(PositionObject[playerid], ppos[0], ppos[1], ppos[2], speed);
+	if (speed != 0.0)
+		MoveDynamicObject(PositionObject[playerid], ppos[0], ppos[1], ppos[2], floatround(speed, floatround_ceil) * 10.0);
+	return 1;
+}
+//-----< pTimerTickHandler >----------------------------------------------------
+public pTimerTickHandler_Agent(nsec, playerid)
+{
+	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
+	if (nsec != 100) return 1;
+	new Float:orot[3];
+	GetDynamicObjectRot(PositionObject[playerid], orot[0], orot[1], orot[2]);
+	SetDynamicObjectRot(PositionObject[playerid], orot[0], orot[1], orot[2] + 36.0);
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Agent(playerid, cmdtext[])
 {
-	new cmd[256], idx;
+	new cmd[256], idx,
+		destid;
 	cmd = strtok(cmdtext, idx);
 	
 	if (!GetPVarInt_(playerid, "pAgent")) return 0;
@@ -92,6 +101,7 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		new help[2048];
 		strcat(help, ""C_PASTEL_YELLOW"/에이전트"C_WHITE": 에이전트 모드를 ON/OFF합니다.\n");
 		strcat(help, ""C_PASTEL_YELLOW"/클로킹"C_WHITE": 자신의 모습을 숨깁니다.\n");
+		strcat(help, ""C_PASTEL_YELLOW"/에이전트출두 [플레이어]"C_WHITE": 해당 플레이어에게 출두합니다.");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "에이전트 도움말", help, "닫기", "");
 		return 1;
 	}
@@ -113,19 +123,35 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 	{
 		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
 		{
-			AgentMarkInterior[playerid] = GetPlayerInterior(playerid);
 			AgentMarkVirtualWorld[playerid] = GetPlayerVirtualWorld(playerid);
-			GetPlayerPos(playerid, AgentMarkPos[playerid][0], AgentMarkPos[playerid][1], AgentMarkPos[playerid][2]);
 			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
-			GameTextForPlayer(playerid, "Cloaked", 1, 2);
+			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
+			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
 		}
 		else
 		{
-		    SetPlayerInterior(playerid, AgentMarkInterior[playerid]);
 			SetPlayerVirtualWorld(playerid, AgentMarkVirtualWorld[playerid]);
-			SetPlayerPos(playerid, AgentMarkPos[playerid][0], AgentMarkPos[playerid][1], AgentMarkPos[playerid][2]);
-			GameTextForPlayer(playerid, "Uncloaked", 1, 2);
+			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
 		}
+		return 1;
+	}
+	else if (!strcmp(cmd, "/에이전트출두", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /에이전트출두 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		new Float:x, Float:y, Float:z, Float:a;
+		GetDynamicObjectPos(PositionObject[destid], x, y, z);
+		GetPlayerFacingAngle(destid, a);
+		x += 1.0 * floatsin(-a, degrees);
+		y += 1.0 * floatcos(-a, degrees);
+		SetPlayerPos(playerid, x, y, z);
+		SetPlayerFacingAngle(playerid, a + 180.0);
+		SetCameraBehindPlayer(playerid);
+		SetPlayerInterior(playerid, GetPlayerInterior(destid));
 		return 1;
 	}
 	
