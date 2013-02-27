@@ -520,6 +520,8 @@ stock CreatePlayerDataTable()
 	strcat(str, ",Health float(16,4) NOT NULL default '100.0'");
 	strcat(str, ",Armour float(16,4) NOT NULL default '0.0'");
 	strcat(str, ",Agent int(2) NOT NULL default '0'");
+	strcat(str, ",AgentMode int(1) NOT NULL default '0'");
+	strcat(str, ",AgentVw int(16) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
@@ -567,6 +569,8 @@ stock SavePlayerData(playerid)
 	format(str, sizeof(str), "%s,Health=%.4f", str, GetPVarFloat_(playerid, "pHealth"));
 	format(str, sizeof(str), "%s,Armour=%.4f", str, GetPVarFloat_(playerid, "pArmour"));
 	format(str, sizeof(str), "%s,Agent=%d", str, GetPVarInt_(playerid, "pAgent"));
+	format(str, sizeof(str), "%s,AgentMode=%d", str, GetPVarInt_(playerid, "pAgentMode"));
+	format(str, sizeof(str), "%s,AgentVw=%d", str, GetPVarInt_(playerid, "pAgentVw"));
 	format(str, sizeof(str), "%s WHERE Name='%s'", str, GetPlayerNameA(playerid));
 	mysql_query(str);
 	return 1;
@@ -606,6 +610,8 @@ stock LoadPlayerData(playerid)
 	mysql_fetch_field("Health",		receive); SetPVarFloat_(playerid, "pHealth", floatstr(receive));
 	mysql_fetch_field("Armour",		receive); SetPVarFloat_(playerid, "pArmour", floatstr(receive));
 	mysql_fetch_field("Agent",      receive); SetPVarInt_(playerid, "pAgent", strval(receive));
+	mysql_fetch_field("AgentMode",  receive); SetPVarInt_(playerid, "pAgentMode", strval(receive));
+	mysql_fetch_field("AgentVw",    receive); SetPVarInt_(playerid, "pAgentVw", strval(receive));
 	
 	mysql_free_result();
 	

@@ -20,7 +20,6 @@
 
   < Callbacks >
 	gInitHandler_Agent()
-	pConnectHandler_Agent(playerid)
 	pUpdateHandler_Agent(playerid)
 	pTimerTickHandler_Agent(nsec, playerid)
 	pCommandTextHandler_Agent(playerid, cmdtext[])
@@ -33,9 +32,7 @@
 
 
 //-----< Variables
-new PositionObject[MAX_PLAYERS],
-	bool:AgentMode[MAX_PLAYERS],
-	AgentMarkVirtualWorld[MAX_PLAYERS];
+new PositionObject[MAX_PLAYERS];
 
 
 
@@ -47,7 +44,6 @@ new PositionObject[MAX_PLAYERS],
 
 //-----< Callbacks
 forward gInitHandler_Agent();
-forward pConnectHandler_Agent(playerid);
 forward pUpdateHandler_Agent(playerid);
 forward pTimerTickHandler_Agent(nsec, playerid);
 forward pCommandTextHandler_Agent(playerid, cmdtext[]);
@@ -59,17 +55,10 @@ public gInitHandler_Agent()
 		PositionObject[i] = CreateDynamicObject(19133, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, VirtualWorld_Agent(0));
 	return 1;
 }
-//-----< pConnectHandler >------------------------------------------------------
-public pConnectHandler_Agent(playerid)
-{
-	AgentMode[playerid] = false;
-	AgentMarkVirtualWorld[playerid] = 0;
-	return 1;
-}
 //-----< pUpdateHandler >-------------------------------------------------------
 public pUpdateHandler_Agent(playerid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn") || AgentMode[playerid]) return 1;
+	if (!GetPVarInt_(playerid, "LoggedIn") || GetPVarInt_(playerid, "pAgentMode")) return 1;
 	new Float:ppos[3], Float:opos[3], Float:speed;
 	GetPlayerPos(playerid, ppos[0], ppos[1], ppos[2]);
 	GetDynamicObjectPos(PositionObject[playerid], opos[0], opos[1], opos[2]);
@@ -107,30 +96,31 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
 	{
-		if (AgentMode[playerid])
+		if (GetPVarInt_(playerid, "pAgentMode"))
 		{
-			AgentMode[playerid] = false;
+			DeletePVar_(playerid, "pAgentMode");
 			SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 종료했습니다.");
 			return 1;
 		}
-		AgentMode[playerid] = true;
+		SetPVarInt_(playerid, "pAgentMode", true);
 		SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 시작합니다.");
 		return 1;
 	}
 	
-	if (!AgentMode[playerid]) return 0;
+	if (!GetPVarInt_(playerid, "pAgentMode")) return 0;
 	else if (!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
 	{
 		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
 		{
-			AgentMarkVirtualWorld[playerid] = GetPlayerVirtualWorld(playerid);
+			SetPVarInt_(playerid, "pAgentVw", GetPlayerVirtualWorld(playerid));
 			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
 			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
 			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
 		}
 		else
 		{
-			SetPlayerVirtualWorld(playerid, AgentMarkVirtualWorld[playerid]);
+			SetPlayerVirtualWorld(playerid, GetPVarInt_(playerid, "pAgentVw"));
+			DeletePVar_(playerid, "pAgentVw");
 			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
 		}
 		return 1;
