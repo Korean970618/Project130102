@@ -63,6 +63,7 @@
 #include "Modules/Cores/Item.pwn"
 #include "Modules/Cores/Fly.pwn"
 #include "Modules/Cores/Agent.pwn"
+#include "Modules/Cores/MpList.pwn"
 #include "Modules/Commands/Admin.pwn"
 #include "Modules/Commands/Animation.pwn"
 
@@ -110,8 +111,8 @@
 #define pTakeDamageHandler			  	38
 #define pGiveDamageHandler			  	39
 #define pClickMapHandler				40
-#define pClickTextDrawHandler		   	41
-#define pClickPlayerTextDrawHandler	 	42
+#define pClickTDHandler		   			41
+#define pClickPlayerTDHandler	 		42
 #define pClickPlayerHandler				43
 #define pEditObjectHandler				44
 #define pEditAttachedObjectHandler		45
@@ -127,8 +128,9 @@
 #define aGetPositionHandler				55
 #define dRequestHandler					56
 #define pSelectObjectHandler			57
+#define mplResponseHandler				58
 
-#define MAX_CALLBACKS					57
+#define MAX_CALLBACKS					58
 #define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -149,6 +151,7 @@ new
 
 //-----< Callbacks
 forward OnTimerTick();
+forward OnMpListResponse(playerid, mplistid, selecteditem);
 //-----< main >-----------------------------------------------------------------
 main()
 {
@@ -171,7 +174,8 @@ public OnGameModeInit()
 	AddHandler("Vehicle",		   	gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pSelectObjectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
-	AddHandler("Agent",             gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Agent",				gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
@@ -662,9 +666,9 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pClickTextDrawHandler])
+		if (CallbacksList[i][CBIndex][pClickTDHandler])
 		{
-			format(funcstr, sizeof(funcstr), "%s_%s", "pClickTextDrawHandler", CallbacksList[i][CBName]);
+			format(funcstr, sizeof(funcstr), "%s_%s", "pClickTDHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, clickedid);
 		}
 	return 1;
@@ -674,9 +678,9 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 {
 	new funcstr[64];
 	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pClickPlayerTextDrawHandler])
+		if (CallbacksList[i][CBIndex][pClickPlayerTDHandler])
 		{
-			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerTextDrawHandler", CallbacksList[i][CBName]);
+			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerTDHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, playertextid);
 		}
 	return 1;
@@ -870,6 +874,18 @@ public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:f
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pSelectObjectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddddfff", playerid, type, objectid, modelid, fX, fY, fZ);
+		}
+	return 1;
+}
+//-----< OnMpListResponse >-----------------------------------------------------
+public OnMpListResponse(playerid, mplistid, selecteditem)
+{
+	new funcstr[64];
+	for (new i = 0; i <= CallbacksIndex; i++)
+		if (CallbacksList[i][CBIndex][mplResponseHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "mplResponseHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "ddd", playerid, mplistid, selecteditem);
 		}
 	return 1;
 }
