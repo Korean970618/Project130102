@@ -26,6 +26,7 @@
 	dResponseHandler_Agent(playerid, dialogid, response, listitem, inputtext[])
 	
   < Functions >
+	AgentLog(playerid, result[])
 
 */
 
@@ -81,6 +82,7 @@ public pTimerTickHandler_Agent(nsec, playerid)
 public pCommandTextHandler_Agent(playerid, cmdtext[])
 {
 	new cmd[256], idx,
+		str[256],
 		destid;
 	cmd = strtok(cmdtext, idx);
 	
@@ -100,10 +102,12 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		{
 			DeletePVar_(playerid, "pAgentMode");
 			SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 종료했습니다.");
+			AgentLog(playerid, "에이전트 모드를 종료했습니다.");
 			return 1;
 		}
 		SetPVarInt_(playerid, "pAgentMode", true);
 		SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 시작합니다.");
+		AgentLog(playerid, "에이전트 모드를 시작합니다.");
 		return 1;
 	}
 	
@@ -116,12 +120,14 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
 			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
 			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
+			AgentLog(playerid, "클로킹하였습니다.");
 		}
 		else
 		{
 			SetPlayerVirtualWorld(playerid, GetPVarInt_(playerid, "pAgentVw"));
 			DeletePVar_(playerid, "pAgentVw");
 			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
+			AgentLog(playerid, "클로킹을 해제했습니다.");
 		}
 		return 1;
 	}
@@ -142,6 +148,8 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		SetPlayerFacingAngle(playerid, a + 180.0);
 		SetCameraBehindPlayer(playerid);
 		SetPlayerInterior(playerid, GetPlayerInterior(destid));
+		format(str, sizeof(str), "%s님에게 출두했습니다.", GetPlayerNameA(destid));
+		AgentLog(playerid, str);
 		return 1;
 	}
 	
@@ -157,4 +165,24 @@ public dResponseHandler_Agent(playerid, dialogid, response, listitem, inputtext[
 
 
 //-----< Functions
+//-----< AgentLog >-------------------------------------------------------------
+stock AgentLog(playerid, result[])
+{
+	new File:fHandle,
+		str[256],
+		year, month, day,
+		hour, minute, second;
+	getdate(year, month, day);
+	format(str, sizeof(str), "AgentLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	fHandle = fopen(str, io_append);
+	if (fHandle)
+	{
+		gettime(hour, minute, second);
+		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
+		fwrite(fHandle, str);
+		for (new i = 0, t = strlen(result); i < t; i++)
+			fputchar(fHandle, result[i], false);
+	}
+	fclose(fHandle);
+}
 //-----<  >---------------------------------------------------------------------
