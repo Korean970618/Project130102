@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/26
+ *		Update:		2013/02/27
  *
  *
  */
@@ -26,6 +26,10 @@
 	75: PropertyData Core
 	100: Item Core
 	125: Agent Core
+
+  < MpList List >
+	0: Nogov Main Script
+	25: Admin Command
 
   < VirtualWorld List >
 	0: Nogov Main Script
@@ -177,7 +181,7 @@ public OnGameModeInit()
 	AddHandler("Agent",				gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	// Commands
-	AddHandler("Admin",				pCommandTextHandler, dResponseHandler);
+	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);

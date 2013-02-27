@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/25
+ *		Update:		2013/02/27
  *
  *
  */
@@ -91,6 +91,8 @@
 	native GivePlayerDamage(playerid, Float:amount);
 	native TextDrawSetPosition(text, Float:x, Float:y);
 	native Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
+	native GetWeaponObjectModelID(weaponid);
+	native GetWeaponNameA(weaponid);
 
 */
 
@@ -103,6 +105,7 @@
 
 //-----< Variables
 new DialogData[MAX_PLAYERS][100];
+new MpListData[MAX_PLAYERS][100];
 enum eAttachedObjectInfo
 {
 	aoModel,
@@ -166,6 +169,7 @@ forward OnDialogRequest(playerid, dialogid, olddialogid);
 
 
 //-----< Defines
+#define MAX_WEAPONS             47
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
 #define chEmpty				 	" "
@@ -1285,5 +1289,30 @@ stock TextDrawUpdate(text)
 stock Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2)
 {
 	return floatadd(floatadd(floatsqroot(floatpower(floatsub(x1, x2), 2)), floatsqroot(floatpower(floatsub(y1, y2), 2))), floatsqroot(floatpower(floatsub(z1, z2), 2)));
+}
+//-----< GetWeaponObjectModelID >-----------------------------------------------
+stock GetWeaponObjectModelID(weaponid)
+{
+	switch (weaponid)
+	{
+	    case 1:			return 331;
+	    case 2..8:		return 331 + weaponid;
+	    case 9:			return 341;
+	    case 10..15:	return 311 + weaponid;
+	    case 16..18:	return 326 + weaponid;
+	    case 22..29:	return 324 + weaponid;
+	    case 30..31:	return 325 + weaponid;
+	    case 32:		return 372;
+	    case 33..45:	return 324 + weaponid;
+	    case 46:		return 371;
+	}
+	return 1575;
+}
+//-----< GetWeaponNameA >-------------------------------------------------------
+stock GetWeaponNameA(weaponid)
+{
+	new wname[128];
+	GetWeaponName(weaponid, wname, sizeof(wname));
+	return wname;
 }
 //-----<  >---------------------------------------------------------------------

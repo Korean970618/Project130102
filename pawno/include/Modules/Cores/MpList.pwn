@@ -152,7 +152,7 @@ public pClickPlayerTDHandler_MpList(playerid, PlayerText:playertextid)
 	{
 		if (playertextid == MplSelectionItems[playerid][x])
 		{
-			CallLocalFunction("OnMpListResponse", "ddd", playerid, MplId[playerid], x + (SELECTION_MPLITEMS * MplPage[playerid]));
+			CallLocalFunction("OnMpListResponse", "ddd", playerid, MplId[playerid], MplPageItems[playerid][x + (SELECTION_MPLITEMS * MplPage[playerid])]);
 			PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0);
 			MplDestroySelectionMenu(playerid);
 			CancelSelectTextDraw(playerid);
@@ -244,7 +244,7 @@ stock PlayerText:MplCreatePlayerHeaderTextDraw(playerid, Float:Xpos, Float:Ypos,
 stock PlayerText:MplCreatePlayerBackground(playerid, Float:Xpos, Float:Ypos, Float:Width, Float:Height)
 {
 	new PlayerText:txtBackground = CreatePlayerTextDraw(playerid, Xpos, Ypos,
-	"											~n~");
+	"                                            ~n~");
 	PlayerTextDrawUseBox(playerid, txtBackground, 1);
 	PlayerTextDrawBoxColor(playerid, txtBackground, 0x00000099);
 	PlayerTextDrawLetterSize(playerid, txtBackground, 5.0, 5.0);

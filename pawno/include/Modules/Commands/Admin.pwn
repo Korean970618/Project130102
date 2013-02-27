@@ -21,6 +21,7 @@
   < Callbacks >
 	pCommandTextHandler_Admin(playerid, cmdtext[])
 	dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[])
+	mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 
   < Functions >
 	SendAdminMessage(color, message[], level=1)
@@ -39,13 +40,15 @@ new Float:Mark[MAX_PLAYERS][4],
 
 
 //-----< Defines
-#define DialogId_Admin(%0)		  (50+%0)
+#define DialogId_Admin(%0)			(50+%0)
+#define MpListId_Admin(%0)      	(25+%0)
 
 
 
 //-----< Callbacks
 forward pCommandTextHandler_Admin(playerid, cmdtext[]);
 forward dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[]);
+forward mplResponseHandler_Admin(playerid, mplistid, selecteditem);
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Admin(playerid, cmdtext[])
 {
@@ -59,10 +62,19 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 		new help[2048];
-		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n/건물생성, /건물설정, /아이템생성, /아이템제거\n\n");
-		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /텍스트드로우, /오브젝트선택\n\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n\
+		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\
+		/무기\n\
+		\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n\
+		/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\
+		\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n\
+		/건물생성, /건물설정, /아이템생성, /아이템제거\n\
+		\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n\
+		/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /텍스트드로우, /오브젝트선택\n\
+		\n");
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "관리자 도움말", help, "닫기", "");
 		return 1;
 	}
@@ -254,6 +266,25 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		format(str, sizeof(str), "%s님을 녹였습니다.", GetPlayerNameA(destid));
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 녹았습니다.");
+		return 1;
+	}
+	else if (!strcmp(cmd, "/무기", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /무기 [플레이어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		new list[MAX_WEAPONS], items;
+		for (new i = 0; i < MAX_WEAPONS; i++)
+			if (GetWeaponObjectModelID(i) != 1575)
+			{
+				list[items] = GetWeaponObjectModelID(i);
+				items++;
+			}
+		MpListData[playerid][0] = destid;
+		ShowPlayerMpList(playerid, MpListId_Admin(0), "Weapons", list, items);
 		return 1;
 	}
 	//
@@ -877,6 +908,41 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			}
 			OnDialogResponse(playerid, DialogId_Admin(10), true, mode, chEmpty);
 		}
+		case 16:
+		{
+		    if (response)
+		    {
+		        GivePlayerWeapon(MpListData[playerid][0], MpListData[playerid][1], strval(inputtext));
+		        format(str, sizeof(str), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+		        SendClientMessage(playerid, COLOR_WHITE, str);
+		        format(str, sizeof(str), "%s님께서 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetPlayerNameA(playerid), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+                SendClientMessage(MpListData[playerid][0], COLOR_WHITE, str);
+		    }
+		    else
+		    {
+		        format(str, sizeof(str), "/무기 %d", MpListData[playerid][0]);
+		        OnPlayerCommandText(playerid, str);
+		    }
+		}
+	}
+	return 1;
+}
+//-----< mplResponseHandler >---------------------------------------------------
+public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
+{
+	new str[256];
+	switch (MpListId_Admin(0) - mplistid)
+	{
+	    case 0:
+	    {
+	        for (new i = 0; i < MAX_WEAPONS; i++)
+	            if (GetWeaponObjectModelID(i) == selecteditem)
+	            {
+	                MpListData[playerid][1] = i;
+	                format(str, sizeof(str), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
+	                ShowPlayerDialog(playerid, DialogId_Admin(16), DIALOG_STYLE_INPUT, ""C_BLUE"무기", str, "확인", "뒤로");
+	            }
+	    }
 	}
 	return 1;
 }
