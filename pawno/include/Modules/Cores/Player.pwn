@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/03/05
+ *		Update:		2013/03/25
  *
  *
  */
@@ -24,6 +24,7 @@
 	pDisconnectHandler_Player(playerid)
 	pRequestClassHandler_Player(playerid, classid)
 	pRequestSpawnHandler_Player(playerid)
+	aConnectHandler_Player(playerid)
 	pUpdateHandler_Player(playerid)
 	pDeathHandler_Player(playerid, killerid, reason)
 	pSpawnHandler_Player(playerid)
@@ -78,6 +79,7 @@ forward pConnectHandler_Player(playerid);
 forward pDisconnectHandler_Player(playerid);
 forward pRequestClassHandler_Player(playerid, classid);
 forward pRequestSpawnHandler_Player(playerid);
+forward aConnectHandler_Player(playerid);
 forward pUpdateHandler_Player(playerid);
 forward pDeathHandler_Player(playerid, killerid, reason);
 forward pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys);
@@ -159,13 +161,19 @@ public pRequestClassHandler_Player(playerid, classid)
 {
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-		PlayAudioStreamForPlayer(playerid, GetGVarString("gIntroMusic"));
 		SetPlayerTime(playerid, 0, 0);
 		SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
 		SetPlayerCameraPos(playerid, -2955.9641, 1280.6005, 30.3001);
 		SetPlayerCameraLookAt(playerid, -2862.5815, 1182.5625, 9.6069);
 		ShowPlayerLoginDialog(playerid, false);
 	}
+	return 1;
+}
+//-----< aConnectHandler >------------------------------------------------------
+public aConnectHandler_Player(playerid)
+{
+	if (!GetPVarInt_(playerid, "LoggedIn"))
+		PlayAudioStreamForPlayer(playerid, GetGVarString("IntroMusic"));
 	return 1;
 }
 //-----< pRequestSpawnHandler >-------------------------------------------------
