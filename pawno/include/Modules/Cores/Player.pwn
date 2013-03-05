@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/25
+ *		Update:		2013/03/05
  *
  *
  */
@@ -69,7 +69,6 @@ new bool:HeavyWalking[MAX_PLAYERS],
 
 //-----< Defines
 #define DialogId_Player(%0)			(25+%0)
-#define INTRO_MUSIC					"cfile9.uf.tistory.com/original/135DD247510CA50F37CEE8"
 
 
 
@@ -160,7 +159,7 @@ public pRequestClassHandler_Player(playerid, classid)
 {
 	if (!GetPVarInt_(playerid, "LoggedIn"))
 	{
-		PlayAudioStreamForPlayer(playerid, "http://"INTRO_MUSIC);
+		PlayAudioStreamForPlayer(playerid, GetGVarString("gIntroMusic"));
 		SetPlayerTime(playerid, 0, 0);
 		SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
 		SetPlayerCameraPos(playerid, -2955.9641, 1280.6005, 30.3001);
@@ -609,9 +608,9 @@ stock LoadPlayerData(playerid)
 	mysql_fetch_field("Power",		receive); SetPVarInt_(playerid, "pPower", strval(receive));
 	mysql_fetch_field("Health",		receive); SetPVarFloat_(playerid, "pHealth", floatstr(receive));
 	mysql_fetch_field("Armour",		receive); SetPVarFloat_(playerid, "pArmour", floatstr(receive));
-	mysql_fetch_field("Agent",      receive); SetPVarInt_(playerid, "pAgent", strval(receive));
+	mysql_fetch_field("Agent",		receive); SetPVarInt_(playerid, "pAgent", strval(receive));
 	mysql_fetch_field("AgentMode",  receive); SetPVarInt_(playerid, "pAgentMode", strval(receive));
-	mysql_fetch_field("AgentVw",    receive); SetPVarInt_(playerid, "pAgentVw", strval(receive));
+	mysql_fetch_field("AgentVw",	receive); SetPVarInt_(playerid, "pAgentVw", strval(receive));
 	
 	mysql_free_result();
 	
@@ -710,8 +709,8 @@ stock IdBan(playerid, reason[])
 	format(str, sizeof(str), "INSERT INTO bandata (ID,IP,Name,Reason,Date,Type)");
 	format(str, sizeof(str), "%s VALUES ('%s',' ','%s','%d년 %d월 %d일',1)", str, GetPlayerNameA(playerid), escape(reason), year, month, day);
 	mysql_query(str);
-    format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
-    ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 1);
+	format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
+	ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 1);
 	Kick(playerid);
 	return 1;
 }
@@ -725,7 +724,7 @@ stock IpBan(playerid, reason[])
 	format(str, sizeof(str), "%s VALUES ('%s','%s','%s','%d년 %d월 %d일',2)", str, GetPlayerNameA(playerid), GetPlayerIpA(playerid), escape(reason), year, month, day);
 	mysql_query(str);
 	format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
-    ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 2);
+	ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 2);
 	Kick(playerid);
 	return 1;
 }
@@ -735,7 +734,7 @@ stock ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 	new str[512], typetext[64];
 	if (type == 1) typetext = "ID";
 	else if (type == 2) typetext = "IP";
-    format(str, sizeof(str), "\
+	format(str, sizeof(str), "\
 	사용중인 "C_RED"%s"C_WHITE"는 다음과 같은 이유로 차단되어 있습니다.\n\
 	\n\
 	"C_PASTEL_BLUE"이름: "C_WHITE"%s\n\

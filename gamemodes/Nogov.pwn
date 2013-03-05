@@ -13,7 +13,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/27
+ *		Update:		2013/03/05
  *
  *
  */
@@ -68,6 +68,7 @@
 #include "Modules/Cores/Fly.pwn"
 #include "Modules/Cores/Agent.pwn"
 #include "Modules/Cores/MpList.pwn"
+#include "Modules/Cores/GVar.pwn"
 #include "Modules/Commands/Admin.pwn"
 #include "Modules/Commands/Animation.pwn"
 
@@ -180,6 +181,7 @@ public OnGameModeInit()
 	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
 	AddHandler("Agent",				gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
+	AddHandler("GVar",				gInitHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
