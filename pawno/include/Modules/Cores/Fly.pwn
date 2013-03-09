@@ -232,7 +232,7 @@ stock CancelFlyMode(playerid)
 	new Float:X, Float:Y, Float:Z;
 	GetPlayerCameraPos(playerid, X, Y, Z);
 
-	DeletePVar_(playerid, "FlyMode");
+	DeletePVar(playerid, "FlyMode");
 	CancelEdit(playerid);
 	TogglePlayerSpectating(playerid, false);
 
@@ -252,7 +252,7 @@ stock FlyMode(playerid)
 	TogglePlayerSpectating(playerid, true);
 	AttachCameraToPlayerObject(playerid, NoclipData[playerid][nFlyobject]);
 
-	SetPVarInt_(playerid, "FlyMode", 1);
+	SetPVarInt(playerid, "FlyMode", 1);
 	NoclipData[playerid][nCameramode] = CAMERA_MODE_FLY;
 	return 1;
 }

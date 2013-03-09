@@ -101,7 +101,7 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 				if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEn])
 				{
-					if (PropertyInfo[i][pLocked] && !GetPVarInt_(playerid, "AdminDuty"))
+					if (PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
 						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
 					SetPlayerPos(playerid, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2]);
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEx][3]);
@@ -111,7 +111,7 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 				else if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEx])
 				{
-					if (PropertyInfo[i][pLocked] && !GetPVarInt_(playerid, "AdminDuty"))
+					if (PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
 						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
 					SetPlayerPos(playerid, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2]);
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEn][3]);
@@ -133,7 +133,7 @@ public pCommandTextHandler_Property(playerid, cmdtext[])
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "건물 도움말", "/건물설정", "닫기", "");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/건물설정", true) && !GetPVarInt_(playerid, "pAdmin"))
+	else if (!strcmp(cmd, "/건물설정", true) && !GetPVarInt(playerid, "pAdmin"))
 	{
 		for (new i = 0, t = GetMaxProperties(); i < t; i++)
 			if (IsValidPropertyID(i) && !strcmp(PropertyInfo[i][pOwnername], GetPlayerNameA(playerid), true) && strlen(PropertyInfo[i][pOwnername]))
@@ -163,7 +163,7 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 	{
 		case 0:
 			if (response)
-				if (!GetPVarInt_(playerid, "pAdmin") && (listitem >= 1 && listitem <= 4 || listitem >= 8 && listitem <= 10))
+				if (!GetPVarInt(playerid, "pAdmin") && (listitem >= 1 && listitem <= 4 || listitem >= 8 && listitem <= 10))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "관리자만 설정할 수 있는 항목입니다.");
 					ShowPropertyModifier(playerid, propid);
@@ -462,7 +462,7 @@ stock ShowPropertyModifier(playerid, propid)
 	}
 	
 	format(str, sizeof(str), "건물 이름:\t\t%s", PropertyModify[playerid][pPropname]);
-	if (!GetPVarInt_(playerid, "pAdmin")) strcat(str, C_GREY);
+	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
 	format(str, sizeof(str), "%s\n주인 이름:\t\t%s", str, PropertyModify[playerid][pOwnername]);
 	format(str, sizeof(str), "%s\n입구 좌표:\t\t%.4f,%.4f,%.4f / %.4f / %d / %d", str,
 		PropertyModify[playerid][pPosEn][0], PropertyModify[playerid][pPosEn][1], PropertyModify[playerid][pPosEn][2],
@@ -476,16 +476,16 @@ stock ShowPropertyModifier(playerid, propid)
 	format(str, sizeof(str), "%s\n출구 픽업:\t\t", str);
 	if (PropertyModify[playerid][pShowPickupEx]) strcat(str, "보임");
 	else strcat(str, "숨김");
-	if (!GetPVarInt_(playerid, "pAdmin")) strcat(str, C_WHITE);
+	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
 	format(str, sizeof(str), "%s\n잠금:\t\t\t", str);
 	if (PropertyModify[playerid][pLocked]) strcat(str, "잠금");
 	else strcat(str, "열림");
 	format(str, sizeof(str), "%s\n메모:\t\t\t%s", str, PropertyModify[playerid][pMemo]);
-	if (!GetPVarInt_(playerid, "pAdmin")) strcat(str, C_GREY);
+	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
 	strcat(str, "\n> 입구로 이동하기");
 	strcat(str, "\n> 출구로 이동하기");
 	strcat(str, "\n> 건물 제거하기");
-	if (!GetPVarInt_(playerid, "pAdmin")) strcat(str, C_WHITE);
+	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
 	strcat(str, "\n> 저장하기");
 	strcat(str, "\n> 취소하기");
 	

@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/03/25
+ *		Update:		2013/03/09
  *
  *
  */
@@ -32,7 +32,7 @@
 	dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
 	pTimerTickHandler_Player(nsec, playerid)
 	pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
-	
+
   < Functions >
 	CreatePlayerDataTable()
 	SavePlayerData(playerid)
@@ -44,6 +44,9 @@
 	IdBan(playerid, reason[])
 	IpBan(playerid, reason[])
 	ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
+	SetPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[])
+	InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[], encryption[]="")
+	DeletePlayerData(playerid, varname[])
 
 */
 
@@ -53,7 +56,18 @@
 
 
 
+//-----< Pre-Defines
+#define MAX_PLAYER_DATAS	30
+
+
+
 //-----< Variables
+enum ePlayerData
+{
+	pdVarname[64],
+	pdVartype,
+	bool:pdSave
+}
 new bool:HeavyWalking[MAX_PLAYERS],
 	bool:Tired[MAX_PLAYERS],
 	bool:TiredWalking[MAX_PLAYERS],
@@ -64,7 +78,9 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	DeadInterior[MAX_PLAYERS],
 	DeadVirtualWorld[MAX_PLAYERS],
 	DeadAnim[MAX_PLAYERS],
-	KillerId[MAX_PLAYERS];
+	KillerId[MAX_PLAYERS],
+	PlayerData[MAX_PLAYERS][MAX_PLAYER_DATAS][ePlayerData],
+	NumSaveDatas[MAX_PLAYERS];
 
 
 
@@ -110,22 +126,29 @@ public pConnectHandler_Player(playerid)
 	DeadVirtualWorld[playerid] = 0;
 	DeadAnim[playerid] = 0;
 	KillerId[playerid] = INVALID_PLAYER_ID;
+	for (new i = 0; i < MAX_PLAYER_DATAS; i++)
+	{
+		strcpy(PlayerData[playerid][i][pdVarname], chNullString);
+		PlayerData[playerid][i][pdVartype] = PLAYER_VARTYPE_NONE;
+		PlayerData[playerid][i][pdSave] = false;
+	}
+	NumSaveDatas[playerid] = 0;
 
 	new str[512], receive[4][128];
 	for (new i; i < 20; i++)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
-	if (!GetPVarInt_(playerid, "LoggedIn"))
+	if (!GetPVarInt(playerid, "LoggedIn"))
 	{
-		format(str, sizeof(str), "SELECT Password From playerdata WHERE Name='%s'", GetPlayerNameA(playerid));
+		format(str, sizeof(str), "SELECT * From playerdata WHERE Name='%s' And Varname='pPassword'", GetPlayerNameA(playerid));
 		mysql_query(str);
 		mysql_store_result();
 		if (mysql_num_rows() > 0)
 		{
-			SetPVarInt_(playerid, "Registered", true);
+			SetPVarInt(playerid, "Registered", true);
 		}
 		mysql_free_result();
 	}
-	
+
 	format(str, sizeof(str), "SELECT * FROM bandata WHERE (Name='%s' AND IP=' ') OR IP='%s'", GetPlayerNameA(playerid), GetPlayerIpA(playerid));
 	mysql_query(str);
 	mysql_store_result();
@@ -139,12 +162,13 @@ public pConnectHandler_Player(playerid)
 		ShowPlayerBanDialog(playerid, receive[0], receive[1], receive[2], strval(receive[3]));
 	}
 	mysql_free_result();
-	
+
 	return 1;
 }
 //-----< pDisconnectHandler >---------------------------------------------------
 public pDisconnectHandler_Player(playerid)
 {
+	SavePlayerData(playerid);
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
 		if (PlunderId[i] == playerid)
 		{
@@ -159,7 +183,7 @@ public pDisconnectHandler_Player(playerid)
 //-----< pRequestClassHandler >-------------------------------------------------
 public pRequestClassHandler_Player(playerid, classid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn"))
+	if (!GetPVarInt(playerid, "LoggedIn"))
 	{
 		SetPlayerTime(playerid, 0, 0);
 		SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
@@ -172,14 +196,14 @@ public pRequestClassHandler_Player(playerid, classid)
 //-----< aConnectHandler >------------------------------------------------------
 public aConnectHandler_Player(playerid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn"))
+	if (!GetPVarInt(playerid, "LoggedIn"))
 		PlayAudioStreamForPlayer(playerid, GetGVarString("IntroMusic"));
 	return 1;
 }
 //-----< pRequestSpawnHandler >-------------------------------------------------
 public pRequestSpawnHandler_Player(playerid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn"))
+	if (!GetPVarInt(playerid, "LoggedIn"))
 		ShowPlayerLoginDialog(playerid, false);
 	else
 		return 1;
@@ -192,13 +216,13 @@ public pUpdateHandler_Player(playerid)
 
 	new Float:x, Float:y, Float:z,
 		keys, ud, lr;
-	if (IsPlayerInAnyVehicle(playerid) || !GetPVarInt_(playerid, "LoggedIn")) return 1;
-	
+	if (IsPlayerInAnyVehicle(playerid) || !GetPVarInt(playerid, "LoggedIn")) return 1;
+
 	GetPlayerVelocity(playerid, x, y, z);
 	GetPlayerKeys(playerid, keys, ud, lr);
-	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt_(playerid, "pWeight"))) * 100,
-		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt_(playerid, "pPower"))) * 100;
-	
+	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt(playerid, "pWeight"))) * 100,
+		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt(playerid, "pPower"))) * 100;
+
 	if (bag > 75.0 || hand > 75.0)
 	{
 		if (z > 0.0)
@@ -216,17 +240,17 @@ public pUpdateHandler_Player(playerid)
 			ClearAnimations(playerid, true);
 		}
 	}
-	
+
 	return 1;
 }
 //-----< pDeathHandler >--------------------------------------------------------
 public pDeathHandler_Player(playerid, killerid, reason)
 {
-	SetPVarInt_(playerid, "Spawned", false);
+	SetPVarInt(playerid, "Spawned", false);
 	killerid = KillerId[playerid];
 	KillerId[playerid] = INVALID_PLAYER_ID;
-	if (!GetPVarInt_(playerid, "LoggedIn")) return 0;
-	
+	if (!GetPVarInt(playerid, "LoggedIn")) return 0;
+
 	PlunderTime[playerid] = 60;
 	Dead[playerid] = true;
 	GetPlayerPos(playerid, DeadPos[playerid][0], DeadPos[playerid][1], DeadPos[playerid][2]);
@@ -249,7 +273,7 @@ public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 	if (newkeys == KEY_SECONDARY_ATTACK)
 	{
 		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-			if (IsPlayerConnected(i) && GetPVarInt_(i, "LoggedIn") && Dead[i])
+			if (IsPlayerConnected(i) && GetPVarInt(i, "LoggedIn") && Dead[i])
 			{
 				new Float:x, Float:y, Float:z;
 				GetPlayerPos(i, x, y, z);
@@ -266,29 +290,29 @@ public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_Player(playerid)
 {
-	SetPVarInt_(playerid, "Spawned", true);
+	SetPVarInt(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
-	
-	if (!GetPVarInt_(playerid, "FirstSpawn"))
+
+	if (!GetPVarInt(playerid, "FirstSpawn"))
 	{
-		SetPVarInt_(playerid, "FirstSpawn", true);
-		SetPlayerSkin(playerid, GetPVarInt_(playerid, "pSkin"));
+		SetPVarInt(playerid, "FirstSpawn", true);
+		SetPlayerSkin(playerid, GetPVarInt(playerid, "pSkin"));
 		SetPlayerTeam(playerid, 0);
-		SetPlayerHealth(playerid, GetPVarFloat_(playerid, "pHealth"));
-		SetPlayerArmour(playerid, GetPVarFloat_(playerid, "pArmour"));
+		SetPlayerHealth(playerid, GetPVarFloat(playerid, "pHealth"));
+		SetPlayerArmour(playerid, GetPVarFloat(playerid, "pArmour"));
 	}
-	
-	if (GetPVarInt_(playerid, "RestoreSpawn"))
+
+	if (GetPVarInt(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
-		split(GetPVarString_(playerid, "pLastPos"), receive, ',');
+		split(GetPVarString(playerid, "pLastPos"), receive, ',');
 		SetPlayerPos(playerid, floatstr(receive[0]), floatstr(receive[1]), floatstr(receive[2]));
 		SetPlayerFacingAngle(playerid, floatstr(receive[3]));
 		SetPlayerInterior(playerid, strval(receive[4]));
 		SetPlayerVirtualWorld(playerid, strval(receive[5]));
-		SetPVarInt_(playerid, "RestoreSpawn", false);
+		SetPVarInt(playerid, "RestoreSpawn", false);
 	}
-	
+
 	if (Dead[playerid])
 	{
 		SetPlayerPos(playerid, DeadPos[playerid][0], DeadPos[playerid][1], DeadPos[playerid][2]);
@@ -306,8 +330,8 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 	new cmd[256], idx,
 		str[256];
 	cmd = strtok(cmdtext, idx);
-	
-	if (!GetPVarInt_(playerid, "LoggedIn")) return 0;
+
+	if (!GetPVarInt(playerid, "LoggedIn")) return 0;
 	else if (!strcmp(cmd, "/비번변경", true) || !strcmp(cmd, "/암호변경", true))
 	{
 		format(str, sizeof(str), "\
@@ -339,32 +363,37 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 	switch (dialogid - DialogId_Player(0))
 	{
 		case 0:
-			if (!GetPVarInt_(playerid, "Registered"))
+			if (!GetPVarInt(playerid, "Registered"))
 			{
 				if (strlen(inputtext) >= 8)
 				{
 					new year, month, day;
 					getdate(year, month, day);
 					format(str, sizeof(str), "%04d%02d%02d", year, month, day);
-					SetPVarInt_(playerid, "pRegDate", strval(str));
-					format(str, sizeof(str), "INSERT INTO playerdata (Name,Password,IP) VALUES ('%s',SHA1('%s'),'%s')", GetPlayerNameA(playerid), inputtext, GetPlayerIpA(playerid));
-					mysql_query(str);
-					SetPVarInt_(playerid, "Registered", true);
+					InsertPlayerData(playerid, "pRegDate", PLAYER_VARTYPE_STRING, 0, 0.0, str);
+					InsertPlayerData(playerid, "pPassword", PLAYER_VARTYPE_STRING, 0, 0.0, inputtext, "SHA1");
+					InsertPlayerData(playerid, "pIP", PLAYER_VARTYPE_STRING, 0, 0.0, GetPlayerIpA(playerid));
+					InsertPlayerData(playerid, "pSkin", PLAYER_VARTYPE_INT, 29, 0.0, chNullString);
+					InsertPlayerData(playerid, "pWeight", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
+					InsertPlayerData(playerid, "pPower", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
+					InsertPlayerData(playerid, "pHealth", PLAYER_VARTYPE_FLOAT, 0, 100.0, chNullString);
+					
+					SetPVarInt(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
 				}
 				else
 					ShowPlayerLoginDialog(playerid, true);
 			}
-			else if (!GetPVarInt_(playerid, "LoggedIn"))
+			else if (!GetPVarInt(playerid, "LoggedIn"))
 			{
-				format(str, sizeof(str), "SELECT ID FROM playerdata WHERE Name='%s' AND Password=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
+				format(str, sizeof(str), "SELECT * FROM playerdata WHERE Name='%s' AND Varname='pPassword' And Value=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
 				mysql_query(str);
 				mysql_store_result();
 				if (mysql_num_rows() == 1)
 				{
-					SetPVarInt_(playerid, "LoggedIn", true);
+					SetPVarInt(playerid, "LoggedIn", true);
 					LoadPlayerData(playerid);
-					if (strlen(GetPVarString_(playerid, "pLastPos")) > 10)
+					if (strlen(GetPVarString(playerid, "pLastPos")) > 10)
 						ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 					else
 						SpawnPlayer_(playerid);
@@ -377,8 +406,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			if (response)
 				if (strlen(inputtext) >= 8)
 				{
-					format(str, sizeof(str), "UPDATE playerdata SET Password=SHA1('%s') WHERE Name='%s'", inputtext, GetPlayerNameA(playerid));
-					mysql_query(str);
+					InsertPlayerData(playerid, "pPassword", PLAYER_VARTYPE_STRING, 0, 0.0, inputtext, "SHA1");
 					SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
 				}
 				else
@@ -394,7 +422,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 		case 2:
 		{
 			if (listitem == 1)
-				SetPVarInt_(playerid, "RestoreSpawn", true);
+				SetPVarInt(playerid, "RestoreSpawn", true);
 			SpawnPlayer_(playerid);
 		}
 		case 3: return Kick(playerid);
@@ -413,7 +441,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 		}
 		case 5:
 		{
-			if (PlunderTime[playerid] && !GetPVarInt_(playerid, "pAdmin") || !GetPVarInt_(playerid, "Spawned"))
+			if (PlunderTime[playerid] && !GetPVarInt(playerid, "pAdmin") || !GetPVarInt(playerid, "Spawned"))
 				return ShowPlayerPlunderStatus(playerid);
 			Dead[playerid] = false;
 			PlunderTime[playerid] = 0;
@@ -432,7 +460,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 //-----< pTimerTickHandler >----------------------------------------------------
 public pTimerTickHandler_Player(nsec, playerid)
 {
-	if (!IsPlayerConnected(playerid) || !GetPVarInt_(playerid, "LoggedIn")) return 1;
+	if (!IsPlayerConnected(playerid) || !GetPVarInt(playerid, "LoggedIn")) return 1;
 
 	if (nsec == 1000)
 	{
@@ -442,18 +470,18 @@ public pTimerTickHandler_Player(nsec, playerid)
 			Float:health, Float:armour,
 			str[64];
 
-		if (GetPVarInt_(playerid, "Spawned"))
+		if (GetPVarInt(playerid, "Spawned"))
 		{
 			GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 			GetPlayerFacingAngle(playerid, pos[3]);
 			format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%d,%d", pos[0], pos[1], pos[2], pos[3], interior, virtualworld);
-			SetPVarString_(playerid, "pLastPos", str);
+			SetPVarString(playerid, "pLastPos", str);
 			GetPlayerHealth(playerid, health);
-			SetPVarFloat_(playerid, "pHealth", health);
+			SetPVarFloat(playerid, "pHealth", health);
 			GetPlayerArmour(playerid, armour);
-			SetPVarFloat_(playerid, "pArmour", armour);
+			SetPVarFloat(playerid, "pArmour", armour);
 		}
-		
+
 		if (PlunderTime[playerid])
 		{
 			PlunderTime[playerid]--;
@@ -466,8 +494,6 @@ public pTimerTickHandler_Player(nsec, playerid)
 				default: ApplyAnimation(playerid, "CRACK", "crckidle4", 4.1, 0, 1, 1, 1, 1, true);
 			}
 		}
-		
-		SavePlayerData(playerid);
 	}
 	return 1;
 }
@@ -477,14 +503,14 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 	new Float:damage = amount,
 		Float:health;
 	GetPlayerHealth(playerid, health);
-	
+
 	if (weaponid == 14)
 		damage = 0.0;
 	else if (weaponid == 34)
 		damage = health;
 	else if (IsMeleeWeapon(weaponid))
-		damage = (amount / 100) * GetPVarInt_(issuerid, "pPower");
-	
+		damage = (amount / 100) * GetPVarInt(issuerid, "pPower");
+
 	if (health - damage < 1)
 		KillerId[playerid] = issuerid;
 	GivePlayerDamage(playerid, damage);
@@ -500,35 +526,11 @@ stock CreatePlayerDataTable()
 {
 	new str[3840];
 	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS playerdata (");
-	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
-	strcat(str, ",Name varchar(32) NOT NULL default ' '");
-	strcat(str, ",Password varchar(128) NOT NULL  default ' '");
-	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
-	strcat(str, ",RegDate int(8) NOT NULL default '0'");
-	strcat(str, ",Level int(5) NOT NULL default '0'");
-	strcat(str, ",Radio int(5) NOT NULL default '0'");
-	strcat(str, ",Origin varchar(64) NOT NULL  default ' '");
-	strcat(str, ",Money int(10) NOT NULL default '0'");
-	strcat(str, ",Skin int(3) NOT NULL default '29'");
-	strcat(str, ",Deaths int(5) NOT NULL default '0'");
-	strcat(str, ",LastQuit int(1) NOT NULL default '0'");
-	strcat(str, ",LastPos varchar(64) NOT NULL  default ' '");
-	strcat(str, ",Tutorial int(1) NOT NULL default '0'");
-	strcat(str, ",Admin int(5) NOT NULL default '0'");
-	strcat(str, ",Warns int(5) NOT NULL default '0'");
-	strcat(str, ",Praises int(5) NOT NULL default '0'");
-	strcat(str, ",Toy1 varchar(256) NOT NULL  default ' '");
-	strcat(str, ",Toy2 varchar(256) NOT NULL  default ' '");
-	strcat(str, ",Toy3 varchar(256) NOT NULL  default ' '");
-	strcat(str, ",Toy4 varchar(256) NOT NULL  default ' '");
-	strcat(str, ",Toy5 varchar(256) NOT NULL  default ' '");
-	strcat(str, ",Weight int(3) NOT NULL default '50'");
-	strcat(str, ",Power int(3) NOT NULL default '50'");
-	strcat(str, ",Health float(16,4) NOT NULL default '100.0'");
-	strcat(str, ",Armour float(16,4) NOT NULL default '0.0'");
-	strcat(str, ",Agent int(2) NOT NULL default '0'");
-	strcat(str, ",AgentMode int(1) NOT NULL default '0'");
-	strcat(str, ",AgentVw int(16) NOT NULL default '0'");
+	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY,");
+	strcat(str, "Name varchar(32) NOT NULL default ' ',");
+	strcat(str, "Varname varchar(64) NOT NULL default ' ',");
+	strcat(str, "Vartype int(1) NOT NULL default '0',");
+	strcat(str, "Value varchar(512) NOT NULL default ' '");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
@@ -547,88 +549,71 @@ stock CreatePlayerDataTable()
 //-----< SavePlayerData >-------------------------------------------------------
 stock SavePlayerData(playerid)
 {
+	new count = GetTickCount();
 	new str[3840];
 	if (IsPlayerNPC(playerid)) return 1;
-	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
+	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
+	
+	for (new i = 0; i < NumSaveDatas[playerid]; i++)
+		if (strlen(PlayerData[playerid][i][pdVarname]) && PlayerData[playerid][i][pdSave])
+		{
+			new varname[64];
+			strcpy(varname, PlayerData[playerid][i][pdVarname]);
 
-	format(str, sizeof(str), "UPDATE playerdata SET");
-	format(str, sizeof(str), "%s IP='%s'", str, GetPlayerIpA(playerid));
-	format(str, sizeof(str), "%s,RegDate=%d", str, GetPVarInt_(playerid, "pRegDate"));
-	format(str, sizeof(str), "%s,Level=%d", str, GetPVarInt_(playerid, "pLevel"));
-	format(str, sizeof(str), "%s,Radio=%d", str, GetPVarInt_(playerid, "pRadio"));
-	format(str, sizeof(str), "%s,Origin='%s'", str, escape(GetPVarString_(playerid, "pOrigin")));
-	format(str, sizeof(str), "%s,Money=%d", str, GetPVarInt_(playerid, "pMoney"));
-	format(str, sizeof(str), "%s,Skin=%d", str, GetPVarInt_(playerid, "pSkin"));
-	format(str, sizeof(str), "%s,Deaths=%d", str, GetPVarInt_(playerid, "pDeaths"));
-	format(str, sizeof(str), "%s,LastQuit=%d", str, GetPVarInt_(playerid, "pLastQuit"));
-	format(str, sizeof(str), "%s,LastPos='%s'", str, GetPVarString_(playerid, "pLastPos"));
-	format(str, sizeof(str), "%s,Tutorial=%d", str, GetPVarInt_(playerid, "pTutorial"));
-	format(str, sizeof(str), "%s,Admin=%d", str, GetPVarInt_(playerid, "pAdmin"));
-	format(str, sizeof(str), "%s,Warns=%d", str, GetPVarInt_(playerid, "pWarns"));
-	format(str, sizeof(str), "%s,Praises=%d", str, GetPVarInt_(playerid, "pPraises"));
-	format(str, sizeof(str), "%s,Toy1='%s'", str, GetPVarString_(playerid, "pToy1"));
-	format(str, sizeof(str), "%s,Toy2='%s'", str, GetPVarString_(playerid, "pToy2"));
-	format(str, sizeof(str), "%s,Toy3='%s'", str, GetPVarString_(playerid, "pToy3"));
-	format(str, sizeof(str), "%s,Toy4='%s'", str, GetPVarString_(playerid, "pToy4"));
-	format(str, sizeof(str), "%s,Toy5='%s'", str, GetPVarString_(playerid, "pToy5"));
-	format(str, sizeof(str), "%s,Weight=%d", str, GetPVarInt_(playerid, "pWeight"));
-	format(str, sizeof(str), "%s,Power=%d", str, GetPVarInt_(playerid, "pPower"));
-	format(str, sizeof(str), "%s,Health=%.4f", str, GetPVarFloat_(playerid, "pHealth"));
-	format(str, sizeof(str), "%s,Armour=%.4f", str, GetPVarFloat_(playerid, "pArmour"));
-	format(str, sizeof(str), "%s,Agent=%d", str, GetPVarInt_(playerid, "pAgent"));
-	format(str, sizeof(str), "%s,AgentMode=%d", str, GetPVarInt_(playerid, "pAgentMode"));
-	format(str, sizeof(str), "%s,AgentVw=%d", str, GetPVarInt_(playerid, "pAgentVw"));
-	format(str, sizeof(str), "%s WHERE Name='%s'", str, GetPlayerNameA(playerid));
-	mysql_query(str);
+			format(str, sizeof(str), "UPDATE playerdata SET");
+			format(str, sizeof(str), "%s Vartype=%d", str, GetPVarType(playerid, varname));
+			switch (GetPVarType(playerid, varname))
+			{
+				case PLAYER_VARTYPE_INT:	format(str, sizeof(str), "%s,Value=%d", str, GetPVarInt(playerid, varname));
+				case PLAYER_VARTYPE_STRING: format(str, sizeof(str), "%s,Value='%s'", str, escape(GetPVarString(playerid, varname)));
+				case PLAYER_VARTYPE_FLOAT:  format(str, sizeof(str), "%s,Value=%f", str, GetPVarFloat(playerid, varname));
+			}
+			format(str, sizeof(str), "%s WHERE Name='%s' And Varname='%s'", str, GetPlayerNameA(playerid), varname);
+			mysql_query(str);
+			PlayerData[playerid][i][pdSave] = false;
+			printf("%s Saved", varname);
+		}
+	NumSaveDatas[playerid] = 0;
+	printf("SavePlayerData(%s): %dms", GetPlayerNameA(playerid), GetTickCount() - count);
 	return 1;
 }
 //-----< LoadPlayerData >-------------------------------------------------------
 stock LoadPlayerData(playerid)
 {
-	new str[256],
-		receive[512];
+	new count = GetTickCount();
+	new str[1024],
+		receive[5][512],
+		idx;
 	if (IsPlayerNPC(playerid)) return 1;
-	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
+	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
 	
 	format(str, sizeof(str), "SELECT * FROM playerdata WHERE Name='%s'", GetPlayerNameA(playerid));
 	mysql_query(str);
 	mysql_store_result();
-	
-	mysql_fetch_field("RegDate",	receive); SetPVarInt_(playerid, "pRegDate", strval(receive));
-	mysql_fetch_field("Level",		receive); SetPVarInt_(playerid, "pLevel", strval(receive));
-	mysql_fetch_field("Radio",		receive); SetPVarInt_(playerid, "pRadio", strval(receive));
-	mysql_fetch_field("Origin",		receive); SetPVarString_(playerid, "pOrigin", receive);
-	mysql_fetch_field("Money",		receive); SetPVarInt_(playerid, "pMoney", strval(receive));
-	mysql_fetch_field("Skin",		receive); SetPVarInt_(playerid, "pSkin", strval(receive));
-	mysql_fetch_field("Deaths",		receive); SetPVarInt_(playerid, "pDeaths", strval(receive));
-	mysql_fetch_field("LastQuit",	receive); SetPVarInt_(playerid, "pLastQuit", strval(receive));
-	mysql_fetch_field("LastPos",	receive); SetPVarString_(playerid, "pLastPos", receive);
-	mysql_fetch_field("Tutorial",	receive); SetPVarInt_(playerid, "pTutorial", strval(receive));
-	mysql_fetch_field("Admin",		receive); SetPVarInt_(playerid, "pAdmin", strval(receive));
-	mysql_fetch_field("Warns",		receive); SetPVarInt_(playerid, "pWarns", strval(receive));
-	mysql_fetch_field("Praises",	receive); SetPVarInt_(playerid, "pPraises", strval(receive));
-	mysql_fetch_field("Toy1",		receive); SetPVarString_(playerid, "pToy1", receive);
-	mysql_fetch_field("Toy2",		receive); SetPVarString_(playerid, "pToy2", receive);
-	mysql_fetch_field("Toy3",		receive); SetPVarString_(playerid, "pToy3", receive);
-	mysql_fetch_field("Toy4",		receive); SetPVarString_(playerid, "pToy4", receive);
-	mysql_fetch_field("Toy5",		receive); SetPVarString_(playerid, "pToy5", receive);
-	mysql_fetch_field("Weight",		receive); SetPVarInt_(playerid, "pWeight", strval(receive));
-	mysql_fetch_field("Power",		receive); SetPVarInt_(playerid, "pPower", strval(receive));
-	mysql_fetch_field("Health",		receive); SetPVarFloat_(playerid, "pHealth", floatstr(receive));
-	mysql_fetch_field("Armour",		receive); SetPVarFloat_(playerid, "pArmour", floatstr(receive));
-	mysql_fetch_field("Agent",		receive); SetPVarInt_(playerid, "pAgent", strval(receive));
-	mysql_fetch_field("AgentMode",  receive); SetPVarInt_(playerid, "pAgentMode", strval(receive));
-	mysql_fetch_field("AgentVw",	receive); SetPVarInt_(playerid, "pAgentVw", strval(receive));
-	
-	mysql_free_result();
-	
-	if (!GetPVarInt_(playerid, "pRegDate"))
+	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	{
+		mysql_fetch_row(str, "|");
+		split(str, receive, '|');
+		idx = 2;
+
+		strcpy(PlayerData[playerid][i][pdVarname], receive[idx++]);
+		PlayerData[playerid][i][pdVartype] = strval(receive[idx++]);
+		switch (PlayerData[playerid][i][pdVartype])
+		{
+			case PLAYER_VARTYPE_INT:	SetPVarInt(playerid, PlayerData[playerid][i][pdVarname], strval(receive[idx++]));
+			case PLAYER_VARTYPE_STRING: SetPVarString(playerid, PlayerData[playerid][i][pdVarname], receive[idx++]);
+			case PLAYER_VARTYPE_FLOAT:  SetPVarFloat(playerid, PlayerData[playerid][i][pdVarname], floatstr(receive[idx++]));
+		}
+		PlayerData[playerid][i][pdSave] = false;
+	}
+	if (!GetPVarInt(playerid, "pRegDate"))
 	{
 		new year, month, day;
 		getdate(year, month, day);
 		format(str, sizeof(str), "%04d%02d%02d", year, month, day);
-		SetPVarInt_(playerid, "pRegDate", strval(str));
+		SetPVarInt(playerid, "pRegDate", strval(str));
 	}
+	printf("LoadPlayerData(%s): %dms", GetPlayerNameA(playerid), GetTickCount() - count);
 	return 1;
 }
 //-----< ShowPlayerLoginDialog >------------------------------------------------
@@ -640,7 +625,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 	"C_LIGHTBLUE"%s님, 안녕하세요!\n\
 	"C_YELLOW"Nogov"C_WHITE"에 오신 것을 환영합니다.\n\
 	", GetPlayerNameA(playerid));
-	if (GetPVarInt_(playerid, "Registered"))
+	if (GetPVarInt(playerid, "Registered"))
 	{
 		if (wrong)
 			strcat(str, "\
@@ -681,7 +666,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 stock SpawnPlayer_(playerid)
 {
 	SetPlayerHealth(playerid, 100.0);
-	SetSpawnInfo(playerid, 0, GetPVarInt_(playerid, "pSkin"), -1422.2572, -289.8291, 14.1484, 270.0, 0, 0, 0, 0, 0, 0);
+	SetSpawnInfo(playerid, 0, GetPVarInt(playerid, "pSkin"), -1422.2572, -289.8291, 14.1484, 270.0, 0, 0, 0, 0, 0, 0);
 	SpawnPlayer(playerid);
 	return 1;
 }
@@ -753,5 +738,78 @@ stock ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 	Nogov - "C_ORANGE"http://cafe.daum.net/Nogov\
 	", typetext, name, reason, date);
 	ShowPlayerDialog(playerid, DialogId_Player(3), DIALOG_STYLE_MSGBOX, "알림", str, "확인", chNullString);
+}
+//-----< SetPlayerData >--------------------------------------------------------
+stock SetPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[])
+{
+	if (varname[0] != 'p' || !GetPVarInt(playerid, "LoggedIn")) return 1;
+	new breaks;
+	switch (vartype)
+	{
+		case PLAYER_VARTYPE_INT:	breaks = (int_value == GetPVarInt(playerid, varname)) ? true : false;
+		case PLAYER_VARTYPE_FLOAT:	breaks = (float_value == GetPVarFloat(playerid, varname)) ? true : false;
+		case PLAYER_VARTYPE_STRING:	breaks = (!strcmp(string_value, GetPVarString(playerid, varname), true)) ? true : false;
+	}
+	if (breaks) return 1;
+	new j = MAX_PLAYER_DATAS;
+	for (new i = 0; i < MAX_PLAYER_DATAS; i++)
+	{
+		if (strlen(PlayerData[playerid][i][pdVarname])
+		&& !strcmp(PlayerData[playerid][i][pdVarname], varname, true))
+		{
+			PlayerData[playerid][i][pdSave] = true;
+			if (NumSaveDatas[playerid] < i)
+				NumSaveDatas[playerid] = i+1;
+			return 1;
+		}
+		else if (j > i) j = i;
+	}
+	if (j == MAX_PLAYER_DATAS)
+	{
+		printf("%s님의 플레이어 데이터 수가 한도(%d)를 초과했습니다.", GetPlayerNameA(playerid), MAX_PLAYER_DATAS);
+		return 1;
+	}
+	InsertPlayerData(playerid, varname, vartype, int_value, float_value, string_value);
+	strcpy(PlayerData[playerid][j][pdVarname], varname);
+	PlayerData[playerid][j][pdVartype] = vartype;
+	PlayerData[playerid][j][pdSave] = false;
+	return 1;
+}
+//-----< InsertPlayerData >-----------------------------------------------------
+stock InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[], encryption[]="")
+{
+	new str[1024], tmp[512];
+	format(str, sizeof(str), "INSERT INTO playerdata (Name,Varname,Vartype,Value)");
+	format(str, sizeof(str), "%s VALUES ('%s','%s',%d,", str, GetPlayerNameA(playerid), escape(varname), vartype);
+	switch (vartype)
+	{
+		case PLAYER_VARTYPE_INT:	format(tmp, sizeof(tmp), "'%d')", int_value);
+		case PLAYER_VARTYPE_FLOAT:  format(tmp, sizeof(tmp), "'%f')", float_value);
+		case PLAYER_VARTYPE_STRING: format(tmp, sizeof(tmp), "'%s')", string_value);
+	}
+	if (strlen(encryption))
+		format(str, sizeof(str), "%s%s(%s)", str, encryption, tmp);
+	else
+		format(str, sizeof(str), "%s%s", str, tmp);
+	mysql_query(str);
+	return 1;
+}
+//-----< DeletePlayerData >-----------------------------------------------------
+stock DeletePlayerData(playerid, varname[])
+{
+	if (varname[0] != 'p' || !GetPVarInt(playerid, "LoggedIn")) return 1;
+	new str[256];
+	for (new i = 0; i < MAX_PLAYER_DATAS; i++)
+		if (strlen(PlayerData[playerid][i][pdVarname])
+		&& !strcmp(PlayerData[playerid][i][pdVarname], varname, true))
+		{
+			format(str, sizeof(str), "DELETE FROM playerdata WHERE Name='%s' And Varname='%s'", GetPlayerNameA(playerid), varname);
+			mysql_query(str);
+			strcpy(PlayerData[playerid][i][pdVarname], chNullString);
+			PlayerData[playerid][i][pdVartype] = PLAYER_VARTYPE_NONE;
+			PlayerData[playerid][i][pdSave] = false;
+			break;
+		}
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------

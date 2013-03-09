@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/02/27
+ *		Update:		2013/03/09
  *
  *
  */
@@ -58,6 +58,17 @@
 	
 	ApplyAnimation(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync = 0)
 	ClearAnimations(playerid, forcesync = 0)
+	
+	SetPVarInt(playerid, varname[], int_value, array=0)
+	Float:SetPVarFloat(playerid, varname[], Float:float_value, array=0)
+	SetPVarString(playerid, varname[], string_value[], array=0)
+	GetPVarInt(playerid, varname[], array=0)
+	Float:GetPVarFloat(playerid, varname[], array=0)
+	GetPVarString(playerid, varname[], array=0)
+	DeletePVar(playerid, varname[], array=0)
+	GetPVarType(playerid, varname[], array=0)
+	
+	strcmp(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
 
   < Functions >
 	native strcpy(dest[], src[]);
@@ -76,14 +87,6 @@
 	native Wait(time);
 	native Crash();
 	native TimeFix(time);
-	native SetPVarInt_(playerid, varname[], int_value, array=0);
-	native SetPVarFloat_(playerid, varname[], Float:float_value, array=0);
-	native SetPVarString_(playerid, varname[], string_value[], array=0);
-	native GetPVarInt_(playerid, varname[], array=0);
-	native Float:GetPVarFloat_(playerid, varname[], array=0);
-	native GetPVarString_(playerid, varname[], array=0);
-	native DeletePVar_(playerid, varname[], array=0);
-	native GetPVarType_(playerid, varname[], array=0);
 	native escape(str[])
 	native ResetPlayerDialogData(playerid);
 	native strtab(dest[], str[], maxlength);
@@ -169,7 +172,7 @@ forward OnDialogRequest(playerid, dialogid, olddialogid);
 
 
 //-----< Defines
-#define MAX_WEAPONS             47
+#define MAX_WEAPONS			 	47
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
 #define chEmpty				 	" "
@@ -903,6 +906,213 @@ stock _ClearAnimations(playerid, forcesync = 0)
 #endif
 #define ClearAnimations ClearAnimations_
 //-----<  >---------------------------------------------------------------------
+//-----< SetPVarInt >-----------------------------------------------------------
+stock SetPVarInt_(playerid, varname[], int_value, array=0)
+{
+	if (array == 0)
+	{
+		SetPlayerData(playerid, varname, PLAYER_VARTYPE_INT, int_value, 0.0, chNullString);
+		SetPVarInt(playerid, varname, int_value);
+	}
+	else
+	{
+		new varname_[64];
+		format(varname_, sizeof(varname_), "%s_%d", varname, array);
+		if (int_value == 0)
+		{
+			DeletePlayerData(playerid, varname_);
+			DeletePVar(playerid, varname_);
+		}
+		else
+		{
+			SetPlayerData(playerid, varname_, PLAYER_VARTYPE_INT, int_value, 0.0, chNullString);
+			SetPVarInt(playerid, varname_, int_value);
+		}
+	}
+}
+stock _SetPVarInt(playerid, varname[], int_value)
+	return SetPVarInt(playerid, varname, int_value);
+#if defined _ALS_SetPVarInt
+	#undef SetPVarInt
+#else
+	#define _ALS_SetPVarInt
+#endif
+#define SetPVarInt SetPVarInt_
+//-----< SetPVarFloat >---------------------------------------------------------
+stock Float:SetPVarFloat_(playerid, varname[], Float:float_value, array=0)
+{
+	if (array == 0)
+	{
+		SetPlayerData(playerid, varname, PLAYER_VARTYPE_FLOAT, 0, float_value, chNullString);
+		SetPVarFloat(playerid, varname, float_value);
+	}
+	else
+	{
+		new varname_[64];
+		format(varname_, sizeof(varname_), "%s_%d", varname, array);
+		if (float_value == 0.0)
+		{
+			DeletePlayerData(playerid, varname_);
+			DeletePVar(playerid, varname_);
+		}
+		else
+		{
+			SetPlayerData(playerid, varname_, PLAYER_VARTYPE_INT, 0, float_value, chNullString);
+			SetPVarFloat(playerid, varname_, float_value);
+		}
+	}
+}
+stock _SetPVarFloat(playerid, varname[], Float:float_value)
+	return SetPVarFloat(playerid, varname, float_value);
+#if defined _ALS_SetPVarFloat
+	#undef SetPVarFloat
+#else
+	#define _ALS_SetPVarFloat
+#endif
+#define SetPVarFloat SetPVarFloat_
+//-----< SetPVarString >--------------------------------------------------------
+stock SetPVarString_(playerid, varname[], string_value[], array=0)
+{
+	if (array == 0)
+	{
+		SetPlayerData(playerid, varname, PLAYER_VARTYPE_STRING, 0, 0.0, string_value);
+		SetPVarString(playerid, varname, string_value);
+	}
+	else
+	{
+		new varname_[64];
+		format(varname_, sizeof(varname_), "%s_%d", varname, array);
+		if (strlen(string_value) == 0)
+		{
+			DeletePlayerData(playerid, varname_);
+			DeletePVar(playerid, varname_);
+		}
+		else
+		{
+			SetPlayerData(playerid, varname_, PLAYER_VARTYPE_INT, 0, 0.0, string_value);
+			SetPVarString(playerid, varname_, string_value);
+		}
+	}
+}
+stock _SetPVarString(playerid, varname[], string_value[])
+	return SetPVarString(playerid, varname, string_value);
+#if defined _ALS_SetPVarString
+	#undef SetPVarString
+#else
+	#define _ALS_SetPVarString
+#endif
+#define SetPVarString SetPVarString_
+//-----< GetPVarInt >-----------------------------------------------------------
+stock GetPVarInt_(playerid, varname[], array=0)
+{
+	if (array == 0) return GetPVarInt(playerid, varname);
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	return GetPVarInt(playerid, varname_);
+}
+stock _GetPVarInt(playerid, varname[])
+	return GetPVarInt(playerid, varname);
+#if defined _ALS_GetPVarInt
+	#undef GetPVarInt
+#else
+	#define _ALS_GetPVarInt
+#endif
+#define GetPVarInt GetPVarInt_
+//-----< GetPVarFloat >---------------------------------------------------------
+stock Float:GetPVarFloat_(playerid, varname[], array=0)
+{
+	if (array == 0) return GetPVarFloat(playerid, varname);
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	return GetPVarFloat(playerid, varname_);
+}
+stock _GetPVarFloat(playerid, varname[])
+	return GetPVarFloat(playerid, varname);
+#if defined _ALS_GetPVarFloat
+	#undef GetPVarFloat
+#else
+	#define _ALS_GetPVarFloat
+#endif
+#define GetPVarFloat GetPVarFloat_
+//-----< GetPVarString >--------------------------------------------------------
+stock GetPVarString_(playerid, varname[], array=0)
+{
+	new string[512];
+	if (array == 0)
+	{
+		GetPVarString(playerid, varname, string, sizeof(string));
+		return string;
+	}
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	GetPVarString(playerid, varname_, string, sizeof(string));
+	return string;
+}
+stock _GetPVarString(playerid, varname[])
+	return GetPVarString(playerid, varname);
+#if defined _ALS_GetPVarString
+	#undef GetPVarString
+#else
+	#define _ALS_GetPVarString
+#endif
+#define GetPVarString GetPVarString_
+//-----< DeletePVar_ >----------------------------------------------------------
+stock DeletePVar_(playerid, varname[], array=0)
+{
+	if (array == 0)
+	{
+		DeletePVar(playerid, varname);
+		DeletePlayerData(playerid, varname);
+	}
+	else
+	{
+		new varname_[64];
+		format(varname_, sizeof(varname_), "%s_%d", varname, array);
+		DeletePVar(playerid, varname_);
+		DeletePlayerData(playerid, varname_);
+	}
+	return 1;
+}
+stock _DeletePVar(playerid, varname[])
+	return DeletePVar(playerid, varname);
+#if defined _ALS_DeletePVar
+	#undef DeletePVar
+#else
+	#define _ALS_DeletePVar
+#endif
+#define DeletePVar DeletePVar_
+//-----< GetPVarType >----------------------------------------------------------
+stock GetPVarType_(playerid, varname[], array=0)
+{
+	if (array == 0) return GetPVarType(playerid, varname);
+	new varname_[64];
+	format(varname_, sizeof(varname_), "%s_%d", varname, array);
+	return GetPVarType(playerid, varname_);
+}
+stock _GetPVarType(playerid, varname[])
+	return GetPVarType(playerid, varname);
+#if defined _ALS_GetPVarType
+	#undef GetPVarType
+#else
+	#define _ALS_GetPVarType
+#endif
+#define GetPVarType GetPVarType_
+//-----<  >---------------------------------------------------------------------
+//-----< strcmp >---------------------------------------------------------------
+stock strcmp_(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
+{
+	if (strlen(string1) && strlen(string2) && strcmp(string1, string2, ignorecase, length) == 0) return 0;
+	return 1;
+}
+stock _strcmp(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
+	return strcmp(string1, string2, ignorecase, length);
+#if defined _ALS_strcmp
+	#undef strcmp
+#else
+	#define _ALS_strcmp
+#endif
+#define strcmp strcmp_
+//-----<  >---------------------------------------------------------------------
 
 
 
@@ -1108,75 +1318,6 @@ stock TimeFix(time)
 {
 	return floatround(time*0.85);
 }
-//-----< SetPVarInt_ >----------------------------------------------------------
-stock SetPVarInt_(playerid, varname[], int_value, array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	if (int_value == 0)
-		DeletePVar(playerid, varname_);
-	else
-		SetPVarInt(playerid, varname_, int_value);
-}
-//-----< SetPVarFloat_ >--------------------------------------------------------
-stock SetPVarFloat_(playerid, varname[], Float:float_value, array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	if (float_value == 0.0)
-		DeletePVar(playerid, varname_);
-	else
-		SetPVarFloat(playerid, varname_, float_value);
-}
-//-----< SetPVarString_ >-------------------------------------------------------
-stock SetPVarString_(playerid, varname[], string_value[], array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	if (strlen(string_value) == 0)
-		DeletePVar(playerid, varname_);
-	else
-		SetPVarString(playerid, varname_, string_value);
-}
-//-----< GetPVarInt_ >----------------------------------------------------------
-stock GetPVarInt_(playerid, varname[], array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	return GetPVarInt(playerid, varname_);
-}
-//-----< GetPVarFloat_ >--------------------------------------------------------
-stock Float:GetPVarFloat_(playerid, varname[], array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	return GetPVarFloat(playerid, varname_);
-}
-//-----< GetPVarString_ >-------------------------------------------------------
-stock GetPVarString_(playerid, varname[], array=0)
-{
-	new
-		varname_[64],
-		string[512]
-	;
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	GetPVarString(playerid, varname_, string, sizeof(string));
-	return string;
-}
-//-----< DeletePVar_ >----------------------------------------------------------
-stock DeletePVar_(playerid, varname[], array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	DeletePVar(playerid, varname_);
-}
-//-----< GetPVarType_ >---------------------------------------------------------
-stock GetPVarType_(playerid, varname[], array=0)
-{
-	new varname_[64];
-	format(varname_, sizeof(varname_), "%s_%d", varname, array);
-	return GetPVarType(playerid, varname_);
-}
 //-----< escape >---------------------------------------------------------------
 stock escape(str[])
 {
@@ -1295,16 +1436,16 @@ stock GetWeaponObjectModelID(weaponid)
 {
 	switch (weaponid)
 	{
-	    case 1:			return 331;
-	    case 2..8:		return 331 + weaponid;
-	    case 9:			return 341;
-	    case 10..15:	return 311 + weaponid;
-	    case 16..18:	return 326 + weaponid;
-	    case 22..29:	return 324 + weaponid;
-	    case 30..31:	return 325 + weaponid;
-	    case 32:		return 372;
-	    case 33..45:	return 324 + weaponid;
-	    case 46:		return 371;
+		case 1:			return 331;
+		case 2..8:		return 331 + weaponid;
+		case 9:			return 341;
+		case 10..15:	return 311 + weaponid;
+		case 16..18:	return 326 + weaponid;
+		case 22..29:	return 324 + weaponid;
+		case 30..31:	return 325 + weaponid;
+		case 32:		return 372;
+		case 33..45:	return 324 + weaponid;
+		case 46:		return 371;
 	}
 	return 1575;
 }

@@ -59,7 +59,7 @@ public gInitHandler_Agent()
 //-----< pUpdateHandler >-------------------------------------------------------
 public pUpdateHandler_Agent(playerid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn") || GetPVarInt_(playerid, "pAgentMode")) return 1;
+	if (!GetPVarInt(playerid, "LoggedIn") || GetPVarInt(playerid, "pAgentMode")) return 1;
 	new Float:ppos[3], Float:opos[3], Float:speed;
 	GetPlayerPos(playerid, ppos[0], ppos[1], ppos[2]);
 	GetDynamicObjectPos(PositionObject[playerid], opos[0], opos[1], opos[2]);
@@ -71,7 +71,7 @@ public pUpdateHandler_Agent(playerid)
 //-----< pTimerTickHandler >----------------------------------------------------
 public pTimerTickHandler_Agent(nsec, playerid)
 {
-	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
+	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
 	if (nsec != 100) return 1;
 	new Float:orot[3];
 	GetDynamicObjectRot(PositionObject[playerid], orot[0], orot[1], orot[2]);
@@ -86,7 +86,7 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		destid;
 	cmd = strtok(cmdtext, idx);
 	
-	if (!GetPVarInt_(playerid, "pAgent")) return 0;
+	if (!GetPVarInt(playerid, "pAgent")) return 0;
 	else if (!strcmp(cmd, "/에이전트도움말", true) || !strcmp(cmd, "/agenthelp", true))
 	{
 		new help[2048];
@@ -98,25 +98,25 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
 	{
-		if (GetPVarInt_(playerid, "pAgentMode"))
+		if (GetPVarInt(playerid, "pAgentMode"))
 		{
-			DeletePVar_(playerid, "pAgentMode");
+			DeletePVar(playerid, "pAgentMode");
 			SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 종료했습니다.");
 			AgentLog(playerid, "에이전트 모드를 종료했습니다.");
 			return 1;
 		}
-		SetPVarInt_(playerid, "pAgentMode", true);
+		SetPVarInt(playerid, "pAgentMode", true);
 		SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 시작합니다.");
 		AgentLog(playerid, "에이전트 모드를 시작합니다.");
 		return 1;
 	}
 	
-	if (!GetPVarInt_(playerid, "pAgentMode")) return 0;
+	if (!GetPVarInt(playerid, "pAgentMode")) return 0;
 	else if (!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
 	{
 		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
 		{
-			SetPVarInt_(playerid, "pAgentVw", GetPlayerVirtualWorld(playerid));
+			SetPVarInt(playerid, "pAgentVw", GetPlayerVirtualWorld(playerid));
 			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
 			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
 			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
@@ -124,8 +124,8 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		}
 		else
 		{
-			SetPlayerVirtualWorld(playerid, GetPVarInt_(playerid, "pAgentVw"));
-			DeletePVar_(playerid, "pAgentVw");
+			SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "pAgentVw"));
+			DeletePVar(playerid, "pAgentVw");
 			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
 			AgentLog(playerid, "클로킹을 해제했습니다.");
 		}

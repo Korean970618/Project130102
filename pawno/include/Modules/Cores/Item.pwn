@@ -167,7 +167,7 @@ public pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 	if (newkeys == KEY_SECONDARY_ATTACK)
 	{
 		new itemid = GetPlayerNearestItem(playerid);
-		if (GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt_(playerid, "pWeight"))
+		if (GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt(playerid, "pWeight"))
 		{
 			if (GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight])
 				SendClientMessage(playerid, COLOR_WHITE, "가방이 너무 무겁습니다.");
@@ -291,7 +291,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					return 1;
 				}
 				weight = (listitem == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
-				if (items + weight > GetPVarInt_(playerid, "pPower"))
+				if (items + weight > GetPVarInt(playerid, "pPower"))
 				{
 					if (items > weight)
 						SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
@@ -556,7 +556,7 @@ stock CreatePlayerItemDataTable()
 stock SavePlayerItemDataById(playerid, itemid)
 {
 	new str[1024];
-	if (!GetPVarInt_(playerid, "LoggedIn")) return 1;
+	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
 	format(str, sizeof(str), "UPDATE playeritemdata SET");
 	format(str, sizeof(str), "%s Itemmodel=%d", str, PlayerItemInfo[playerid][itemid][iItemmodel]);
 	format(str, sizeof(str), "%s,Ownername='%s'", str, escape(PlayerItemInfo[playerid][itemid][iOwnername]));

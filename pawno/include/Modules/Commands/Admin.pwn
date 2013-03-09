@@ -58,7 +58,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		str[256];
 	cmd = strtok(cmdtext, idx);
 
-	if (GetPVarInt_(playerid, "pAdmin") < 1) return 0;
+	if (GetPVarInt(playerid, "pAdmin") < 1) return 0;
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 		new help[2048];
@@ -127,19 +127,19 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		destid = ReturnUser(cmd);
 		if (!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-		SetPVarInt_(playerid, "EditPVar_destid", destid);
+		SetPVarInt(playerid, "EditPVar_destid", destid);
 		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
-		SetPVarString_(playerid, "EditPVar_varname", cmd);
+		SetPVarString(playerid, "EditPVar_varname", cmd);
 		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
-		SetPVarInt_(playerid, "EditPVar_array", strval(cmd));
+		SetPVarInt(playerid, "EditPVar_array", strval(cmd));
 		strcpy(cmd, stringslice_c(cmdtext, 4));
 		if (!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
-		SetPVarString_(playerid, "EditPVar_value", cmd);
+		SetPVarString(playerid, "EditPVar_value", cmd);
 		format(str, sizeof(str), "정보수정: %s(%d)", GetPlayerNameA(destid), destid);
 		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, str, "INTEGER\nFLOAT\nSTRING", "확인", "취소");
 		return 1;
@@ -161,11 +161,11 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		new array = (strlen(cmd))?strval(cmd):0;
 		format(str, sizeof(str), "- %s님의 %s", GetPlayerNameA(destid), varname);
 		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "  INTEGER: %d", GetPVarInt_(playerid, varname, array));
+		format(str, sizeof(str), "  INTEGER: %d", GetPVarInt(playerid, varname, array));
 		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "  FLOAT: %f", GetPVarFloat_(playerid, varname, array));
+		format(str, sizeof(str), "  FLOAT: %f", GetPVarFloat(playerid, varname, array));
 		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "  STRING: %s", GetPVarString_(playerid, varname, array));
+		format(str, sizeof(str), "  STRING: %s", GetPVarString(playerid, varname, array));
 		SendClientMessage(playerid, COLOR_YELLOW, str);
 		return 1;
 	}
@@ -351,7 +351,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/날기", true))
 	{
-		if (GetPVarType_(playerid, "FlyMode")) CancelFlyMode(playerid);
+		if (GetPVarType(playerid, "FlyMode")) CancelFlyMode(playerid);
 		else FlyMode(playerid);
 		return 1;
 	}
@@ -580,28 +580,28 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		{
 			if (response)
 			{
-				destid = GetPVarInt_(playerid, "EditPVar_destid");
+				destid = GetPVarInt(playerid, "EditPVar_destid");
 				if (!IsPlayerConnected(destid))
 					return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 				new varname[64];
-				strcpy(varname, GetPVarString_(playerid, "EditPVar_varname"));
-				new array = GetPVarInt_(playerid, "EditPVar_array");
-				strcpy(str, GetPVarString_(playerid, "EditPVar_value"));
+				strcpy(varname, GetPVarString(playerid, "EditPVar_varname"));
+				new array = GetPVarInt(playerid, "EditPVar_array");
+				strcpy(str, GetPVarString(playerid, "EditPVar_value"));
 				switch (listitem)
 				{
 					case 0:
-						SetPVarInt_(destid, varname, strval(str), array);
+						SetPVarInt(destid, varname, strval(str), array);
 					case 1:
-						SetPVarFloat_(destid, varname, floatstr(str), array);
+						SetPVarFloat(destid, varname, floatstr(str), array);
 					default:
-						SetPVarString_(destid, varname, str, array);
+						SetPVarString(destid, varname, str, array);
 				}
 				format(str, sizeof(str), "%s님이 %s님의 %s 수정: %s", GetPlayerNameA(playerid), GetPlayerNameA(destid), varname, str);
 				SendAdminMessage(COLOR_YELLOW, str);
 			}
-			SetPVarInt_(playerid, "EditPVar_destid", 0);
-			SetPVarString_(playerid, "EditPVar_varname", chNullString);
-			SetPVarString_(playerid, "EditPVar_value", chNullString);
+			SetPVarInt(playerid, "EditPVar_destid", 0);
+			SetPVarString(playerid, "EditPVar_varname", chNullString);
+			SetPVarString(playerid, "EditPVar_value", chNullString);
 		}
 		case 1:
 			if (response)
@@ -955,7 +955,7 @@ public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 stock SendAdminMessage(color, message[], level=1)
 {
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		if (GetPVarInt_(i, "pAdmin") >= level)
+		if (GetPVarInt(i, "pAdmin") >= level)
 			SendClientMessage(i, color, message);
 }
 //-----< ShowAttachedObjectList >-----------------------------------------------
