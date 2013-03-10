@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/02
- *		Update:		2013/03/09
+ *		Update:		2013/03/10
  *
  *
  */
@@ -762,7 +762,7 @@ stock SetPlayerData(playerid, varname[], vartype, int_value, Float:float_value, 
 				NumSaveDatas[playerid] = i+1;
 			return 1;
 		}
-		else if (j > i) j = i;
+		else if (!strlen(PlayerData[playerid][i][pdVarname]) && j > i) j = i;
 	}
 	if (j == MAX_PLAYER_DATAS)
 	{
