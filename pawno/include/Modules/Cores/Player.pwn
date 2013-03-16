@@ -16,7 +16,6 @@
 	pConnectHandler_Player(playerid)
 	pDisconnectHandler_Player(playerid)
 	pRequestClassHandler_Player(playerid, classid)
-	pRequestSpawnHandler_Player(playerid)
 	aConnectHandler_Player(playerid)
 	pUpdateHandler_Player(playerid)
 	pDeathHandler_Player(playerid, killerid, reason)
@@ -30,6 +29,7 @@
 	CreatePlayerDataTable()
 	SavePlayerData(playerid)
 	LoadPlayerData(playerid)
+	ShowPlayerLoginMovie(playerid)
 	ShowPlayerLoginDialog(playerid, bool:wrong)
 	SpawnPlayer_(playerid)
 	ShowPlayerPlunderStatus(playerid)
@@ -88,7 +88,6 @@ forward gInitHandler_Player();
 forward pConnectHandler_Player(playerid);
 forward pDisconnectHandler_Player(playerid);
 forward pRequestClassHandler_Player(playerid, classid);
-forward pRequestSpawnHandler_Player(playerid);
 forward aConnectHandler_Player(playerid);
 forward pUpdateHandler_Player(playerid);
 forward pDeathHandler_Player(playerid, killerid, reason);
@@ -239,12 +238,10 @@ public pDisconnectHandler_Player(playerid)
 //-----< pRequestClassHandler >-------------------------------------------------
 public pRequestClassHandler_Player(playerid, classid)
 {
+	SpawnPlayer_(playerid);
 	if (!GetPVarInt(playerid, "LoggedIn"))
 	{
-		SetPlayerTime(playerid, 0, 0);
-		SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
-		SetPlayerCameraPos(playerid, -2955.9641, 1280.6005, 30.3001);
-		SetPlayerCameraLookAt(playerid, -2862.5815, 1182.5625, 9.6069);
+		ShowPlayerLoginMovie(playerid);
 		ShowPlayerLoginDialog(playerid, false);
 	}
 	return 1;
@@ -255,15 +252,6 @@ public aConnectHandler_Player(playerid)
 	if (!GetPVarInt(playerid, "LoggedIn"))
 		PlayAudioStreamForPlayer(playerid, GetGVarString("IntroMusic"));
 	return 1;
-}
-//-----< pRequestSpawnHandler >-------------------------------------------------
-public pRequestSpawnHandler_Player(playerid)
-{
-	if (!GetPVarInt(playerid, "LoggedIn"))
-		ShowPlayerLoginDialog(playerid, false);
-	else
-		return 1;
-	return 0;
 }
 //-----< pUpdateHandler >-------------------------------------------------------
 public pUpdateHandler_Player(playerid)
@@ -346,6 +334,8 @@ public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_Player(playerid)
 {
+	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
+	
 	SetPVarInt(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
 
@@ -672,6 +662,15 @@ stock LoadPlayerData(playerid)
 		SetPVarInt(playerid, "pRegDate", strval(str));
 	}
 	printf("LoadPlayerData(%s): %dms", GetPlayerNameA(playerid), GetTickCount() - count);
+	return 1;
+}
+//-----< ShowPlayerLoginMovie >-------------------------------------------------
+stock ShowPlayerLoginMovie(playerid)
+{
+	SetPlayerTime(playerid, 0, 0);
+	SetPlayerPos(playerid, -2955.9641, 1280.6005, 0.0);
+	SetPlayerCameraPos(playerid, -2955.9641, 1280.6005, 30.3001);
+	SetPlayerCameraLookAt(playerid, -2862.5815, 1182.5625, 9.6069);
 	return 1;
 }
 //-----< ShowPlayerLoginDialog >------------------------------------------------
