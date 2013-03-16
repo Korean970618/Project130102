@@ -1,18 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
- *			Fly Core
- *
- *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
+ *			Nogov Fly Core
+ *		  	2013/01/30
  *
  *
- *		Release:	2013/01/30
- *		Update:		2013/01/30
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */

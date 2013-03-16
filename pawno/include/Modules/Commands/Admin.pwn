@@ -1,18 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
- *			Admin Command
- *
- *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
+ *			Nogov Admin Command
+ *		  	2013/01/07
  *
  *
- *		Release:	2013/01/07
- *		Update:		2013/03/16
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */

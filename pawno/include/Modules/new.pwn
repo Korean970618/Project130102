@@ -1,18 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
- *			_ Module
- *
- *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
+ *			Nogov _ Module
+ *		  	2013/01/02
  *
  *
- *		Release:	2013/01/02
- *		Update:		2013/01/02
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */

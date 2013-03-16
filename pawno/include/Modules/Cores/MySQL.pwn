@@ -1,18 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
- *			MySQL Core
- *
- *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
+ *			Nogov MySQL Core
+ *		  	2013/01/08
  *
  *
- *		Release:	2013/01/08
- *		Update:		2013/01/22
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */

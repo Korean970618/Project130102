@@ -1,18 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
- *			Vehicle Module
- *
- *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
+ *			Nogov Vehicle Module
+ *		  	2013/01/17
  *
  *
- *		Release:	2013/01/17
- *		Update:		2013/01/17
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */

@@ -1,18 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
- *			GVar Core
- *
- *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
+ *			Nogov GVar Core
+ *		  	2013/02/27
  *
  *
- *		Release:	2013/02/27
- *		Update:		2013/03/05
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */

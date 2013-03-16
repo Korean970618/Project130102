@@ -1,19 +1,11 @@
 /*
  *
  *
- *		PureunBa(¼­¼º¹ü)
- *
  *			Nogov Main Script
- *			v0.0.1
+ *		  	2013/01/02
  *
  *
- *		Coded by PureunBa 2011-2013 @ all right reserved.
- *
- *			< pureunba.tistory.com >
- *
- *
- *		Release:	2013/01/02
- *		Update:		2013/03/05
+ *		Copyright (c) sBum. All rights reserved.
  *
  *
  */
