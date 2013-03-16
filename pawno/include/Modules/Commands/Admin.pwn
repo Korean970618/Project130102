@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/01/07
- *		Update:		2013/02/20
+ *		Update:		2013/03/16
  *
  *
  */
@@ -276,7 +276,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		destid = ReturnUser(cmd);
 		if (!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-		new list[MAX_WEAPONS], items;
+		new list[MAX_WEAPONS], colors[MAX_WEAPONS], items;
 		for (new i = 0; i < MAX_WEAPONS; i++)
 			if (GetWeaponObjectModelID(i) != 1575)
 			{
@@ -284,7 +284,7 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 				items++;
 			}
 		MpListData[playerid][0] = destid;
-		ShowPlayerMpList(playerid, MpListId_Admin(0), "Weapons", list, items);
+		ShowPlayerMpList(playerid, MpListId_Admin(0), "Weapons", list, colors, items);
 		return 1;
 	}
 	//

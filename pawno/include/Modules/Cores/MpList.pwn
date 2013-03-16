@@ -12,7 +12,7 @@
  *
  *
  *		Release:	2013/02/27
- *		Update:		2013/02/27
+ *		Update:		2013/03/16
  *
  *
  */
@@ -24,14 +24,14 @@
 	pClickPlayerTDHandler_MpList(playerid, PlayerText:playertextid)
 	
   < Functions >
-	ShowPlayerMpList(playerid, mplistid, caption[], items[], size=sizeof(items))
+	ShowPlayerMpList(playerid, mplistid, caption[], items[], colors[], size=sizeof(items))
 
 	MplGetNumberOfPages(playerid)
 	PlayerText:MplCreateCurrentPageTextDraw(playerid, Float:Xpos, Float:Ypos)
 	PlayerText:MplCreatePlayerDialogButton(playerid, Float:Xpos, Float:Ypos, Float:Width, Float:Height, button_text[])
 	PlayerText:MplCreatePlayerHeaderTextDraw(playerid, Float:Xpos, Float:Ypos, header_text[])
 	PlayerText:MplCreatePlayerBackground(playerid, Float:Xpos, Float:Ypos, Float:Width, Float:Height)
-	PlayerText:MplCreateModelPreviewTextDraw(playerid, modelindex, Float:Xpos, Float:Ypos, Float:width, Float:height)
+	PlayerText:MplCreateModelPreviewTextDraw(playerid, modelindex, vehcol, Float:Xpos, Float:Ypos, Float:width, Float:height)
 	MplDestroyPlayerModelPreviews(playerid)
 	MplShowPlayerModelPreviews(playerid)
 	MplUpdatePageTextDraw(playerid)
@@ -54,6 +54,7 @@
 new MplHeaderText[MAX_PLAYERS][64];
 new MplNumberOfPageItems[MAX_PLAYERS];
 new MplPageItems[MAX_PLAYERS][MPL_MAX_ITEMS];
+new MplPageColors[MAX_PLAYERS][MPL_MAX_ITEMS];
 new PlayerText:MplCurrentPageTextDrawId[MAX_PLAYERS];
 new PlayerText:MplHeaderTextDrawId[MAX_PLAYERS];
 new PlayerText:MplBackgroundTextDrawId[MAX_PLAYERS];
@@ -170,13 +171,16 @@ public pClickPlayerTDHandler_MpList(playerid, PlayerText:playertextid)
 
 //-----< Functions
 //-----< ShowPlayerMpList >-----------------------------------------------------
-stock ShowPlayerMpList(playerid, mplistid, caption[], items[], size=sizeof(items))
+stock ShowPlayerMpList(playerid, mplistid, caption[], items[], colors[], size=sizeof(items))
 {
 	MplDestroySelectionMenu(playerid);
 	strcpy(MplHeaderText[playerid], caption);
 	MplNumberOfPageItems[playerid] = size;
 	for (new i = 0; i < MplNumberOfPageItems[playerid]; i++)
+	{
 		MplPageItems[playerid][i] = items[i];
+		MplPageColors[playerid][i] = colors[i];
+	}
 	MplPage[playerid] = 0;
 	MplActive[playerid] = true;
 	MplId[playerid] = mplistid;
@@ -258,7 +262,7 @@ stock PlayerText:MplCreatePlayerBackground(playerid, Float:Xpos, Float:Ypos, Flo
 	return txtBackground;
 }
 //-----< MplCreateModelPreviewTextDraw >----------------------------------------
-stock PlayerText:MplCreateModelPreviewTextDraw(playerid, modelindex, Float:Xpos, Float:Ypos, Float:width, Float:height)
+stock PlayerText:MplCreateModelPreviewTextDraw(playerid, modelindex, vehcol, Float:Xpos, Float:Ypos, Float:width, Float:height)
 {
 	new PlayerText:txtPlayerSprite = CreatePlayerTextDraw(playerid, Xpos, Ypos, "");
 	PlayerTextDrawFont(playerid, txtPlayerSprite, TEXT_DRAW_FONT_MODEL_PREVIEW);
@@ -267,6 +271,7 @@ stock PlayerText:MplCreateModelPreviewTextDraw(playerid, modelindex, Float:Xpos,
 	PlayerTextDrawTextSize(playerid, txtPlayerSprite, width, height);
 	PlayerTextDrawSetPreviewModel(playerid, txtPlayerSprite, modelindex);
 	PlayerTextDrawSetPreviewRot(playerid,txtPlayerSprite, -16.0, 0.0, -55.0);
+	PlayerTextDrawSetPreviewVehCol(playerid, txtPlayerSprite, vehcol, vehcol);
 	PlayerTextDrawSetSelectable(playerid, txtPlayerSprite, 1);
 	PlayerTextDrawShow(playerid,txtPlayerSprite);
 	return txtPlayerSprite;
@@ -303,7 +308,7 @@ stock MplShowPlayerModelPreviews(playerid)
 			BaseX = MPL_DIALOG_BASE_X + 25.0;
 			BaseY += MPL_SPRITE_DIM_Y * 1.0;
 		}
-		MplSelectionItems[playerid][x] = MplCreateModelPreviewTextDraw(playerid, MplPageItems[playerid][itemat], BaseX, BaseY, MPL_SPRITE_DIM_X, MPL_SPRITE_DIM_Y);
+		MplSelectionItems[playerid][x] = MplCreateModelPreviewTextDraw(playerid, MplPageItems[playerid][itemat], MplPageColors[playerid][itemat], BaseX, BaseY, MPL_SPRITE_DIM_X, MPL_SPRITE_DIM_Y);
 		BaseX += MPL_SPRITE_DIM_X + 1.0;
 		linetracker++;
 		if (linetracker == MPLITEMS_PER_LINE) linetracker = 0;
