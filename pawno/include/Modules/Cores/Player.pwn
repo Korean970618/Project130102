@@ -73,7 +73,8 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	DeadAnim[MAX_PLAYERS],
 	KillerId[MAX_PLAYERS],
 	PlayerData[MAX_PLAYERS][MAX_PLAYER_DATAS][ePlayerData],
-	NumSaveDatas[MAX_PLAYERS];
+	NumSaveDatas[MAX_PLAYERS],
+	LoginTextDraw[5];
 
 
 
@@ -102,6 +103,68 @@ forward pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid);
 public gInitHandler_Player()
 {
 	CreatePlayerDataTable();
+	
+	LoginTextDraw[0] = TextDrawCreate(320.000000, 1.000000, ".");
+	TextDrawUseBox(LoginTextDraw[0], 1);
+	TextDrawBoxColor(LoginTextDraw[0], 0x000000ff);
+	TextDrawTextSize(LoginTextDraw[0], 50.000000, -650.000000);
+	TextDrawAlignment(LoginTextDraw[0], 2);
+	TextDrawBackgroundColor(LoginTextDraw[0], 0x00000000);
+	TextDrawFont(LoginTextDraw[0], 3);
+	TextDrawLetterSize(LoginTextDraw[0], 1.000000, 13.100000);
+	TextDrawColor(LoginTextDraw[0], 0x00000000);
+	TextDrawSetOutline(LoginTextDraw[0], 1);
+	TextDrawSetProportional(LoginTextDraw[0], 1);
+	TextDrawSetShadow(LoginTextDraw[0], 1);
+
+	LoginTextDraw[1] = TextDrawCreate(317.000000, 121.000000, ".");
+	TextDrawUseBox(LoginTextDraw[1], 1);
+	TextDrawBoxColor(LoginTextDraw[1], 0x0000ffff);
+	TextDrawTextSize(LoginTextDraw[1], 10.000000, -650.000000);
+	TextDrawAlignment(LoginTextDraw[1], 2);
+	TextDrawBackgroundColor(LoginTextDraw[1], 0x00000000);
+	TextDrawFont(LoginTextDraw[1], 3);
+	TextDrawLetterSize(LoginTextDraw[1], 1.000000, -0.000000);
+	TextDrawColor(LoginTextDraw[1], 0x00000000);
+	TextDrawSetOutline(LoginTextDraw[1], 1);
+	TextDrawSetProportional(LoginTextDraw[1], 1);
+	TextDrawSetShadow(LoginTextDraw[1], 1);
+
+	LoginTextDraw[2] = TextDrawCreate(320.000000, 330.000000, ".");
+	TextDrawUseBox(LoginTextDraw[2], 1);
+	TextDrawBoxColor(LoginTextDraw[2], 0x000000ff);
+	TextDrawTextSize(LoginTextDraw[2], 50.000000, -650.000000);
+	TextDrawAlignment(LoginTextDraw[2], 2);
+	TextDrawBackgroundColor(LoginTextDraw[2], 0x00000000);
+	TextDrawFont(LoginTextDraw[2], 3);
+	TextDrawLetterSize(LoginTextDraw[2], 1.000000, 13.100000);
+	TextDrawColor(LoginTextDraw[2], 0x00000000);
+	TextDrawSetOutline(LoginTextDraw[2], 1);
+	TextDrawSetProportional(LoginTextDraw[2], 1);
+	TextDrawSetShadow(LoginTextDraw[2], 1);
+
+	LoginTextDraw[3] = TextDrawCreate(317.000000, 327.000000, ".");
+	TextDrawUseBox(LoginTextDraw[3], 1);
+	TextDrawBoxColor(LoginTextDraw[3], 0x0000ffff);
+	TextDrawTextSize(LoginTextDraw[3], 10.000000, -650.000000);
+	TextDrawAlignment(LoginTextDraw[3], 2);
+	TextDrawBackgroundColor(LoginTextDraw[3], 0x00000000);
+	TextDrawFont(LoginTextDraw[3], 3);
+	TextDrawLetterSize(LoginTextDraw[3], 1.000000, -0.000000);
+	TextDrawColor(LoginTextDraw[3], 0x00000000);
+	TextDrawSetOutline(LoginTextDraw[3], 1);
+	TextDrawSetProportional(LoginTextDraw[3], 1);
+	TextDrawSetShadow(LoginTextDraw[3], 1);
+
+	LoginTextDraw[4] = TextDrawCreate(250.000000, 31.000000, "Nogov");
+	TextDrawAlignment(LoginTextDraw[4], 1);
+	TextDrawBackgroundColor(LoginTextDraw[4], 0x0000ffff);
+	TextDrawFont(LoginTextDraw[4], 0);
+	TextDrawLetterSize(LoginTextDraw[4], 1.500000, 5.299998);
+	TextDrawColor(LoginTextDraw[4], 0xffffffff);
+	TextDrawSetOutline(LoginTextDraw[4], 1);
+	TextDrawSetProportional(LoginTextDraw[4], 1);
+	TextDrawSetShadow(LoginTextDraw[4], 1);
 	return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
@@ -385,6 +448,8 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				if (mysql_num_rows() == 1)
 				{
 					SetPVarInt(playerid, "LoggedIn", true);
+					for (new i = 0; i < sizeof(LoginTextDraw); i++)
+						TextDrawHideForPlayer(playerid, LoginTextDraw[i]);
 					LoadPlayerData(playerid);
 					if (strlen(GetPVarString(playerid, "pLastPos")) > 10)
 						ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
@@ -653,6 +718,8 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 			");
 		ShowPlayerDialog(playerid, DialogId_Player(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
 	}
+	for (new i = 0; i < sizeof(LoginTextDraw); i++)
+		TextDrawShowForPlayer(playerid, LoginTextDraw[i]);
 	return 1;
 }
 //-----< SpawnPlayer_ >---------------------------------------------------------
