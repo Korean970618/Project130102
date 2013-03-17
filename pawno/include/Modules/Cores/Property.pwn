@@ -17,6 +17,7 @@
 	pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 	pCommandTextHandler_Property(playerid, cmdtext[])
 	dResponseHandler_Property(playerid, dialogid, response, listitem, inputtext[])
+	CancelPropertyWarn(playerid, propertyid)
 
   < Functions >
 	CreatePropertyDataTable()
@@ -36,7 +37,8 @@
 
 
 //-----< Defines
-#define DialogId_Property(%0)	   (75+%0)
+#define MAX_PROPERTIES			  	128
+#define DialogId_Property(%0)		(75+%0)
 
 
 
@@ -60,9 +62,10 @@ enum ePropertyInfo
 	pPickupEn,
 	pPickupEx
 }
-new PropertyInfo[128][ePropertyInfo],
+new PropertyInfo[MAX_PROPERTIES][ePropertyInfo],
 	PropertyModifyDest[MAX_PLAYERS],
-	PropertyModify[MAX_PLAYERS][ePropertyInfo];
+	PropertyModify[MAX_PLAYERS][ePropertyInfo],
+	WarnedPropertyTimer[MAX_PLAYERS][MAX_PROPERTIES];
 
 
 
@@ -72,6 +75,7 @@ forward pConnectHandler_Property(playerid);
 forward pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys);
 forward pCommandTextHandler_Property(playerid, cmdtext[]);
 forward dResponseHandler_Property(playerid, dialogid, response, listitem, inputtext[]);
+forward CancelPropertyWarn(playerid, propertyid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Property()
 {
@@ -83,11 +87,14 @@ public gInitHandler_Property()
 public pConnectHandler_Property(playerid)
 {
 	PropertyModifyDest[playerid] = -1;
+	for (new i = 0; i < MAX_PROPERTIES; i++)
+		WarnedPropertyTimer[playerid][i] = 0;
 	return 1;
 }
 //-----< pKeyStateChangeHandler >-----------------------------------------------
 public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 {
+	new str[256];
 	if (newkeys == KEY_SECONDARY_ATTACK)
 		for (new i = 0, t = GetMaxProperties(); i < t; i++)
 			if (IsValidPropertyID(i))
@@ -100,6 +107,14 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEx][3]);
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEx]);
 					SetPlayerVirtualWorld(playerid, PropertyInfo[i][pVirtualWorldEx]);
+					if (!strlen(PropertyInfo[i][pOwnername]) && !WarnedPropertyTimer[playerid][i])
+					{
+						WarnedPropertyTimer[playerid][i] = SetTimerEx("CancelPropertyWarn", 5000, false, "dd", playerid, i);
+						format(str, sizeof(str), "* %s(%d)´ÔÀÌ ºó Áý %d¹øÀ¸·Î ÀÔÀåÇÏ¼Ì½À´Ï´Ù.", GetPlayerNameA(playerid), playerid, i);
+						for (new j = 0, u = GetMaxPlayers(); j < u; j++)
+							if (GetPVarInt_(j, "pAgentMode"))
+								SendClientMessage(j, COLOR_ORANGE, str);
+					}
 				}
 				else if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEx])
@@ -279,6 +294,12 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 			ShowPropertyModifier(playerid, propid);
 		}
 	}
+	return 1;
+}
+//-----< CancelPropertyWarn >---------------------------------------------------
+public CancelPropertyWarn(playerid, propertyid)
+{
+	WarnedPropertyTimer[playerid][propertyid] = 0;
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
