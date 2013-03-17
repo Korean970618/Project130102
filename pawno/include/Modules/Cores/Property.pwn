@@ -35,6 +35,11 @@
 
 
 
+//-----< Defines
+#define DialogId_Property(%0)	   (75+%0)
+
+
+
 //-----< Variables
 enum ePropertyInfo
 {
@@ -58,11 +63,6 @@ enum ePropertyInfo
 new PropertyInfo[128][ePropertyInfo],
 	PropertyModifyDest[MAX_PLAYERS],
 	PropertyModify[MAX_PLAYERS][ePropertyInfo];
-
-
-
-//-----< Defines
-#define DialogId_Property(%0)	   (75+%0)
 
 
 

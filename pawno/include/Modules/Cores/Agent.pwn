@@ -25,14 +25,14 @@
 
 
 
-//-----< Variables
-new PositionObject[MAX_PLAYERS];
-
-
-
 //-----< Definess
 #define DialogId_Agent(%0)  		(125+%0)
 #define VirtualWorld_Agent(%0)  	(25+%0)
+
+
+
+//-----< Variables
+new PositionObject[MAX_PLAYERS];
 
 
 

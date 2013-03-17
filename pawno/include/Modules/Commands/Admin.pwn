@@ -25,16 +25,16 @@
 
 
 
+//-----< Defines
+#define DialogId_Admin(%0)			(50+%0)
+#define MpListId_Admin(%0)      	(25+%0)
+
+
+
 //-----< Variables
 new Float:Mark[MAX_PLAYERS][4],
 	MarkInterior[MAX_PLAYERS],
 	MarkVirtualWorld[MAX_PLAYERS];
-
-
-
-//-----< Defines
-#define DialogId_Admin(%0)			(50+%0)
-#define MpListId_Admin(%0)      	(25+%0)
 
 
 

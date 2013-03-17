@@ -32,6 +32,10 @@
 
 
 
+//-----< Defines
+
+
+
 //-----< Variables
 enum GVarEnum
 {
@@ -42,10 +46,6 @@ enum GVarEnum
 	Float:gFloatValue
 }
 new GVar[50][GVarEnum];
-
-
-
-//-----< Defines
 
 
 

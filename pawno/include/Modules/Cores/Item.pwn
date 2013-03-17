@@ -54,9 +54,10 @@
 
 
 
-//-----< Pre-Defines
+//-----< Defines
 #define MAX_ITEMS			500
 #define MAX_PLAYERITEMS		10
+#define DialogId_Item(%0)   (100+%0)
 
 
 
@@ -104,11 +105,6 @@ new ItemModelInfo[2][eItemModelInfo] =
 		{ 0.3, 0.1, 0.1 }, { 100.0, 0.0, 75.0 }, { 1.0, 1.0, 1.0 }
 	}
 };
-
-
-
-//-----< Defines
-#define DialogId_Item(%0)   (100+%0)
 
 
 

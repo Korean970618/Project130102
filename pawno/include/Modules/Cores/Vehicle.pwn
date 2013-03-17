@@ -19,6 +19,10 @@
 
 
 
+//-----< Defines
+
+
+
 //-----< Variables
 enum eVehicleInfo
 {
@@ -38,10 +42,6 @@ enum eVehicleInfo
 	bool:vEngine
 }
 new VehicleInfo[MAX_VEHICLES][eVehicleInfo];
-
-
-
-//-----< Defines
 
 
 

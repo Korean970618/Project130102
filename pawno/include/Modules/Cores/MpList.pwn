@@ -35,11 +35,19 @@
 
 
 
-//-----< Pre-Defines
+//-----< Defines
 #define TOTAL_MPLITEMS		  	250
 #define SELECTION_MPLITEMS	  	21
 #define MPLITEMS_PER_LINE	   	7
 #define MPL_MAX_ITEMS			500
+#define MPL_NEXT_TEXT			   "Next"
+#define MPL_PREV_TEXT			   "Prev"
+#define MPL_DIALOG_BASE_X			75.0
+#define MPL_DIALOG_BASE_Y			130.0
+#define MPL_DIALOG_WIDTH			550.0
+#define MPL_DIALOG_HEIGHT			180.0
+#define MPL_SPRITE_DIM_X			60.0
+#define MPL_SPRITE_DIM_Y			70.0
 
 
 
@@ -58,18 +66,6 @@ new MplItemAt[MAX_PLAYERS];
 new MplId[MAX_PLAYERS];
 new bool:MplActive[MAX_PLAYERS];
 new MplPage[MAX_PLAYERS];
-
-
-
-//-----< Defines
-#define MPL_NEXT_TEXT			   "Next"
-#define MPL_PREV_TEXT			   "Prev"
-#define MPL_DIALOG_BASE_X			75.0
-#define MPL_DIALOG_BASE_Y			130.0
-#define MPL_DIALOG_WIDTH			550.0
-#define MPL_DIALOG_HEIGHT			180.0
-#define MPL_SPRITE_DIM_X			60.0
-#define MPL_SPRITE_DIM_Y			70.0
 
 
 

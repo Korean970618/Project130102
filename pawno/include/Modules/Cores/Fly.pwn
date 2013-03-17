@@ -27,21 +27,6 @@
 
 
 
-//-----< Variables
-enum eNoclipData
-{
-	nCameramode,
-	nFlyobject,
-	nMode,
-	nLrold,
-	nUdold,
-	nLastmove,
-	Float:nAccelmul
-}
-new NoclipData[MAX_PLAYERS][eNoclipData];
-
-
-
 //-----< Defines
 // Players Move Speed
 #define MOVE_SPEED			100.0
@@ -58,6 +43,21 @@ new NoclipData[MAX_PLAYERS][eNoclipData];
 #define MOVE_FORWARD_RIGHT	6
 #define MOVE_BACK_LEFT		7
 #define MOVE_BACK_RIGHT		8
+
+
+
+//-----< Variables
+enum eNoclipData
+{
+	nCameramode,
+	nFlyobject,
+	nMode,
+	nLrold,
+	nUdold,
+	nLastmove,
+	Float:nAccelmul
+}
+new NoclipData[MAX_PLAYERS][eNoclipData];
 
 
 

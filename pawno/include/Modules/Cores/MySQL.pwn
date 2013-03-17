@@ -21,16 +21,16 @@
 
 
 
-//-----< Variables
-new MySQL:MySQL_Handle;
-
-
-
 //-----< Defines
 #define SQL_IP		  "pureunba.no-ip.org"
 #define SQL_ID		  "samp_nogov"
 #define SQL_PW		  "nogov2013"
 #define SQL_DB		  "samp_nogov"
+
+
+
+//-----< Variables
+new MySQL:MySQL_Handle;
 
 
 

@@ -45,12 +45,9 @@
 
 
 
-//-----< Includes
-
-
-
-//-----< Pre-Defines
-#define MAX_PLAYER_DATAS	30
+//-----< Defines
+#define MAX_PLAYER_DATAS			30
+#define DialogId_Player(%0)			(25+%0)
 
 
 
@@ -75,11 +72,6 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	PlayerData[MAX_PLAYERS][MAX_PLAYER_DATAS][ePlayerData],
 	NumSaveDatas[MAX_PLAYERS],
 	LoginTextDraw[5];
-
-
-
-//-----< Defines
-#define DialogId_Player(%0)			(25+%0)
 
 
 
