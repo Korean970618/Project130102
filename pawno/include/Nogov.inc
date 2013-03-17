@@ -62,6 +62,7 @@
 	GetPVarType(playerid, varname[], array=0)
 	
 	strcmp(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
+	strlen(const string[])
 
   < Functions >
 	native strcpy(dest[], src[]);
@@ -1105,6 +1106,21 @@ stock _strcmp(const string1[], const string2[], bool:ignorecase=false, length=ce
 	#define _ALS_strcmp
 #endif
 #define strcmp strcmp_
+//-----< strlen >---------------------------------------------------------------
+stock strlen_(const string[])
+{
+	new len = strlen(string);
+	if (len == 1 && !strcmp(string, " ", true)) return 0;
+	return len;
+}
+stock _strlen(const string[])
+	return strlen(string);
+#if defined _ALS_strlen
+	#undef strlen
+#else
+	#define _ALS_strlen
+#endif
+#define strlen strlen_
 //-----<  >---------------------------------------------------------------------
 
 
