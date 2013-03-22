@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov Player Core
+ *			Nogov Player Module
  *		  	2013/01/02
  *
  *

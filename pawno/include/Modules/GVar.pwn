@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov GVar Core
+ *			Nogov GVar Module
  *		  	2013/02/27
  *
  *

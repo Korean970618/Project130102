@@ -1,7 +1,7 @@
 /*
  *
  *
- *		  Nogov InitExit Core
+ *		  Nogov InitExit Module
  *		  	2013/01/02
  *
  *

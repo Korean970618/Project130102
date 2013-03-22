@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Agent Core
+ *			Agent Module
  *		  	2013/02/25
  *
  *

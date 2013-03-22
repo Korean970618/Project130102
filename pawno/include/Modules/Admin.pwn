@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov Admin Command
+ *			Nogov Admin Module
  *		  	2013/01/07
  *
  *

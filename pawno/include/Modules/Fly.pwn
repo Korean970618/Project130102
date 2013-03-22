@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov Fly Core
+ *			Nogov Fly Module
  *		  	2013/01/30
  *
  *

@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov MySQL Core
+ *			Nogov MySQL Module
  *		  	2013/01/08
  *
  *

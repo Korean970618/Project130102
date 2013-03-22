@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov MpList Core
+ *			Nogov MpList Module
  *		  	2013/02/27
  *
  *

@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov Property Core
+ *			Nogov Property Module
  *		  	2013/01/14
  *
  *

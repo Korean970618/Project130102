@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov Item Core
+ *			Nogov Item Module
  *		  	2013/01/18
  *
  *

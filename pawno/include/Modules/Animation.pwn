@@ -1,7 +1,7 @@
 /*
  *
  *
- *			Nogov Animation Command
+ *			Nogov Animation Module
  *		  	2013/01/30
  *
  *
