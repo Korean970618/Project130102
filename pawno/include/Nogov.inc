@@ -65,7 +65,7 @@
 	strlen(const string[])
 
   < Functions >
-	native strcpy(dest[], src[]);
+	native strcpy(dest[], src[], deststart=0, destend=-1, srcstart=0, srcend=-1);
 	native FixBlankString(input[]);
 	native AntiDeAMX();
 	native strtok(const string[], &index, seperator=' ');
@@ -90,6 +90,7 @@
 	native Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 	native GetWeaponObjectModelID(weaponid);
 	native GetWeaponNameA(weaponid);
+	native udb_hash(buf[]);
 
 */
 
@@ -1127,11 +1128,17 @@ stock _strlen(const string[])
 
 //-----< Functions
 //-----< strcpy >---------------------------------------------------------------
-stock strcpy(dest[], src[])
+stock strcpy(dest[], src[], deststart=0, destend=-1, srcstart=0, srcend=-1)
 {
-	new i = 0;
-	while ((dest[i] = src[i]))
-		i++;
+	new index[2];
+	index[0] = deststart;
+	index[1] = srcstart;
+	while ((dest[index[0]] = src[index[1]]))
+	{
+		index[0]++;
+		index[1]++;
+		if (destend != -1 && index[0] == destend + 1 || srcend != -1 && index[1] == srcend + 1) break;
+	}
 }
 //-----< AntiDeAMX >------------------------------------------------------------
 stock AntiDeAMX()
@@ -1464,5 +1471,19 @@ stock GetWeaponNameA(weaponid)
 	new wname[128];
 	GetWeaponName(weaponid, wname, sizeof(wname));
 	return wname;
+}
+//-----< udb_hash >-------------------------------------------------------------
+stock udb_hash(buf[])
+{
+	new length = strlen(buf);
+	new s1 = 1;
+	new s2 = 0;
+	new n;
+	for (n = 0; n < length; n++)
+	{
+	   s1 = (s1 + buf[n])	% 65521;
+	   s2 = (s2 + s1)		% 65521;
+	}
+	return (s2 << 16) + s1;
 }
 //-----<  >---------------------------------------------------------------------
