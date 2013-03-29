@@ -51,13 +51,14 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		str[256];
 	cmd = strtok(cmdtext, idx);
 
-	if (GetPVarInt(playerid, "pAdmin") < 1) return 0;
+	if (GetPVarInt(playerid, "pAdmin") < 1
+	&& !IsGrantedCommand(playerid, cmd)) return 0;
 	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 		new help[2048];
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n\
 		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\
-		/무기\n\
+		/무기, /명령어권한부여, /명령어권한회수\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n\
 		/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\
@@ -278,6 +279,42 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 			}
 		MpListData[playerid][0] = destid;
 		ShowPlayerMpList(playerid, MpListId_Admin(0), "Weapons", list, colors, items);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/명령어권한부여", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+        cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
+		GrantCommand(destid, cmd);
+		format(str, sizeof(str), "%s님에게 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", GetPlayerNameA(destid), cmd);
+		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", cmd);
+		SendClientMessage(destid, COLOR_YELLOW, str);
+		return 1;
+	}
+    else if (!strcmp(cmd, "/명령어권한회수", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+        cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
+		RevokeCommand(destid, cmd);
+		format(str, sizeof(str), "%s님으로부터 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", GetPlayerNameA(destid), cmd);
+		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", cmd);
+		SendClientMessage(destid, COLOR_YELLOW, str);
 		return 1;
 	}
 	//

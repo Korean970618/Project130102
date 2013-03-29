@@ -51,18 +51,19 @@
 #include <audio>
 #include <Nogov>
 //-----< Modules >--------------------------------------------------------------
-#include "Modules/Cores/MySQL.pwn"
-#include "Modules/Cores/InitExit.pwn"
-#include "Modules/Cores/Player.pwn"
-#include "Modules/Cores/Property.pwn"
-#include "Modules/Cores/Vehicle.pwn"
-#include "Modules/Cores/Item.pwn"
-#include "Modules/Cores/Fly.pwn"
-#include "Modules/Cores/Agent.pwn"
-#include "Modules/Cores/MpList.pwn"
-#include "Modules/Cores/GVar.pwn"
-#include "Modules/Commands/Admin.pwn"
-#include "Modules/Commands/Animation.pwn"
+#include "Modules/MySQL.pwn"
+#include "Modules/InitExit.pwn"
+#include "Modules/Player.pwn"
+#include "Modules/Property.pwn"
+#include "Modules/Vehicle.pwn"
+#include "Modules/Item.pwn"
+#include "Modules/Fly.pwn"
+#include "Modules/Agent.pwn"
+#include "Modules/MpList.pwn"
+#include "Modules/GVar.pwn"
+#include "Modules/Admin.pwn"
+#include "Modules/Animation.pwn"
+#include "Modules/Grant.pwn"
 
 
 

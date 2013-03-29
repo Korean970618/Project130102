@@ -79,7 +79,8 @@ public pCommandTextHandler_Agent(playerid, cmdtext[])
 		destid;
 	cmd = strtok(cmdtext, idx);
 	
-	if (!GetPVarInt(playerid, "pAgent")) return 0;
+	if (!GetPVarInt(playerid, "pAgent")
+	&& !IsGrantedCommand(playerid, cmdtext)) return 0;
 	else if (!strcmp(cmd, "/에이전트도움말", true) || !strcmp(cmd, "/agenthelp", true))
 	{
 		new help[2048];
