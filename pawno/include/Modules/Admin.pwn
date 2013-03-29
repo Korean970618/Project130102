@@ -27,7 +27,7 @@
 
 //-----< Defines
 #define DialogId_Admin(%0)			(50+%0)
-#define MpListId_Admin(%0)      	(25+%0)
+#define MpListId_Admin(%0)			(25+%0)
 
 
 
@@ -264,8 +264,8 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/무기", true))
 	{
-	    cmd = strtok(cmdtext, idx);
-	    if (!strlen(cmd))
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /무기 [플레이어]");
 		destid = ReturnUser(cmd);
 		if (!IsPlayerConnected(destid))
@@ -285,13 +285,13 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	{
 		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
-		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
 		destid = ReturnUser(cmd);
 		if (!IsPlayerConnected(destid))
-		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-        cmd = strtok(cmdtext, idx);
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
-		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
 		GrantCommand(destid, cmd);
 		format(str, sizeof(str), "%s님에게 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", GetPlayerNameA(destid), cmd);
 		SendClientMessage(playerid, COLOR_YELLOW, str);
@@ -299,17 +299,17 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_YELLOW, str);
 		return 1;
 	}
-    else if (!strcmp(cmd, "/명령어권한회수", true))
+	else if (!strcmp(cmd, "/명령어권한회수", true))
 	{
 		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
-		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
 		destid = ReturnUser(cmd);
 		if (!IsPlayerConnected(destid))
-		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-        cmd = strtok(cmdtext, idx);
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
-		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
 		RevokeCommand(destid, cmd);
 		format(str, sizeof(str), "%s님으로부터 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", GetPlayerNameA(destid), cmd);
 		SendClientMessage(playerid, COLOR_YELLOW, str);
@@ -940,19 +940,19 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		}
 		case 16:
 		{
-		    if (response)
-		    {
-		        GivePlayerWeapon(MpListData[playerid][0], MpListData[playerid][1], strval(inputtext));
-		        format(str, sizeof(str), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
-		        SendClientMessage(playerid, COLOR_WHITE, str);
-		        format(str, sizeof(str), "%s님께서 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetPlayerNameA(playerid), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
-                SendClientMessage(MpListData[playerid][0], COLOR_WHITE, str);
-		    }
-		    else
-		    {
-		        format(str, sizeof(str), "/무기 %d", MpListData[playerid][0]);
-		        OnPlayerCommandText(playerid, str);
-		    }
+			if (response)
+			{
+				GivePlayerWeapon(MpListData[playerid][0], MpListData[playerid][1], strval(inputtext));
+				format(str, sizeof(str), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+				SendClientMessage(playerid, COLOR_WHITE, str);
+				format(str, sizeof(str), "%s님께서 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetPlayerNameA(playerid), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+				SendClientMessage(MpListData[playerid][0], COLOR_WHITE, str);
+			}
+			else
+			{
+				format(str, sizeof(str), "/무기 %d", MpListData[playerid][0]);
+				OnPlayerCommandText(playerid, str);
+			}
 		}
 	}
 	return 1;
@@ -963,16 +963,16 @@ public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 	new str[256];
 	switch (MpListId_Admin(0) - mplistid)
 	{
-	    case 0:
-	    {
-	        for (new i = 0; i < MAX_WEAPONS; i++)
-	            if (GetWeaponObjectModelID(i) == selecteditem)
-	            {
-	                MpListData[playerid][1] = i;
-	                format(str, sizeof(str), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
-	                ShowPlayerDialog(playerid, DialogId_Admin(16), DIALOG_STYLE_INPUT, ""C_BLUE"무기", str, "확인", "뒤로");
-	            }
-	    }
+		case 0:
+		{
+			for (new i = 0; i < MAX_WEAPONS; i++)
+				if (GetWeaponObjectModelID(i) == selecteditem)
+				{
+					MpListData[playerid][1] = i;
+					format(str, sizeof(str), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
+					ShowPlayerDialog(playerid, DialogId_Admin(16), DIALOG_STYLE_INPUT, ""C_BLUE"무기", str, "확인", "뒤로");
+				}
+		}
 	}
 	return 1;
 }
