@@ -64,6 +64,7 @@
 #include "Modules/Admin.pwn"
 #include "Modules/Animation.pwn"
 #include "Modules/Grant.pwn"
+#include "Modules/Cheat.pwn"
 
 
 
@@ -175,6 +176,7 @@ public OnGameModeInit()
 	AddHandler("Agent",				gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	AddHandler("GVar",				gInitHandler);
+	AddHandler("Cheat",             pKeyStateChangeHandler, pSpawnHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);

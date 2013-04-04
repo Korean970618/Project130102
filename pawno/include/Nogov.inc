@@ -63,6 +63,11 @@
 	
 	strcmp(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
 	strlen(const string[])
+	
+	GivePlayerWeapon(playerid, weaponid, ammo)
+	ResetPlayerWeapons(playerid)
+	
+	SetPlayerInterior(playerid, interiorid)
 
   < Functions >
 	native strcpy(dest[], src[], deststart=0, destend=-1, srcstart=0, srcend=-1);
@@ -98,71 +103,6 @@
 
 //-----< Pragmas
 #pragma dynamic					20000000
-
-
-
-//-----< Variables
-new DialogData[MAX_PLAYERS][100];
-new MpListData[MAX_PLAYERS][100];
-enum eAttachedObjectInfo
-{
-	aoModel,
-	aoBone,
-	Float:aoOffset[3],
-	Float:aoRot[3],
-	Float:aoScale[3],
-	aoMColor[2]
-}
-enum eClientMessageInfo
-{
-	cmColor,
-	cmMessage[512]
-}
-enum eTextDrawInfo
-{
-	Text:tdID,
-	Float:tdPos[2],
-	tdText[512],
-	Float:tdLetterSize[2],
-	Float:tdTextSize[2],
-	tdAlignment,
-	tdColor,
-	tdUseBox,
-	tdBoxColor,
-	tdShadow,
-	tdOutline,
-	tdBackgroundColor,
-	tdFont,
-	tdProportional,
-	bool:tdShowPlayer[MAX_PLAYERS],
-	tdPreviewModel,
-	Float:tdPreviewRot[4],
-	tdPreviewVehCol[2]
-}
-enum eAnimationInfo
-{
-	aLib[32],
-	aName[64],
-	Float:aDelta,
-	aLoop,
-	aLockX,
-	aLockY,
-	aFreeze,
-	aTime,
-	aForceSync
-}
-new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo],
-	Audio_MainStreamIndex[MAX_PLAYERS],
-	ClientMessages[MAX_PLAYERS],
-	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo],
-	TextDrawInfo[MAX_TEXT_DRAWS][eTextDrawInfo],
-	AnimationInfo[MAX_PLAYERS][eAnimationInfo],
-	DialogInfo[MAX_PLAYERS];
-
-
-
-//-----< Forwards
-forward OnDialogRequest(playerid, dialogid, olddialogid);
 
 
 
@@ -237,6 +177,73 @@ forward OnDialogRequest(playerid, dialogid, olddialogid);
 
 
 
+//-----< Variables
+new DialogData[MAX_PLAYERS][100];
+new MpListData[MAX_PLAYERS][100];
+enum eAttachedObjectInfo
+{
+	aoModel,
+	aoBone,
+	Float:aoOffset[3],
+	Float:aoRot[3],
+	Float:aoScale[3],
+	aoMColor[2]
+}
+enum eClientMessageInfo
+{
+	cmColor,
+	cmMessage[512]
+}
+enum eTextDrawInfo
+{
+	Text:tdID,
+	Float:tdPos[2],
+	tdText[512],
+	Float:tdLetterSize[2],
+	Float:tdTextSize[2],
+	tdAlignment,
+	tdColor,
+	tdUseBox,
+	tdBoxColor,
+	tdShadow,
+	tdOutline,
+	tdBackgroundColor,
+	tdFont,
+	tdProportional,
+	bool:tdShowPlayer[MAX_PLAYERS],
+	tdPreviewModel,
+	Float:tdPreviewRot[4],
+	tdPreviewVehCol[2]
+}
+enum eAnimationInfo
+{
+	aLib[32],
+	aName[64],
+	Float:aDelta,
+	aLoop,
+	aLockX,
+	aLockY,
+	aFreeze,
+	aTime,
+	aForceSync
+}
+new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo],
+	Audio_MainStreamIndex[MAX_PLAYERS],
+	ClientMessages[MAX_PLAYERS],
+	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo],
+	TextDrawInfo[MAX_TEXT_DRAWS][eTextDrawInfo],
+	AnimationInfo[MAX_PLAYERS][eAnimationInfo],
+	DialogInfo[MAX_PLAYERS],
+	WeaponInfo[MAX_PLAYERS][MAX_WEAPONS],
+	InteriorInfo[MAX_PLAYERS];
+
+
+
+//-----< Forwards
+forward OnDialogRequest(playerid, dialogid, olddialogid);
+
+
+
 //-----< Hook Callbacks
 forward OnGameModeInit_();
 forward OnPlayerConnect_(playerid);
@@ -295,6 +302,10 @@ public OnPlayerConnect(playerid)
 	AnimationInfo[playerid][aForceSync] = 0;
 	
 	DialogInfo[playerid] = 0;
+	
+	for (new i = 0; i < MAX_WEAPONS; i++)
+	    WeaponInfo[playerid][i] = 0;
+	InteriorInfo[playerid] = 0;
 	
 	return OnPlayerConnect_(playerid);
 }
@@ -372,6 +383,7 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	if (OnDialogRequest(playerid, dialogid, DialogInfo[playerid]))
 	{
 		DialogInfo[playerid] = dialogid;
+		
 		return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 	}
 	return 0;
@@ -1122,6 +1134,51 @@ stock _strlen(const string[])
 	#define _ALS_strlen
 #endif
 #define strlen strlen_
+//-----<  >---------------------------------------------------------------------
+//-----< GivePlayerWeapon >-----------------------------------------------------
+stock GivePlayerWeapon_(playerid, weaponid, ammo)
+{
+	WeaponInfo[playerid][weaponid] += ammo;
+	return GivePlayerWeapon(playerid, weaponid, ammo);
+}
+stock _GivePlayerWeapon(playerid, weaponid, ammo)
+	return GivePlayerWeapon(playerid, weaponid, ammo);
+#if defined _ALS_GivePlayerWeapon
+	#undef GivePlayerWeapon
+#else
+	#define _ALS_GivePlayerWeapon
+#endif
+#define GivePlayerWeapon GivePlayerWeapon_
+//-----< ResetPlayerWeapons >---------------------------------------------------
+stock ResetPlayerWeapons_(playerid)
+{
+	for (new i = 0; i < MAX_WEAPONS; i++)
+	    WeaponInfo[playerid][i] = 0;
+	return ResetPlayerWeapons(playerid);
+}
+stock _ResetPlayerWeapons(playerid)
+	return ResetPlayerWeapons(playerid);
+#if defined _ALS_ResetPlayerWeapons
+	#undef ResetPlayerWeapons
+#else
+	#define _ALS_ResetPlayerWeapons
+#endif
+#define ResetPlayerWeapons ResetPlayerWeapons
+//-----<  >---------------------------------------------------------------------
+//-----< SetPlayerInterior >----------------------------------------------------
+stock SetPlayerInterior_(playerid, interiorid)
+{
+	InteriorInfo[playerid] = interiorid;
+	return SetPlayerInterior(playerid, interiorid);
+}
+stock _SetPlayerInterior(playerid, interiorid)
+	return SetPlayerInterior(playerid, interiorid);
+#if defined _ALS_SetPlayerInterior
+	#undef SetPlayerInterior
+#else
+	#define _ALS_SetPlayerInterior
+#endif
+#define SetPlayerInterior SetPlayerInterior_
 //-----<  >---------------------------------------------------------------------
 
 
