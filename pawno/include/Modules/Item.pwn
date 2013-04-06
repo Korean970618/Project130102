@@ -72,6 +72,7 @@ enum eItemInfo
 	iVirtualWorld,
 	iSaveType[32],
 	iMemo[128],
+	iVirtualItem,
 	
 	iObject,
 	Text3D:i3DText
@@ -537,6 +538,7 @@ stock CreatePlayerItemDataTable()
 	strcat(str, ",Ownername varchar(32) NOT NULL default ' '");
 	strcat(str, ",SaveType varchar(32) NOT NULL default ' '");
 	strcat(str, ",Memo varchar(128) NOT NULL default ' '");
+	strcat(str, ",VirtualItem int(1) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -551,6 +553,7 @@ stock SavePlayerItemDataById(playerid, itemid)
 	format(str, sizeof(str), "%s,Ownername='%s'", str, escape(PlayerItemInfo[playerid][itemid][iOwnername]));
 	format(str, sizeof(str), "%s,SaveType='%s'", str, escape(PlayerItemInfo[playerid][itemid][iSaveType]));
 	format(str, sizeof(str), "%s,Memo='%s'", str, escape(PlayerItemInfo[playerid][itemid][iMemo]));
+	format(str, sizeof(str), "%s,VirtualItem=%d", str, PlayerItemInfo[playerid][itemid][iVirtualItem]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, PlayerItemInfo[playerid][itemid][iID]);
 	mysql_query(str);
 	return 1;
@@ -570,7 +573,7 @@ stock LoadPlayerItemData(playerid)
 		receive[7][128],
 		idx;
 	UnloadPlayerItemData(playerid);
-	format(str, sizeof(str), "SELECT * FROM playeritemdata WHERE Ownername='%s'", GetPlayerNameA(playerid));
+	format(str, sizeof(str), "SELECT * FROM playeritemdata WHERE Ownername='%s' AND VirtualItem=%d", GetPlayerNameA(playerid), GetPVarInt(playerid, "pAgentMode"));
 	mysql_query(str);
 	mysql_store_result();
 	for (new i = 0, t = mysql_num_rows(); i < t; i++)
@@ -585,6 +588,7 @@ stock LoadPlayerItemData(playerid)
 
 		strcpy(PlayerItemInfo[playerid][i][iSaveType], receive[idx++]);
 		strcpy(PlayerItemInfo[playerid][i][iMemo], receive[idx++]);
+		PlayerItemInfo[playerid][i][iVirtualItem] = strval(receive[idx++]);
 		
 		new modelid = PlayerItemInfo[playerid][i][iItemmodel];
 		if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "¿Þ¼Õ", true))
@@ -626,9 +630,9 @@ stock UnloadPlayerItemData(playerid)
 stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[])
 {
 	new str[1024];
-	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo)");
-	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s')", str,
-		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo));
+	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem)");
+	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s',%d)", str,
+		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"));
 	mysql_query(str);
 	LoadPlayerItemData(playerid);
 	return 1;

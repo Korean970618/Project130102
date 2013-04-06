@@ -60,8 +60,11 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\
 		/무기, /명령어권한부여, /명령어권한회수\n\
 		\n");
+		strcat(help, ""C_PASTEL_YELLOW"- 행동 -"C_WHITE"\n\
+		/날기, /클로킹\n\
+		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n\
-		/출두, /소환, /마크, /마크로, /날기, /텔레포트, /로산, /샌피, /라벤\n\
+		/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n\
 		/건물생성, /건물설정, /아이템생성, /아이템제거\n\
@@ -318,6 +321,34 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		return 1;
 	}
 	//
+	// 행동
+	//
+	else if (!strcmp(cmd, "/날기", true))
+	{
+		if (GetPVarType(playerid, "FlyMode")) CancelFlyMode(playerid);
+		else FlyMode(playerid);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
+	{
+		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
+		{
+			SetPVarInt(playerid, "pAgentVw", GetPlayerVirtualWorld(playerid));
+			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
+			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
+			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
+			AgentLog(playerid, "클로킹하였습니다.");
+		}
+		else
+		{
+			SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "pAgentVw"));
+			DeletePVar(playerid, "pAgentVw");
+			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
+			AgentLog(playerid, "클로킹을 해제했습니다.");
+		}
+		return 1;
+	}
+	//
 	// 이동
 	//
 	else if (!strcmp(cmd, "/출두", true) || !strcmp(cmd, "/가", true)  || !strcmp(cmd, "/가자", true))
@@ -377,12 +408,6 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		SetCameraBehindPlayer(playerid);
 		SetPlayerInterior(playerid, MarkInterior[playerid]);
 		SetPlayerVirtualWorld(playerid, MarkVirtualWorld[playerid]);
-		return 1;
-	}
-	else if (!strcmp(cmd, "/날기", true))
-	{
-		if (GetPVarType(playerid, "FlyMode")) CancelFlyMode(playerid);
-		else FlyMode(playerid);
 		return 1;
 	}
 	else if (!strcmp(cmd, "/텔레포트", true))
@@ -627,7 +652,7 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 						SetPVarString(destid, varname, str, array);
 				}
 				format(str, sizeof(str), "%s님이 %s님의 %s 수정: %s", GetPlayerNameA(playerid), GetPlayerNameA(destid), varname, str);
-				SendAdminMessage(COLOR_YELLOW, str);
+				SendAdminMessage(COLOR_YELLOW, str, 0);
 			}
 			SetPVarInt(playerid, "EditPVar_destid", 0);
 			SetPVarString(playerid, "EditPVar_varname", chNullString);
@@ -985,8 +1010,12 @@ public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 stock SendAdminMessage(color, message[], level=1)
 {
 	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		if (GetPVarInt(i, "pAdmin") >= level)
+	{
+		new alevel = GetPVarInt(i, "pAdmin");
+		if (alevel && alevel >= level
+		||	!level && GetPVarInt(i, "pAgent"))
 			SendClientMessage(i, color, message);
+	}
 }
 //-----< ShowAttachedObjectList >-----------------------------------------------
 stock ShowAttachedObjectList(playerid, destid, dialogid)

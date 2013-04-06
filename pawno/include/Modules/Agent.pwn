@@ -74,76 +74,28 @@ public pTimerTickHandler_Agent(nsec, playerid)
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Agent(playerid, cmdtext[])
 {
-	new cmd[256], idx,
-		str[256],
-		destid;
+	new cmd[256], idx;
 	cmd = strtok(cmdtext, idx);
 	
-	if (!GetPVarInt(playerid, "pAgent")
-	&& !IsGrantedCommand(playerid, cmdtext)) return 0;
-	else if (!strcmp(cmd, "/에이전트도움말", true) || !strcmp(cmd, "/agenthelp", true))
-	{
-		new help[2048];
-		strcat(help, ""C_PASTEL_YELLOW"/에이전트"C_WHITE": 에이전트 모드를 ON/OFF합니다.\n");
-		strcat(help, ""C_PASTEL_YELLOW"/클로킹"C_WHITE": 자신의 모습을 숨깁니다.\n");
-		strcat(help, ""C_PASTEL_YELLOW"/에이전트출두 [플레이어]"C_WHITE": 해당 플레이어에게 출두합니다.");
-		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "에이전트 도움말", help, "닫기", "");
-		return 1;
-	}
+	if (!GetPVarInt(playerid, "pAgent")) return 0;
 	else if (!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
 	{
 		if (GetPVarInt(playerid, "pAgentMode"))
 		{
 			DeletePVar(playerid, "pAgentMode");
+			UnloadPlayerItemData(playerid);
+			LoadPlayerItemData(playerid);
 			SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 종료했습니다.");
 			AgentLog(playerid, "에이전트 모드를 종료했습니다.");
 			return 1;
 		}
 		SetPVarInt(playerid, "pAgentMode", true);
+		LoadPlayerItemData(playerid);
+		for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+			if (IsValidPlayerItemID(playerid, i))
+				DestroyPlayerItem(playerid, i);
 		SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 시작합니다.");
 		AgentLog(playerid, "에이전트 모드를 시작합니다.");
-		return 1;
-	}
-	
-	if (!GetPVarInt(playerid, "pAgentMode")) return 0;
-	else if (!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
-	{
-		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
-		{
-			SetPVarInt(playerid, "pAgentVw", GetPlayerVirtualWorld(playerid));
-			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
-			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
-			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
-			AgentLog(playerid, "클로킹하였습니다.");
-		}
-		else
-		{
-			SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "pAgentVw"));
-			DeletePVar(playerid, "pAgentVw");
-			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
-			AgentLog(playerid, "클로킹을 해제했습니다.");
-		}
-		return 1;
-	}
-	else if (!strcmp(cmd, "/에이전트출두", true))
-	{
-		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
-			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /에이전트출두 [플레이어]");
-		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
-			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-		new Float:x, Float:y, Float:z, Float:a;
-		GetDynamicObjectPos(PositionObject[destid], x, y, z);
-		GetPlayerFacingAngle(destid, a);
-		x += 1.0 * floatsin(-a, degrees);
-		y += 1.0 * floatcos(-a, degrees);
-		SetPlayerPos(playerid, x, y, z);
-		SetPlayerFacingAngle(playerid, a + 180.0);
-		SetCameraBehindPlayer(playerid);
-		SetPlayerInterior(playerid, GetPlayerInterior(destid));
-		format(str, sizeof(str), "%s님에게 출두했습니다.", GetPlayerNameA(destid));
-		AgentLog(playerid, str);
 		return 1;
 	}
 	
