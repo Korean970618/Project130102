@@ -176,7 +176,7 @@ public OnGameModeInit()
 	AddHandler("Agent",				gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	AddHandler("GVar",				gInitHandler);
-	AddHandler("Cheat",             pKeyStateChangeHandler, pSpawnHandler);
+	AddHandler("Cheat",				pKeyStateChangeHandler, pSpawnHandler);
 	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
