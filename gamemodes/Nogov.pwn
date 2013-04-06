@@ -13,19 +13,18 @@
 
   < Dialog List >
 	0: Nogov Main Script
-	25: Player Core
-	50: Admin Command
-	75: PropertyData Core
-	100: Item Core
-	125: Agent Core
+	25: Player Module
+	50: Admin Module
+	75: PropertyData Module
+	100: Item Module
 
   < MpList List >
 	0: Nogov Main Script
-	25: Admin Command
+	25: Admin Module
 
   < VirtualWorld List >
 	0: Nogov Main Script
-	25: Agent Core
+	25: Position Module
 
   < Attached Object Slots (0~9) >
 	0: Item Core
@@ -58,7 +57,7 @@
 #include "Modules/Vehicle.pwn"
 #include "Modules/Item.pwn"
 #include "Modules/Fly.pwn"
-#include "Modules/Agent.pwn"
+#include "Modules/Position.pwn"
 #include "Modules/MpList.pwn"
 #include "Modules/GVar.pwn"
 #include "Modules/Admin.pwn"
@@ -173,7 +172,7 @@ public OnGameModeInit()
 	AddHandler("Vehicle",		   	gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pKeyStateChangeHandler, pSelectObjectHandler, pUpdateHandler, pCommandTextHandler, dResponseHandler);
 	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
-	AddHandler("Agent",				gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler, pCommandTextHandler, dResponseHandler);
+	AddHandler("Position",			gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	AddHandler("GVar",				gInitHandler);
 	AddHandler("Cheat",				pKeyStateChangeHandler, pSpawnHandler);

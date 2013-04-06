@@ -20,6 +20,7 @@
 	SendAdminMessage(color, message[], level=1)
 	ShowAttachedObjectList(playerid, destid, dialogid)
 	ShowAttachedObjectModifier(playerid, destid, index, dialogid, dialogstyle)
+	AgentLog(playerid, result[])
 
 */
 
@@ -50,6 +51,28 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 		destid,
 		str[256];
 	cmd = strtok(cmdtext, idx);
+	
+	if (!GetPVarInt(playerid, "pAgent")) return 0;
+	else if (!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
+	{
+		if (GetPVarInt(playerid, "pAgentMode"))
+		{
+			DeletePVar(playerid, "pAgentMode");
+			UnloadPlayerItemData(playerid);
+			LoadPlayerItemData(playerid);
+			SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 종료했습니다.");
+			AgentLog(playerid, "에이전트 모드를 종료했습니다.");
+			return 1;
+		}
+		SetPVarInt(playerid, "pAgentMode", true);
+		LoadPlayerItemData(playerid);
+		for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+			if (IsValidPlayerItemID(playerid, i))
+				DestroyPlayerItem(playerid, i);
+		SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 시작합니다.");
+		AgentLog(playerid, "에이전트 모드를 시작합니다.");
+		return 1;
+	}
 
 	if (GetPVarInt(playerid, "pAdmin") < 1
 	&& !IsGrantedCommand(playerid, cmd)) return 0;
@@ -331,18 +354,18 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
 	{
-		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Agent(0))
+		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Position(0))
 		{
-			SetPVarInt(playerid, "pAgentVw", GetPlayerVirtualWorld(playerid));
-			SetPlayerVirtualWorld(playerid, VirtualWorld_Agent(0));
+			SetPVarInt(playerid, "pClockingVw", GetPlayerVirtualWorld(playerid));
+			SetPlayerVirtualWorld(playerid, VirtualWorld_Position(0));
 			SetDynamicObjectPos(PositionObject[playerid], 0.0, 0.0, 0.0);
 			GameTextForPlayer(playerid, "Cloaked", 1000, 2);
 			AgentLog(playerid, "클로킹하였습니다.");
 		}
 		else
 		{
-			SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "pAgentVw"));
-			DeletePVar(playerid, "pAgentVw");
+			SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "pClockingVw"));
+			DeletePVar(playerid, "pClockingVw");
 			GameTextForPlayer(playerid, "Uncloaked", 1000, 2);
 			AgentLog(playerid, "클로킹을 해제했습니다.");
 		}
@@ -1105,5 +1128,25 @@ stock ShowTextDrawModifier(playerid, textid, dialogid, dialogstyle)
 	strcat(str, "\n");  strtab(str,	"PreviewVehCol",	17);	format(str, sizeof(str), "%s%d,%d", str, TextDrawInfo[textid][tdPreviewVehCol][0], TextDrawInfo[textid][tdPreviewVehCol][1]);
 	ShowPlayerDialog(playerid, dialogid, dialogstyle, "TextDraw", str, "확인", "뒤로");
 	return 1;
+}
+//-----< AgentLog >-------------------------------------------------------------
+stock AgentLog(playerid, result[])
+{
+	new File:fHandle,
+		str[256],
+		year, month, day,
+		hour, minute, second;
+	getdate(year, month, day);
+	format(str, sizeof(str), "AgentLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	fHandle = fopen(str, io_append);
+	if (fHandle)
+	{
+		gettime(hour, minute, second);
+		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
+		fwrite(fHandle, str);
+		for (new i = 0, t = strlen(result); i < t; i++)
+			fputchar(fHandle, result[i], false);
+	}
+	fclose(fHandle);
 }
 //-----<  >---------------------------------------------------------------------
