@@ -198,7 +198,7 @@ enum eTextDrawInfo
 {
 	Text:tdID,
 	Float:tdPos[2],
-	tdText[512],
+	tdText[2048],
 	Float:tdLetterSize[2],
 	Float:tdTextSize[2],
 	tdAlignment,
@@ -375,8 +375,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 //-----< ShowPlayerDialog >-----------------------------------------------------
 stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[], button2[])
 {
-	new caption_[128],
-		info_[10240];
+	new caption_[64],
+		info_[2048];
 	format(caption_, sizeof(caption_), "%s%s", C_DIALOG, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	
