@@ -13,6 +13,7 @@
 
   < Callbacks >
 	pCommandTextHandler_Admin(playerid, cmdtext[])
+	OnPlayerAdminCommandText(playerid, cmdtext[])
 	dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[])
 	mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 
@@ -20,6 +21,7 @@
 	SendAdminMessage(color, message[], level=1)
 	ShowAttachedObjectList(playerid, destid, dialogid)
 	ShowAttachedObjectModifier(playerid, destid, index, dialogid, dialogstyle)
+	AdminLog(playerid, result[])
 	AgentLog(playerid, result[])
 
 */
@@ -41,17 +43,32 @@ new Float:Mark[MAX_PLAYERS][4],
 
 //-----< Callbacks
 forward pCommandTextHandler_Admin(playerid, cmdtext[]);
+forward OnPlayerAdminCommandText(playerid, cmdtext[]);
 forward dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[]);
 forward mplResponseHandler_Admin(playerid, mplistid, selecteditem);
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Admin(playerid, cmdtext[])
+{
+	if (CallLocalFunction("OnPlayerAdminCommandText", "ds", playerid, FixBlankString(cmdtext)))
+	{
+		new str[256];
+		format(str, sizeof(str), "명령어 사용: %s", cmdtext);
+		if (GetPVarInt(playerid, "pAgent"))
+			AgentLog(playerid, str);
+		AdminLog(playerid, str);
+		return 1;
+	}
+	return 0;
+}
+//-----< OnPlayerAdminCommandText >---------------------------------------------
+public OnPlayerAdminCommandText(playerid, cmdtext[])
 {
 	new cmd[256],
 		idx,
 		destid,
 		str[256];
 	cmd = strtok(cmdtext, idx);
-	
+
 	if (!GetPVarInt(playerid, "pAgent")) return 0;
 	else if (!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
 	{
@@ -1128,6 +1145,26 @@ stock ShowTextDrawModifier(playerid, textid, dialogid, dialogstyle)
 	strcat(str, "\n");  strtab(str,	"PreviewVehCol",	17);	format(str, sizeof(str), "%s%d,%d", str, TextDrawInfo[textid][tdPreviewVehCol][0], TextDrawInfo[textid][tdPreviewVehCol][1]);
 	ShowPlayerDialog(playerid, dialogid, dialogstyle, "TextDraw", str, "확인", "뒤로");
 	return 1;
+}
+//-----< AdminLog >-------------------------------------------------------------
+stock AdminLog(playerid, result[])
+{
+	new File:fHandle,
+		str[256],
+		year, month, day,
+		hour, minute, second;
+	getdate(year, month, day);
+	format(str, sizeof(str), "AdminLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	fHandle = fopen(str, io_append);
+	if (fHandle)
+	{
+		gettime(hour, minute, second);
+		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
+		fwrite(fHandle, str);
+		for (new i = 0, t = strlen(result); i < t; i++)
+			fputchar(fHandle, result[i], false);
+	}
+	fclose(fHandle);
 }
 //-----< AgentLog >-------------------------------------------------------------
 stock AgentLog(playerid, result[])
