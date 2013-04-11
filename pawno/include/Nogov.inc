@@ -68,6 +68,9 @@
 	ResetPlayerWeapons(playerid)
 	
 	SetPlayerInterior(playerid, interiorid)
+	
+	SetPlayerHealth(playerid, Float:health)
+	SetPlayerArmour(playerid, Float:armour)
 
   < Functions >
 	native strcpy(dest[], src[], deststart=0, destend=-1, srcstart=0, srcend=-1);
@@ -304,7 +307,7 @@ public OnPlayerConnect(playerid)
 	DialogInfo[playerid] = 0;
 	
 	for (new i = 0; i < MAX_WEAPONS; i++)
-	    WeaponInfo[playerid][i] = 0;
+		WeaponInfo[playerid][i] = 0;
 	InteriorInfo[playerid] = 0;
 	
 	return OnPlayerConnect_(playerid);
@@ -1153,7 +1156,7 @@ stock _GivePlayerWeapon(playerid, weaponid, ammo)
 stock ResetPlayerWeapons_(playerid)
 {
 	for (new i = 0; i < MAX_WEAPONS; i++)
-	    WeaponInfo[playerid][i] = 0;
+		WeaponInfo[playerid][i] = 0;
 	return ResetPlayerWeapons(playerid);
 }
 stock _ResetPlayerWeapons(playerid)
@@ -1179,6 +1182,35 @@ stock _SetPlayerInterior(playerid, interiorid)
 	#define _ALS_SetPlayerInterior
 #endif
 #define SetPlayerInterior SetPlayerInterior_
+//-----<  >---------------------------------------------------------------------
+//-----< SetPlayerHealth >------------------------------------------------------
+stock SetPlayerHealth_(playerid, Float:health)
+{
+	HealthInfo[playerid] = health;
+	return SetPlayerHealth(playerid, health);
+}
+stock _SetPlayerHealth(playerid, Float:health)
+	return SetPlayerHealth(playerid, health);
+#if defined _ALS_SetPlayerHealth
+	#undef SetPlayerHealth
+#else
+	#define _ALS_SetPlayerHealth
+#endif
+#define SetPlayerHealth SetPlayerHealth
+//-----< SetPlayerArmour >------------------------------------------------------
+stock SetPlayerArmour_(playerid, Float:armour)
+{
+	ArmourInfo[playerid] = armour;
+	return SetPlayerArmour(playerid, armour);
+}
+stock _SetPlayerArmour(playerid, Float:armour)
+	return SetPlayerArmour(playerid, armour);
+#if defined _ALS_SetPlayerArmour
+	#undef SetPlayerArmour
+#else
+	#define _ALS_SetPlayerArmour
+#endif
+#define SetPlayerArmour SetPlayerArmour
 //-----<  >---------------------------------------------------------------------
 
 

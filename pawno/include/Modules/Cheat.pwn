@@ -12,6 +12,9 @@
 /*
 
   < Callbacks >
+	pConnectHandler_Cheat(playerid)
+	pUpdateHandler_Cheat(playerid)
+	TimerPlayerVehicles(playerid)
 	pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	pSpawnHandler_Cheat(playerid)
 	CheckS0beit(playerid)
@@ -27,13 +30,54 @@
 
 
 //-----< Variables
+new	LastVehicle[MAX_PLAYERS],
+	NumPlayerVehicles[MAX_PLAYERS],
+	TimerPlayerVehicles[MAX_PLAYERS];
 
 
 
 //-----< Callbacks
+forward pConnectHandler_Cheat(playerid);
+forward pUpdateHandler_Cheat(playerid);
+forward TimerPlayerVehicles(playerid);
 forward pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys);
 forward pSpawnHandler_Cheat(playerid);
 forward CheckS0beit(playerid);
+//-----< pConnectHandler >------------------------------------------------------
+public pConnectHandler_Cheat(playerid)
+{
+	LastVehicle[playerid] = INVALID_VEHICLE_ID;
+	NumPlayerVehicles[playerid]++;
+	KillTimer(TimerPlayerVehicles[playerid]);
+	TimerPlayerVehicles[playerid] = 0;
+	return 1;
+}
+//-----< pUpdateHandler >-------------------------------------------------------
+public pUpdateHandler_Cheat(playerid)
+{
+	new vehicleid = GetPlayerVehicleID(playerid);
+	if (vehicleid != LastVehicle[playerid])
+	{
+		NumPlayerVehicles[playerid]++;
+		LastVehicle[playerid] = vehicleid;
+		KillTimer(TimerPlayerVehicles[playerid]);
+		TimerPlayerVehicles[playerid] = SetTimerEx("PlayerVehiclesTimer", 1000, false, "d", playerid);
+		if (NumPlayerVehicles[playerid] >= 5)
+		{
+		    SendClientMessage(playerid, COLOR_WHITE, "Vehicle Cleo Detected.");
+		    TimerPlayerVehicles(playerid);
+		}
+	}
+	return 1;
+}
+//-----< TimerPlayerVehicles >--------------------------------------------------
+public TimerPlayerVehicles(playerid)
+{
+	NumPlayerVehicles[playerid]++;
+	KillTimer(TimerPlayerVehicles[playerid]);
+	TimerPlayerVehicles[playerid] = 0;
+	return 1;
+}
 //-----< pKeyStateChangeHandler >-----------------------------------------------
 public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 {
@@ -47,11 +91,25 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	WeaponInfo[playerid][weaponid] = ammo;
 	
 	new interiorid = GetPlayerInterior(playerid);
-	if (GetPlayerInterior(playerid) == interiorid)
+	if (InteriorInfo[playerid] != interiorid)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Interior Cheat Detected.");
 	}
 	InteriorInfo[playerid] = interiorid;
+	
+	new Float:health = GetPlayerHealthA(playerid);
+	if (HealthInfo[playerid] < health)
+	{
+		SendClientMessage(playerid, COLOR_WHITE, "Health Cheat Detected.");
+	}
+	HealthInfo[playerid] = health;
+	
+	new Float:armour = GetPlayerArmourA(playerid);
+	if (ArmourInfo[playerid] < armour)
+	{
+		SendClientMessage(playerid, COLOR_WHITE, "Armour Cheat Detected.");
+	}
+	ArmourInfo[playerid] = armour;
 	
 	return 1;
 }
