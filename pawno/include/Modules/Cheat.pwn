@@ -32,7 +32,7 @@
 //-----< Variables
 new	LastVehicle[MAX_PLAYERS],
 	NumPlayerVehicles[MAX_PLAYERS],
-	TimerPlayerVehicles[MAX_PLAYERS];
+	HandlePlayerVehicles[MAX_PLAYERS];
 
 
 
@@ -48,8 +48,8 @@ public pConnectHandler_Cheat(playerid)
 {
 	LastVehicle[playerid] = INVALID_VEHICLE_ID;
 	NumPlayerVehicles[playerid]++;
-	KillTimer(TimerPlayerVehicles[playerid]);
-	TimerPlayerVehicles[playerid] = 0;
+	KillTimer(HandlePlayerVehicles[playerid]);
+	HandlePlayerVehicles[playerid] = 0;
 	return 1;
 }
 //-----< pUpdateHandler >-------------------------------------------------------
@@ -60,12 +60,12 @@ public pUpdateHandler_Cheat(playerid)
 	{
 		NumPlayerVehicles[playerid]++;
 		LastVehicle[playerid] = vehicleid;
-		KillTimer(TimerPlayerVehicles[playerid]);
-		TimerPlayerVehicles[playerid] = SetTimerEx("PlayerVehiclesTimer", 1000, false, "d", playerid);
+		KillTimer(HandlePlayerVehicles[playerid]);
+		HandlePlayerVehicles[playerid] = SetTimerEx("PlayerVehiclesTimer", 1000, false, "d", playerid);
 		if (NumPlayerVehicles[playerid] >= 5)
 		{
-		    SendClientMessage(playerid, COLOR_WHITE, "Vehicle Cleo Detected.");
-		    TimerPlayerVehicles(playerid);
+			SendClientMessage(playerid, COLOR_WHITE, "Vehicle Cleo Detected.");
+			TimerPlayerVehicles(playerid);
 		}
 	}
 	return 1;
@@ -74,8 +74,8 @@ public pUpdateHandler_Cheat(playerid)
 public TimerPlayerVehicles(playerid)
 {
 	NumPlayerVehicles[playerid]++;
-	KillTimer(TimerPlayerVehicles[playerid]);
-	TimerPlayerVehicles[playerid] = 0;
+	KillTimer(HandlePlayerVehicles[playerid]);
+	HandlePlayerVehicles[playerid] = 0;
 	return 1;
 }
 //-----< pKeyStateChangeHandler >-----------------------------------------------

@@ -238,7 +238,9 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 	AnimationInfo[MAX_PLAYERS][eAnimationInfo],
 	DialogInfo[MAX_PLAYERS],
 	WeaponInfo[MAX_PLAYERS][MAX_WEAPONS],
-	InteriorInfo[MAX_PLAYERS];
+	InteriorInfo[MAX_PLAYERS],
+	Float:HealthInfo[MAX_PLAYERS],
+	Float:ArmourInfo[MAX_PLAYERS];
 
 
 
@@ -309,6 +311,8 @@ public OnPlayerConnect(playerid)
 	for (new i = 0; i < MAX_WEAPONS; i++)
 		WeaponInfo[playerid][i] = 0;
 	InteriorInfo[playerid] = 0;
+	HealthInfo[playerid] = 100.0;
+	ArmourInfo[playerid] = 0.0;
 	
 	return OnPlayerConnect_(playerid);
 }
@@ -1196,7 +1200,7 @@ stock _SetPlayerHealth(playerid, Float:health)
 #else
 	#define _ALS_SetPlayerHealth
 #endif
-#define SetPlayerHealth SetPlayerHealth
+#define SetPlayerHealth SetPlayerHealth_
 //-----< SetPlayerArmour >------------------------------------------------------
 stock SetPlayerArmour_(playerid, Float:armour)
 {
@@ -1210,7 +1214,7 @@ stock _SetPlayerArmour(playerid, Float:armour)
 #else
 	#define _ALS_SetPlayerArmour
 #endif
-#define SetPlayerArmour SetPlayerArmour
+#define SetPlayerArmour SetPlayerArmour_
 //-----<  >---------------------------------------------------------------------
 
 
