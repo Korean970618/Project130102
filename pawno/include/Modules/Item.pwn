@@ -20,6 +20,11 @@
 	dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
 
   < Functions >
+	CreateItemModelDataTable()
+	SaveItemModelDataById(modelid)
+	SaveItemModelData()
+	LoadItemModelData()
+  
 	CreateItemDataTable()
 	SaveItemDataById(itemid)
 	SaveItemData()
@@ -45,6 +50,9 @@
 	ShowItemModelList(playerid, dialogid)
 	GetPlayerNearestItem(playerid, Float:distance=1.0)
 	GetItemSaveTypeCode(savetype[])
+	
+	IsValidItemModelID(modelid)
+	GetMaxItemModels()
 	IsValidItemID(itemid)
 	GetMaxItems()
 	IsValidPlayerItemID(playerid, itemid)
@@ -93,7 +101,8 @@ enum eItemModelInfo
 	Float:imRot2[3],
 	Float:imScale2[3]
 }
-new ItemModelInfo[2][eItemModelInfo] =
+new ItemModelInfo[100][eItemModelInfo];
+/*new ItemModelInfo[2][eItemModelInfo] =
 {
 	{
 		"TV", 1429, -0.75, 60, "TVºÁ¼­ ¹¹ÇÏ°Ú³ë... ±×³É ºÎ½¤ ¹ö¸±±î?",
@@ -105,7 +114,7 @@ new ItemModelInfo[2][eItemModelInfo] =
 		{ 0.3, -0.3, -0.3 }, { 45.0, 0.0, 90.0 }, { 1.0, 1.0, 1.0 },
 		{ 0.3, 0.1, 0.1 }, { 100.0, 0.0, 75.0 }, { 1.0, 1.0, 1.0 }
 	}
-};
+};*/
 
 
 
@@ -121,6 +130,8 @@ forward PlunderTimer(playerid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Item()
 {
+	CreateItemModelDataTable();
+	LoadItemModelData();
 	CreateItemDataTable();
 	LoadItemData();
 	CreatePlayerItemDataTable();
@@ -418,6 +429,92 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 
 
 //-----< Functions
+//-----< CreateItemModelDataTable >---------------------------------------------
+stock CreateItemModelDataTable()
+{
+	new str[1024];
+	strcpy(str, "CREATE TABLE IF NOT EXISTS itemmodeldata (");
+	strcat(str, "ID int(5) NOT NULL PRIMARY KEY");
+	strcat(str, ",Name varchar(32) NOT NULL DEFAULT ' '");
+	strcat(str, ",Model int(10) NOT NULL default '0'");
+	strcat(str, ",ZVar float(16,4) NOT NULL default '0.0'");
+	strcat(str, ",Weight int(10) NOT NULL default '0'");
+	strcat(str, ",Info varchar(256) NOT NULL default ' '");
+	strcat(str, ",Position1 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
+	strcat(str, ",Position2 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
+	mysql_query(str);
+	return 1;
+}
+//-----< SaveItemModelDataById >------------------------------------------------
+stock SaveItemModelDataById(modelid)
+{
+	new str[2048];
+	format(str, sizeof(str), "UPDATE itemmodeldata SET");
+	format(str, sizeof(str), "%s Name='%s'", str, escape(ItemModelInfo[modelid][imName]));
+	format(str, sizeof(str), "%s,Model=%d", str, ItemModelInfo[modelid][imModel]);
+	format(str, sizeof(str), "%s,ZVar=%.4f", str, ItemModelInfo[modelid][imZVar]);
+	format(str, sizeof(str), "%s,Weight=%d", str, ItemModelInfo[modelid][imWeight]);
+	format(str, sizeof(str), "%s,Info='%s'", str, escape(ItemModelInfo[modelid][imInfo]));
+	format(str, sizeof(str), "%s,Position1='%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str,
+		ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imScale1][0]
+		ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imScale1][1]
+		ItemModelInfo[modelid][imOffset1][2], ItemModelInfo[modelid][imRot1][2], ItemModelInfo[modelid][imScale1][2]);
+	format(str, sizeof(str), "%s,Position2='%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str,
+		ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imScale2][0]
+		ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imScale2][1]
+		ItemModelInfo[modelid][imOffset2][2], ItemModelInfo[modelid][imRot2][2], ItemModelInfo[modelid][imScale2][2]);
+	format(str, sizeof(str), "%s WHERE ID=%d", str, modelid);
+}
+//-----< SaveItemModelData >----------------------------------------------------
+stock SaveItemModelData()
+{
+	for (new i = 0, t = GetMaxItemModels(); i < t; i++)
+		if (IsValidItemModelID(i))
+			SaveItemModelDataById(i);
+	return 1;
+}
+//-----< LoadItemModelData >----------------------------------------------------
+stock LoadItemModelData()
+{
+	new str[2048],
+		id,
+		receive[9][256],
+		idx,
+		splited[9][32];
+	mysql_query("SELECT * FROM itemmodeldata");
+	mysql_store_result();
+	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	{
+		mysql_fetch_row(str, "|");
+		split(str, receive, '|');
+		idx = 0;
+
+		id = strval(receive[idx++]);
+		strcpy(ItemModelInfo[id][imName], receive[idx++]);
+		ItemModelInfo[id][imModel] = strval(receive[idx++]);
+		ItemModelInfo[id][imZVar] = floatstr(receive[idx++]);
+		ItemModelInfo[id][imWeight] = strval(receive[idx++]);
+		strcpy(ItemModelInfo[id][imInfo], receive[idx++]);
+
+		split(receive[idx++], splited, ',');
+		for (new j = 0; j < 3; j++)
+		{
+			ItemModelInfo[id][imOffset1][j] = floatstr(splited[(j*3)]);
+			ItemModelInfo[id][imRot1][j] = floatstr(splited[(j*3)+1]);
+			ItemModelInfo[id][imScale1][j] = floatstr(splited[(j*3)+2]);
+		}
+
+		split(receive[idx++], splited, ',');
+		for (new j = 0; j < 3; j++)
+		{
+			ItemModelInfo[id][imOffset2][j] = floatstr(splited[(j*3)]);
+			ItemModelInfo[id][imRot2][j] = floatstr(splited[(j*3)+1]);
+			ItemModelInfo[id][imScale2][j] = floatstr(splited[(j*3)+2]);
+		}
+	}
+	return 1;
+}
+//-----<  >---------------------------------------------------------------------
 //-----< CreateItemDataTable >--------------------------------------------------
 stock CreateItemDataTable()
 {
@@ -779,6 +876,13 @@ stock GetItemSaveTypeCode(savetype[])
 	else if (!strcmp(savetype, "¾ç¼Õ", true))   code = 2;
 	return code;
 }
+//-----<  >---------------------------------------------------------------------
+//-----< IsValidItemModelID >---------------------------------------------------
+stock IsValidItemModelID(modelid)
+	return (strlen(ItemModelInfo[modelid][imName]))?true:false;
+//-----< GetMaxItemModels >-----------------------------------------------------
+stock GetMaxItemModels()
+	return sizeof(ItemModelInfo);
 //-----< IsValidItemID >--------------------------------------------------------
 stock IsValidItemID(itemid)
 {
