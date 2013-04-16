@@ -51,6 +51,7 @@ forward gInitHandler_Vehicle();
 public gInitHandler_Vehicle()
 {
 	CreateVehicleDataTable();
+	LoadVehicleData();
 	return 1;
 }
 
