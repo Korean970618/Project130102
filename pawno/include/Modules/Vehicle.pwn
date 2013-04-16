@@ -104,6 +104,7 @@ stock SaveVehicleData()
 //-----< LoadVehicleData >------------------------------------------------------
 stock LoadVehicleData()
 {
+	new count = GetTickCount();
 	new str[512],
 		receive[8][128],
 		idx,
@@ -138,6 +139,7 @@ stock LoadVehicleData()
 		SetVehicleVirtualWorld(VehicleInfo[i][vVID], VehicleInfo[i][vVirtualWorld]);
 		ChangeVehiclePaintjob(VehicleInfo[i][vVID], VehicleInfo[i][vPaintjob]);
 	}
+	printf("vehicledata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
 //-----< UnloadVehicleDataById >------------------------------------------------

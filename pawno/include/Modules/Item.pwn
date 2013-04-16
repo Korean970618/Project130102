@@ -477,6 +477,7 @@ stock SaveItemModelData()
 //-----< LoadItemModelData >----------------------------------------------------
 stock LoadItemModelData()
 {
+	new count = GetTickCount();
 	new str[2048],
 		id,
 		receive[9][256],
@@ -513,6 +514,7 @@ stock LoadItemModelData()
 			ItemModelInfo[id][imScale2][j] = floatstr(splited[(j*3)+2]);
 		}
 	}
+	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -554,6 +556,7 @@ stock SaveItemData()
 //-----< LoadItemData >---------------------------------------------------------
 stock LoadItemData()
 {
+	new count = GetTickCount();
 	new str[1024],
 		receive[6][128],
 		idx,
@@ -587,6 +590,7 @@ stock LoadItemData()
 			INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0,
 			ItemInfo[i][iVirtualWorld], ItemInfo[i][iInterior]);
 	}
+	printf("itemdata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
 //-----< UnloadItemDataById >---------------------------------------------------

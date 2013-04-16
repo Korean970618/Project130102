@@ -106,6 +106,7 @@ stock SaveGVarData()
 //-----< LoadGVarData >---------------------------------------------------------
 stock LoadGVarData()
 {
+	new count = GetTickCount();
 	new str[768],
 		receive[5][512],
 		idx;
@@ -123,6 +124,7 @@ stock LoadGVarData()
 		GVar[i][gIntValue] = strval(receive[idx++]);
 		GVar[i][gFloatValue] = floatstr(receive[idx++]);
 	}
+	printf("gvardata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 }
 //-----<  >---------------------------------------------------------------------
 //-----< SetGVarString >--------------------------------------------------------
