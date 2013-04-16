@@ -22,10 +22,10 @@
 
 
 //-----< Defines
-#define SQL_IP		  "pureunba.no-ip.org"
-#define SQL_ID		  "samp_nogov"
-#define SQL_PW		  "nogov2013"
-#define SQL_DB		  "samp_nogov"
+#define SQL_IP		  "acu.pe.kr"
+#define SQL_ID		  "roto"
+#define SQL_PW		  "130414"
+#define SQL_DB		  "samp_roto"
 
 
 

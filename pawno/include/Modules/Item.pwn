@@ -442,6 +442,7 @@ stock CreateItemModelDataTable()
 	strcat(str, ",Info varchar(256) NOT NULL default ' '");
 	strcat(str, ",Position1 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
 	strcat(str, ",Position2 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
+	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
 }
