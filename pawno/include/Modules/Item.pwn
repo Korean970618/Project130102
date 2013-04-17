@@ -24,6 +24,8 @@
 	SaveItemModelDataById(modelid)
 	SaveItemModelData()
 	LoadItemModelData()
+	AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3])
+	DestoryItemModel(modelid)
   
 	CreateItemDataTable()
 	SaveItemDataById(itemid)
@@ -465,6 +467,7 @@ stock SaveItemModelDataById(modelid)
 		ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imScale2][1]
 		ItemModelInfo[modelid][imOffset2][2], ItemModelInfo[modelid][imRot2][2], ItemModelInfo[modelid][imScale2][2]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, modelid);
+	mysql_query(str);
 }
 //-----< SaveItemModelData >----------------------------------------------------
 stock SaveItemModelData()
@@ -515,6 +518,23 @@ stock LoadItemModelData()
 		}
 	}
 	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
+	return 1;
+}
+//-----< AddItemModel >---------------------------------------------------------
+stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3])
+{
+	new str[2048];
+	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2) VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f')",
+	    modelid, name, model, zvar, weight, info, offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2]);
+	mysql_query(str);
+	return 1;
+]
+//-----< DestroyItemModel >-----------------------------------------------------
+stock DestroyItemModel(modelid)
+{
+	new str[1024];
+	format(str, sizeof(str), "DELETE FROM itemmodeldata WHERE Model=%d", modelid);
+	mysql_query(str);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -620,8 +640,8 @@ stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worl
 	LoadItemData();
 	return 1;
 }
-//-----< DestroyItem >----------------------------------------------------------
-stock DestroyItem(itemid)
+//-----< DestroyItemModel >-----------------------------------------------------
+stock DestroyItemModel(itemid)
 {
 	new str[128];
 	format(str, sizeof(str), "DELETE FROM itemdata WHERE ID=%d", ItemInfo[itemid][iID]);
