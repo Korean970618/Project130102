@@ -525,7 +525,7 @@ stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:off
 {
 	new str[2048];
 	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2) VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f')",
-	    modelid, name, model, zvar, weight, info, offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2]);
+		modelid, name, model, zvar, weight, info, offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2]);
 	mysql_query(str);
 	return 1;
 ]

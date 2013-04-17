@@ -64,6 +64,7 @@
 #include "Modules/Animation.pwn"
 #include "Modules/Grant.pwn"
 #include "Modules/Cheat.pwn"
+#include "Modules/Accel.pwn"
 
 
 
@@ -164,7 +165,6 @@ main()
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
-	// Cores
 	AddHandler("MySQL",			 	gInitHandler);
 	AddHandler("InitExit",			gInitHandler, gExitHandler);
 	AddHandler("Player",			gInitHandler, pConnectHandler, pDisconnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, aConnectHandler, pUpdateHandler, pDeathHandler, pKeyStateChangeHandler, pSpawnHandler, pCommandTextHandler, dRequestHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
@@ -176,9 +176,9 @@ public OnGameModeInit()
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	AddHandler("GVar",				gInitHandler);
 	AddHandler("Cheat",				pKeyStateChangeHandler, pSpawnHandler);
-	// Commands
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
+	AddHandler("Accel",				pUpdateHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);
 	Timer_OneSecTimer = GetTickCount();

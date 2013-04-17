@@ -98,7 +98,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new help[2048];
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n\
 		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\
-		/무기, /명령어권한부여, /명령어권한회수\n\
+		/무기, /명령어권한부여, /명령어권한회수 /고정가속도\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 행동 -"C_WHITE"\n\
 		/날기, /클로킹\n\
@@ -358,6 +358,24 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_YELLOW, str);
 		format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", cmd);
 		SendClientMessage(destid, COLOR_YELLOW, str);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/고정가속도", true))
+	{
+	    cmd = strtok(cmdtext, idx);
+	    if (!strlen(cmd))
+	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
+		SetPVarFloat(playerid, "pAccel", floatstr(cmd));
+		format(str, sizeof(str), "관리자에 의해 고정가속도 설정 - %.4f", floatstr(cmd));
+		SendClientMessage(destid, COLOR_YELLOW, str);
+		format(str, sizeof(str), "%s님의 고정가속도 설정 - %.4f", GetPlayerNameA(destid), floatstr(cmd));
+		SendClientMessage(playerid, COLOR_YELLOW, str);
 		return 1;
 	}
 	//
