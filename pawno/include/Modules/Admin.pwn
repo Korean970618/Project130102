@@ -104,7 +104,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		/날기, /클로킹\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 이동 -"C_WHITE"\n\
-		/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤\n\
+		/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤, /건물로\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n\
 		/건물생성, /건물설정, /아이템생성, /아이템제거\n\
@@ -362,15 +362,15 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	}
 	else if (!strcmp(cmd, "/고정가속도", true))
 	{
-	    cmd = strtok(cmdtext, idx);
-	    if (!strlen(cmd))
-	        return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
-		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
-		    return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
 		if (!strlen(cmd))
-		    return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
+		destid = ReturnUser(cmd);
+		if (!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
 		SetPVarFloat(playerid, "pAccel", floatstr(cmd));
 		format(str, sizeof(str), "관리자에 의해 고정가속도 설정 - %.4f", floatstr(cmd));
 		SendClientMessage(destid, COLOR_YELLOW, str);
@@ -503,6 +503,17 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		else
 			SetPlayerPos(playerid, 1679.5079, 1448.0795, 47.7813 + 2.0);
 		SetPlayerInterior(playerid, 0);
+		return 1;
+	}
+	else if (!strcmp(cmd, "/건물로", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if (!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /건물로 [건물번호]");
+		destid = strval(cmd);
+		if (!IsValidPropertyID(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 건물입니다.");
+		SetPlayerPosToProperty(playerid, destid);
 		return 1;
 	}
 	//

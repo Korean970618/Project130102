@@ -28,6 +28,7 @@
 	UnloadPropertyData()
 	RemoveProperty(propid)
 	ShowPropertyList(playerid, dialogid)
+	SetPlayerPosToProperty(playerid, propid)
 	GetPropertyDBID(propid)
 	IsValidPropertyID(propid)
 	GetMaxProperties()
@@ -506,6 +507,14 @@ stock ShowPropertyModifier(playerid, propid)
 	strcat(str, "\n> 취소하기");
 	
 	ShowPlayerDialog(playerid, DialogId_Property(0), DIALOG_STYLE_LIST, "건물 설정", str, "확인", "닫기");
+	return 1;
+}
+//-----< SetPlayerPosToProperty >-----------------------------------------------
+stock SetPlayerPosToProperty(playerid, propid)
+{
+	SetPlayerInterior(playerid, PropertyInfo[propid][pInteriorEx]);
+	SetPlayerVirtualWorld(playerid, PropertyInfo[propid][pVirtualWorldEx]);
+	SetPlayerPos(playerid, PropertyInfo[propid][pPosEx][0], PropertyInfo[propid][pPosEx][1], PropertyInfo[propid][pPosEx][2]);
 	return 1;
 }
 //-----< GetPropertyDBID >------------------------------------------------------
