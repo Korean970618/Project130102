@@ -33,8 +33,10 @@
 	LoadItemData()
 	UnloadItemDataById(itemid)
 	UnloadItemData()
-	CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[])
+	CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0)
 	DestroyItem(itemid)
+	SetItemHealth(itemid, health)
+	GetItemHealth(itemid)
 	
 	CreatePlayerItemDataTable()
 	SavePlayerItemDataById(playerid, itemid)
@@ -42,7 +44,9 @@
 	LoadPlayerItemData(playerid)
 	UnloadPlayerItemDataById(playerid, itemid)
 	UnloadPlayerItemData(playerid)
-	CreatePlayerItem(playerid, itemmodel)
+	CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0)
+	SetPlayerItemHealth(playerid, itemid, health)
+	GetPlayerItemHealth(playerid, itemid)
 	
 	GivePlayerItem(playerid, itemid, savetype[]="가방")
 	GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
@@ -83,6 +87,7 @@ enum eItemInfo
 	iSaveType[32],
 	iMemo[128],
 	iVirtualItem,
+	iHealth,
 	
 	iObject,
 	Text3D:i3DText
@@ -101,7 +106,8 @@ enum eItemModelInfo
 	Float:imScale1[3],
 	Float:imOffset2[3],
 	Float:imRot2[3],
-	Float:imScale2[3]
+	Float:imScale2[3],
+	imMaxHealth
 }
 new ItemModelInfo[100][eItemModelInfo];
 /*new ItemModelInfo[2][eItemModelInfo] =
@@ -294,7 +300,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					return 1;
 				}
 				weight = (listitem == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
-				if (items + weight > GetPVarInt(playerid, "pPower"))
+				if (items + weight > GetPVarInt(playerid, "pHealth"))
 				{
 					if (items > weight)
 						SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
@@ -444,6 +450,7 @@ stock CreateItemModelDataTable()
 	strcat(str, ",Info varchar(256) NOT NULL default ' '");
 	strcat(str, ",Position1 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
 	strcat(str, ",Position2 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
+	strcat(str, ",MaxHealth int(10) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -466,6 +473,7 @@ stock SaveItemModelDataById(modelid)
 		ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imScale2][0]
 		ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imScale2][1]
 		ItemModelInfo[modelid][imOffset2][2], ItemModelInfo[modelid][imRot2][2], ItemModelInfo[modelid][imScale2][2]);
+	format(str, sizeof(str), "%s,MaxHealth=%d", str, ItemModelInfo[modelid][imMaxHealth]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, modelid);
 	mysql_query(str);
 }
@@ -483,7 +491,7 @@ stock LoadItemModelData()
 	new count = GetTickCount();
 	new str[2048],
 		id,
-		receive[9][256],
+		receive[10][256],
 		idx,
 		splited[9][32];
 	mysql_query("SELECT * FROM itemmodeldata");
@@ -516,16 +524,18 @@ stock LoadItemModelData()
 			ItemModelInfo[id][imRot2][j] = floatstr(splited[(j*3)+1]);
 			ItemModelInfo[id][imScale2][j] = floatstr(splited[(j*3)+2]);
 		}
+		
+		ItemModelInfo[id][imMaxHealth] = strval(receive[idx++]);
 	}
 	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
 //-----< AddItemModel >---------------------------------------------------------
-stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3])
+stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3], maxhealth)
 {
 	new str[2048];
-	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2) VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f')",
-		modelid, name, model, zvar, weight, info, offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2]);
+	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2,MaxHealth) VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f',%d)",
+		modelid, name, model, zvar, weight, info, offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2], maxhealth);
 	mysql_query(str);
 	return 1;
 }
@@ -547,6 +557,7 @@ stock CreateItemDataTable()
 	strcat(str, ",Itemmodel int(3) NOT NULL default '0'");
 	strcat(str, ",Pos varchar(64) NOT NULL default '0.0,0.0,0.0,0.0,0,1'");
 	strcat(str, ",Memo varchar(128) NOT NULL default ' '");
+	strcat(str, ",Health int(10) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -561,6 +572,7 @@ stock SaveItemDataById(itemid)
 		ItemInfo[itemid][iPos][0], ItemInfo[itemid][iPos][1], ItemInfo[itemid][iPos][2], ItemInfo[itemid][iPos][3],
 		ItemInfo[itemid][iInterior], ItemInfo[itemid][iVirtualWorld]);
 	format(str, sizeof(str), "%s,Memo='%s'", str, escape(ItemInfo[itemid][iMemo]));
+	format(str, sizeof(str), "%s,Health=%d", str, ItemInfo[itemid][iHealth]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, ItemInfo[itemid][iID]);
 	mysql_query(str);
 	return 1;
@@ -578,7 +590,7 @@ stock LoadItemData()
 {
 	new count = GetTickCount();
 	new str[1024],
-		receive[6][128],
+		receive[7][128],
 		idx,
 		splited[6][16];
 	UnloadItemData();
@@ -600,6 +612,7 @@ stock LoadItemData()
 		ItemInfo[i][iVirtualWorld] = strval(splited[5]);
 
 		strcpy(ItemInfo[i][iMemo], receive[idx++]);
+		ItemInfo[i][iHealth] = strval(receive[idx++]);
 
 		new Float:z = ItemInfo[i][iPos][2] + ItemModelInfo[ItemInfo[i][iItemmodel]][imZVar];
 		ItemInfo[i][iObject] = CreateDynamicObject(ItemModelInfo[ItemInfo[i][iItemmodel]][imModel],
@@ -630,12 +643,12 @@ stock UnloadItemData()
 	return 1;
 }
 //-----< CreateItem >-----------------------------------------------------------
-stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[])
+stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0)
 {
 	new str[1024];
-	format(str, sizeof(str), "INSERT INTO itemdata (Itemmodel,Pos,Memo)");
-	format(str, sizeof(str), "%s VALUES (%d,'%.4f,%.4f,%.4f,%.4f,%d,%d','%s')", str,
-		itemmodel, x, y, z, a, interiorid, worldid, escape(memo));
+	format(str, sizeof(str), "INSERT INTO itemdata (Itemmodel,Pos,Memo,Health)");
+	format(str, sizeof(str), "%s VALUES (%d,'%.4f,%.4f,%.4f,%.4f,%d,%d','%s',%d)", str,
+		itemmodel, x, y, z, a, interiorid, worldid, escape(memo), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health);
 	mysql_query(str);
 	LoadItemData();
 	return 1;
@@ -649,6 +662,19 @@ stock DestroyItem(itemid)
 	UnloadItemDataById(itemid);
 	return 1;
 }
+//-----< SetItemHealth >--------------------------------------------------------
+stock SetItemHealth(itemid, health)
+{
+	if (!health)
+		return DestroyItem(itemid);
+	ItemInfo[itemid][iHealth] = health;
+	return 1;
+}
+//-----< GetItemHealth >--------------------------------------------------------
+stock GetItemHealth(itemid)
+{
+	return ItemInfo[itemid][iHealth];
+}
 //-----<  >---------------------------------------------------------------------
 //-----< CreatePlayerItemDataTable >--------------------------------------------
 stock CreatePlayerItemDataTable()
@@ -661,6 +687,7 @@ stock CreatePlayerItemDataTable()
 	strcat(str, ",SaveType varchar(32) NOT NULL default ' '");
 	strcat(str, ",Memo varchar(128) NOT NULL default ' '");
 	strcat(str, ",VirtualItem int(1) NOT NULL default '0'");
+	strcat(str, ",Health int(10) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -676,6 +703,7 @@ stock SavePlayerItemDataById(playerid, itemid)
 	format(str, sizeof(str), "%s,SaveType='%s'", str, escape(PlayerItemInfo[playerid][itemid][iSaveType]));
 	format(str, sizeof(str), "%s,Memo='%s'", str, escape(PlayerItemInfo[playerid][itemid][iMemo]));
 	format(str, sizeof(str), "%s,VirtualItem=%d", str, PlayerItemInfo[playerid][itemid][iVirtualItem]);
+	format(str, sizeof(str), "%s,Health=%d", str, PlayerItemInfo[playerid][itemid][iHealth]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, PlayerItemInfo[playerid][itemid][iID]);
 	mysql_query(str);
 	return 1;
@@ -692,7 +720,7 @@ stock SavePlayerItemData(playerid)
 stock LoadPlayerItemData(playerid)
 {
 	new str[2048],
-		receive[7][128],
+		receive[8][128],
 		idx;
 	UnloadPlayerItemData(playerid);
 	format(str, sizeof(str), "SELECT * FROM playeritemdata WHERE Ownername='%s' AND VirtualItem=%d", GetPlayerNameA(playerid), GetPVarInt(playerid, "pAgentMode"));
@@ -711,6 +739,7 @@ stock LoadPlayerItemData(playerid)
 		strcpy(PlayerItemInfo[playerid][i][iSaveType], receive[idx++]);
 		strcpy(PlayerItemInfo[playerid][i][iMemo], receive[idx++]);
 		PlayerItemInfo[playerid][i][iVirtualItem] = strval(receive[idx++]);
+		PlayerItemInfo[playerid][i][iHealth] = strval(receive[idx++]);
 		
 		new modelid = PlayerItemInfo[playerid][i][iItemmodel];
 		if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
@@ -749,12 +778,12 @@ stock UnloadPlayerItemData(playerid)
 	return 1;
 }
 //-----< CreatePlayerItem >-----------------------------------------------------
-stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[])
+stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0)
 {
 	new str[1024];
-	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem)");
-	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s',%d)", str,
-		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"));
+	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem,Health)");
+	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s',%d,%d)", str,
+		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health);
 	mysql_query(str);
 	LoadPlayerItemData(playerid);
 	return 1;
@@ -768,6 +797,19 @@ stock DestroyPlayerItem(playerid, itemid)
 	UnloadPlayerItemDataById(playerid, itemid);
 	return 1;
 }
+//-----< SetPlayerItemHealth >--------------------------------------------------
+stock SetPlayerItemHealth(playerid, itemid, health)
+{
+	if (!health)
+		return DestroyPlayerItem(playerid, itemid);
+	PlayerItemInfo[playerid][itemid][iHealth] = health;
+	return 1;
+}
+//-----< GetPlayerItemHealth >--------------------------------------------------
+stock GetPlayerItemHealth(playerid, itemid)
+{
+	return PlayerItemInfo[playerid][itemid][iHealth];
+}
 //-----<  >---------------------------------------------------------------------
 //-----< GivePlayerItem >-------------------------------------------------------
 stock GivePlayerItem(playerid, itemid, savetype[]="가방")
@@ -777,14 +819,14 @@ stock GivePlayerItem(playerid, itemid, savetype[]="가방")
 	
 	format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s에 넣었습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], savetype);
 	SendClientMessage(playerid, COLOR_WHITE, str);
-	CreatePlayerItem(playerid, ItemInfo[itemid][iItemmodel], savetype, ItemInfo[itemid][iMemo]);
+	CreatePlayerItem(playerid, ItemInfo[itemid][iItemmodel], savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth]);
 	DestroyItem(itemid);
 	return 1;
 }
 //-----< GivePlayerItemToPlayer >-----------------------------------------------
 stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
 {
-	CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo]);
+	CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth]);
 	DestroyPlayerItem(playerid, itemid);
 	return 1;
 }
@@ -800,7 +842,7 @@ stock DropPlayerItem(playerid, itemid)
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, a);
 	CreateItem(PlayerItemInfo[playerid][itemid][iItemmodel], x, y, z, a,
-		GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo]);
+		GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth]);
 	DestroyPlayerItem(playerid, itemid);
 	return 1;
 }
