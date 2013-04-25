@@ -513,6 +513,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		destid = strval(cmd);
 		if (!IsValidPropertyID(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 건물입니다.");
+		if (GetPVarInt(playerid, "pAgent"))
+		{
+			if (!GetPropertyEnable(destid))
+				return SendClientMessage(playerid, COLOR_WHITE, "이미 다른 에이전트가 출두했습니다.");
+			else
+				TogglePropertyEnable(destid, false);
+		}
 		SetPlayerPosToProperty(playerid, destid);
 		return 1;
 	}

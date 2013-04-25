@@ -29,6 +29,8 @@
 	RemoveProperty(propid)
 	ShowPropertyList(playerid, dialogid)
 	SetPlayerPosToProperty(playerid, propid)
+	TogglePropertyEnable(propid)
+	GetPropertyEnable(playerid)
 	GetPropertyDBID(propid)
 	IsValidPropertyID(propid)
 	GetMaxProperties()
@@ -61,7 +63,8 @@ enum ePropertyInfo
 	pMemo[256],
 	
 	pPickupEn,
-	pPickupEx
+	pPickupEx,
+	pEnable
 }
 new PropertyInfo[MAX_PROPERTIES][ePropertyInfo],
 	PropertyModifyDest[MAX_PLAYERS],
@@ -99,8 +102,16 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 	if (newkeys == KEY_SECONDARY_ATTACK)
 		for (new i = 0, t = GetMaxProperties(); i < t; i++)
 			if (IsValidPropertyID(i))
+			{
+				new isen, isex;
 				if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEn])
+					isen = true;
+				else if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
+				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEx])
+					isex = true;
+
+				if (isen)
 				{
 					if (PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
 						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
@@ -110,6 +121,7 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 					SetPlayerVirtualWorld(playerid, PropertyInfo[i][pVirtualWorldEx]);
 					if (!strlen(PropertyInfo[i][pOwnername]) && !WarnedPropertyTimer[playerid][i])
 					{
+						TogglePropertyEnable(i, true);
 						WarnedPropertyTimer[playerid][i] = SetTimerEx("CancelPropertyWarn", 5000, false, "dd", playerid, i);
 						format(str, sizeof(str), "* %s(%d)님이 빈 집 %d번으로 입장하셨습니다.", GetPlayerNameA(playerid), playerid, i);
 						for (new j = 0, u = GetMaxPlayers(); j < u; j++)
@@ -117,8 +129,7 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 								SendClientMessage(j, COLOR_ORANGE, str);
 					}
 				}
-				else if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
-				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEx])
+				else if (isex)
 				{
 					if (PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
 						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
@@ -127,6 +138,7 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEn]);
 					SetPlayerVirtualWorld(playerid, PropertyInfo[i][pVirtualWorldEn]);
 				}
+			}
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
@@ -397,6 +409,7 @@ stock LoadPropertyData()
 			PropertyInfo[i][pPickupEn] = CreateDynamicPickup(1239, 1, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2], -1, PropertyInfo[i][pVirtualWorldEn]);
 		if (PropertyInfo[i][pShowPickupEx])
 			PropertyInfo[i][pPickupEx] = CreateDynamicPickup(1239, 1, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2], -1, PropertyInfo[i][pVirtualWorldEx]);
+		PropertyInfo[i][pEnable] = false;
 	}
 	printf("propertydata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
@@ -516,6 +529,17 @@ stock SetPlayerPosToProperty(playerid, propid)
 	SetPlayerVirtualWorld(playerid, PropertyInfo[propid][pVirtualWorldEx]);
 	SetPlayerPos(playerid, PropertyInfo[propid][pPosEx][0], PropertyInfo[propid][pPosEx][1], PropertyInfo[propid][pPosEx][2]);
 	return 1;
+}
+//-----< TogglePropertyEnable >-------------------------------------------------
+stock TogglePropertyEnable(propid, toggle)
+{
+	PropertyInfo[propid][pEnable] = toggle;
+	return 1;
+}
+//-----< GetPropertyEnable >----------------------------------------------------
+stock GetPropertyEnable(propid)
+{
+	return PropertyInfo[propid][pEnable];
 }
 //-----< GetPropertyDBID >------------------------------------------------------
 stock GetPropertyDBID(propid)
