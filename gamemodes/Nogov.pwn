@@ -64,7 +64,6 @@
 #include "Modules/Animation.pwn"
 #include "Modules/Grant.pwn"
 #include "Modules/Cheat.pwn"
-#include "Modules/Accel.pwn"
 
 
 
@@ -178,7 +177,6 @@ public OnGameModeInit()
 	AddHandler("Cheat",				pKeyStateChangeHandler, pSpawnHandler);
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
-	AddHandler("Accel",				pUpdateHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);
 	Timer_OneSecTimer = GetTickCount();
