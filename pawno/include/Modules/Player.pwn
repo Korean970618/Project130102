@@ -34,8 +34,8 @@
 	SpawnPlayer_(playerid)
 	ShowPlayerPlunderStatus(playerid)
 	IsMeleeWeapon(weaponid)
-	IdBan(playerid, reason[])
-	IpBan(playerid, reason[])
+	IdBan(playerid, reason[], notice=0, orderer[]="시스템")
+	IpBan(playerid, reason[], notice=0, orderer[]="시스템")
 	ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 	SetPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[])
 	InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[], encryption[]="")
@@ -745,31 +745,70 @@ stock IsMeleeWeapon(weaponid)
 	return false;
 }
 //-----< IdBan >----------------------------------------------------------------
-stock IdBan(playerid, reason[])
+stock IdBan(playerid, reason[], notice=0, orderer[]="시스템")
 {
-	new string[256],
+	new str[256],
+		pname[MAX_PLAYER_NAME],
 		year, month, day;
+
+	GetPlayerName(playerid, pname, sizeof(pname));
 	getdate(year, month, day);
 	format(str, sizeof(str), "INSERT INTO bandata (ID,IP,Name,Reason,Date,Type)");
-	format(str, sizeof(str), "%s VALUES ('%s',' ','%s','%d년 %d월 %d일',1)", str, GetPlayerNameA(playerid), escape(reason), year, month, day);
+	format(str, sizeof(str), "%s VALUES ('%s',' ','%s','%d년 %d월 %d일',1)", str, pname, escape(reason), year, month, day);
 	mysql_query(str);
 	format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
-	ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 1);
+	ShowPlayerBanDialog(playerid, pname, reason, str, 1);
 	Kick(playerid);
+	
+	format(str, sizeof(str), "%s님이 %s님에 의해 %s까지 아이디밴되었습니다.", pname, orderer, str);
+	switch (notice)
+	{
+		case 1:
+			SendAdminMessage(COLOR_RED, str, 1);
+		case 2:
+			SendAdminMessage(COLOR_RED, str, 0);
+		case 3:
+		{
+			SendAdminMessage(COLOR_RED, str, 0);
+			format(str, sizeof(str), "%s님이 아이디밴되었습니다.", pname);
+			for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+				if (GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
+					SendClientMessage(playerid, COLOR_RED, str);
+		}
+	}
 	return 1;
 }
 //-----< IpBan >----------------------------------------------------------------
-stock IpBan(playerid, reason[])
+stock IpBan(playerid, reason[], notice=0, orderer[]="시스템")
 {
-	new string[256],
+	new str[256],
+		pname[MAX_PLAYER_NAME],
 		year, month, day;
+
 	getdate(year, month, day);
 	format(str, sizeof(str), "INSERT INTO bandata (ID,IP,Name,Reason,Date,Type)");
 	format(str, sizeof(str), "%s VALUES ('%s','%s','%s','%d년 %d월 %d일',2)", str, GetPlayerNameA(playerid), GetPlayerIpA(playerid), escape(reason), year, month, day);
 	mysql_query(str);
 	format(str, sizeof(str), "%d년 %d월 %d일", year, month, day);
-	ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, string, 2);
+	ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, str, 2);
 	Kick(playerid);
+	
+	format(str, sizeof(str), "%s님이 %s님에 의해 %s까지 밴되었습니다.", pname, orderer, str);
+	switch (notice)
+	{
+		case 1:
+			SendAdminMessage(COLOR_RED, str, 1);
+		case 2:
+			SendAdminMessage(COLOR_RED, str, 0);
+		case 3:
+		{
+			SendAdminMessage(COLOR_RED, str, 0);
+			format(str, sizeof(str), "%s님이 밴되었습니다.", pname);
+			for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+				if (GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
+					SendClientMessage(playerid, COLOR_RED, str);
+		}
+	}
 	return 1;
 }
 //-----< ShowPlayerBanDialog >--------------------------------------------------
