@@ -1190,7 +1190,7 @@ stock AdminLog(playerid, result[])
 		year, month, day,
 		hour, minute, second;
 	getdate(year, month, day);
-	format(str, sizeof(str), "AdminLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	format(str, sizeof(str), "Logs/AdminLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
 	fHandle = fopen(str, io_append);
 	if (fHandle)
 	{
@@ -1210,7 +1210,7 @@ stock AgentLog(playerid, result[])
 		year, month, day,
 		hour, minute, second;
 	getdate(year, month, day);
-	format(str, sizeof(str), "AgentLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	format(str, sizeof(str), "Logs/AgentLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
 	fHandle = fopen(str, io_append);
 	if (fHandle)
 	{

@@ -87,6 +87,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	else if (WeaponInfo[playerid][weaponid] < ammo)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Weapon Cheat Detected.");
+		IpBan(playerid, "Weapon Cheat");
 	}
 	WeaponInfo[playerid][weaponid] = ammo;
 	
@@ -94,6 +95,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	if (InteriorInfo[playerid] != interiorid)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Interior Cheat Detected.");
+		IpBan(playerid, "Interior Cheat");
 	}
 	InteriorInfo[playerid] = interiorid;
 	
@@ -101,6 +103,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	if (HealthInfo[playerid] < health)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Health Cheat Detected.");
+		IpBan(playerid, "Health Cheat");
 	}
 	HealthInfo[playerid] = health;
 	
@@ -108,6 +111,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	if (ArmourInfo[playerid] < armour)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Armour Cheat Detected.");
+		IpBan(playerid, "Armour Cheat");
 	}
 	ArmourInfo[playerid] = armour;
 	
