@@ -1061,7 +1061,7 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 				GivePlayerWeapon(MpListData[playerid][0], MpListData[playerid][1], strval(inputtext));
 				format(str, sizeof(str), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
 				SendClientMessage(playerid, COLOR_WHITE, str);
-				format(str, sizeof(str), "%s님께서 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetPlayerNameA(playerid), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+				format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
 				SendClientMessage(MpListData[playerid][0], COLOR_WHITE, str);
 			}
 			else
