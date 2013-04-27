@@ -384,7 +384,7 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 {
 	new caption_[64],
 		info_[2048];
-	format(caption_, sizeof(caption_), "%s%s", C_DIALOG, caption);
+	format(caption_, sizeof(caption_), "%s%s", C_PASTEL_BLUE, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	
 	if (OnDialogRequest(playerid, dialogid, DialogInfo[playerid]))
