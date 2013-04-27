@@ -177,7 +177,7 @@ public OnGameModeInit()
 	AddHandler("GVar",				gInitHandler);
 	AddHandler("Cheat",				pKeyStateChangeHandler, pSpawnHandler);
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
-	AddHandler("Animation",		 	pCommandTextHandler);
+	AddHandler("Animation",			pCommandTextHandler);
 	AddHandler("Remote",			pConnectHandler, pSpawnHandler, pDisconnectHandler, pUpdateHandler, pTextHandler, pCommandTextHandler, pKeyStateChangeHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);

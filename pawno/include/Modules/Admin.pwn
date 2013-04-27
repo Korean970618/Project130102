@@ -97,7 +97,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	{
 		new help[2048];
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n\
-		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /리스폰, /얼림, /녹임\n\
+		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /스킨설정, /리스폰, /얼림, /녹임\n\
 		/무기, /명령어권한부여, /명령어권한회수 /고정가속도\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 행동 -"C_WHITE"\n\
@@ -261,6 +261,21 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		format(str, sizeof(str), "%s님의 스킨을 변경했습니다. %d > %d", GetPlayerNameA(destid), bskin, skin);
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 스킨이 변경되었습니다.");
+		return 1;
+	}
+	else if(!strcmp(cmd, "/스킨선택", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if(!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스킨선택 [플레이어]");
+		destid = ReturnUser(cmd);
+		if(!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		new list[300], colors[300];
+		for(new i = 0; i < sizeof(list); i++)
+			list[i] = i;
+		MpListData[playerid][0] = destid;
+		ShowPlayerMpList(playerid, MpListId_Admin(1), "Skins", list, colors, sizeof(list));
 		return 1;
 	}
 	else if(!strcmp(cmd, "/리스폰", true))
@@ -1073,6 +1088,13 @@ public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 					format(str, sizeof(str), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
 					ShowPlayerDialog(playerid, DialogId_Admin(16), DIALOG_STYLE_INPUT, ""C_BLUE"무기", str, "확인", "뒤로");
 				}
+		}
+		case 1:
+		{
+			SetPlayerSkin(MpListData[playerid][0], selecteditem);
+			format(str, sizeof(str), "%s님의 스킨을 변경했습니다.", GetPlayerNameA(MpListData[playerid][0]));
+			SendClientMessage(playerid, COLOR_WHITE, str);
+			SendClientMessage(MpListData[playerid][0], COLOR_WHITE, "관리자가 당신의 스킨을 변경했습니다.");
 		}
 	}
 	return 1;
