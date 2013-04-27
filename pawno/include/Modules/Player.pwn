@@ -391,7 +391,7 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 		mysql_query(str);
 		mysql_store_result();
 		rows = mysql_num_rows();
-		if (rows < 1)
+		if(rows < 1)
 			strcpy(info, "로그인 기록이 없습니다.");
 		else
 		{
@@ -400,7 +400,7 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 			strtab(info, "일시", 32);
 			strtab(info, "결과", 4);
 			strcat(info, "IP");
-			for (new i = 0; i < rows; i++)
+			for(new i = 0; i < rows; i++)
 			{
 				mysql_fetch_row(str, "|");
 				split(str, receive, '|');
@@ -416,12 +416,12 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 				checked = strval(receive[idx++]);
 				
 				strcat(info, "\n");
-				if (checked)
+				if(checked)
 					strcat(info, C_WHITE);
 				else
 					strcat(info, C_GREY);
 				strtab(info, date, 32);
-				if (success)
+				if(success)
 					strtab(info, "성공", 4);
 				else
 					strtab(info, "실패", 4);
