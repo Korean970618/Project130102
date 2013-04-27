@@ -167,13 +167,13 @@ public pConnectHandler_Player(playerid)
 	PlunderId[playerid] = INVALID_PLAYER_ID;
 	PlunderTime[playerid] = 0;
 	Dead[playerid] = false;
-	for (new i = 0; i < 3; i++)
+	for(new i = 0; i < 3; i++)
 		DeadPos[playerid][0] = 0.0;
 	DeadInterior[playerid] = 0;
 	DeadVirtualWorld[playerid] = 0;
 	DeadAnim[playerid] = 0;
 	KillerId[playerid] = INVALID_PLAYER_ID;
-	for (new i = 0; i < MAX_PLAYER_DATAS; i++)
+	for(new i = 0; i < MAX_PLAYER_DATAS; i++)
 	{
 		strcpy(PlayerData[playerid][i][pdVarname], chNullString);
 		PlayerData[playerid][i][pdVartype] = PLAYER_VARTYPE_NONE;
@@ -182,14 +182,14 @@ public pConnectHandler_Player(playerid)
 	NumSaveDatas[playerid] = 0;
 
 	new str[512], receive[4][128];
-	for (new i; i < 20; i++)
+	for(new i; i < 20; i++)
 		SendClientMessage(playerid, COLOR_WHITE, chEmpty);
-	if (!GetPVarInt(playerid, "LoggedIn"))
+	if(!GetPVarInt(playerid, "LoggedIn"))
 	{
 		format(str, sizeof(str), "SELECT * From playerdata WHERE Name='%s' And Varname='pPassword'", GetPlayerNameA(playerid));
 		mysql_query(str);
 		mysql_store_result();
-		if (mysql_num_rows() > 0)
+		if(mysql_num_rows() > 0)
 		{
 			SetPVarInt(playerid, "Registered", true);
 		}
@@ -199,7 +199,7 @@ public pConnectHandler_Player(playerid)
 	format(str, sizeof(str), "SELECT * FROM bandata WHERE (Name='%s' AND IP=' ') OR IP='%s'", GetPlayerNameA(playerid), GetPlayerIpA(playerid));
 	mysql_query(str);
 	mysql_store_result();
-	if (mysql_num_rows() > 0)
+	if(mysql_num_rows() > 0)
 	{
 		mysql_fetch_field("Name", receive[0]);
 		mysql_fetch_field("Reason", receive[1]);
@@ -216,12 +216,12 @@ public pConnectHandler_Player(playerid)
 public pDisconnectHandler_Player(playerid)
 {
 	SavePlayerData(playerid);
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		if (PlunderId[i] == playerid)
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+		if(PlunderId[i] == playerid)
 		{
 			PlunderId[i] = INVALID_PLAYER_ID;
-			for (new j = 0, u = GetMaxPlayerItems(); j < u; j++)
-				if (IsValidPlayerItemID(playerid, j))
+			for(new j = 0, u = GetMaxPlayerItems(); j < u; j++)
+				if(IsValidPlayerItemID(playerid, j))
 					DestroyPlayerItem(playerid, j);
 			ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "알림", "사자가 게임을 종료했습니다.\n사자는 모든 아이템을 잃게 됩니다.", "확인", chNullString);
 		}
@@ -231,7 +231,7 @@ public pDisconnectHandler_Player(playerid)
 public pRequestClassHandler_Player(playerid, classid)
 {
 	SpawnPlayer_(playerid);
-	if (!GetPVarInt(playerid, "LoggedIn"))
+	if(!GetPVarInt(playerid, "LoggedIn"))
 	{
 		ShowPlayerLoginMovie(playerid);
 		ShowPlayerLoginDialog(playerid, false);
@@ -241,7 +241,7 @@ public pRequestClassHandler_Player(playerid, classid)
 //-----< aConnectHandler >------------------------------------------------------
 public aConnectHandler_Player(playerid)
 {
-	if (!GetPVarInt(playerid, "LoggedIn"))
+	if(!GetPVarInt(playerid, "LoggedIn"))
 		PlayAudioStreamForPlayer(playerid, GetGVarString("IntroMusic"));
 	return 1;
 }
@@ -252,25 +252,25 @@ public pUpdateHandler_Player(playerid)
 
 	new Float:x, Float:y, Float:z,
 		keys, ud, lr;
-	if (IsPlayerInAnyVehicle(playerid) || !GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(IsPlayerInAnyVehicle(playerid) || !GetPVarInt(playerid, "LoggedIn")) return 1;
 
 	GetPlayerVelocity(playerid, x, y, z);
 	GetPlayerKeys(playerid, keys, ud, lr);
 	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt(playerid, "pWeight"))) * 100,
 		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt(playerid, "pPower"))) * 100;
 
-	if (bag > 75.0 || hand > 75.0)
+	if(bag > 75.0 || hand > 75.0)
 	{
-		if (z > 0.0)
+		if(z > 0.0)
 		{
 			SetPlayerVelocity(playerid, 0.0, 0.0, -z);
 		}
-		else if (ud != 0 || lr != 0)
+		else if(ud != 0 || lr != 0)
 		{
 			HeavyWalking[playerid] = true;
 			ApplyAnimation(playerid, "PED", "WALK_fatold", 4.1, 1, 1, 1, 1, 1, true);
 		}
-		else if (HeavyWalking[playerid])
+		else if(HeavyWalking[playerid])
 		{
 			HeavyWalking[playerid] = false;
 			ClearAnimations(playerid, true);
@@ -285,7 +285,7 @@ public pDeathHandler_Player(playerid, killerid, reason)
 	SetPVarInt(playerid, "Spawned", false);
 	killerid = KillerId[playerid];
 	KillerId[playerid] = INVALID_PLAYER_ID;
-	if (!GetPVarInt(playerid, "LoggedIn")) return 0;
+	if(!GetPVarInt(playerid, "LoggedIn")) return 0;
 
 	PlunderTime[playerid] = 60;
 	Dead[playerid] = true;
@@ -293,7 +293,7 @@ public pDeathHandler_Player(playerid, killerid, reason)
 	GetPlayerFacingAngle(playerid, DeadPos[playerid][3]);
 	DeadInterior[playerid] = GetPlayerInterior(playerid);
 	DeadVirtualWorld[playerid] = GetPlayerVirtualWorld(playerid);
-	if (IsPlayerConnected(killerid))
+	if(IsPlayerConnected(killerid))
 	{
 		PlunderId[killerid] = playerid;
 		SendClientMessage(killerid, COLOR_WHITE, "시체 주변에서 "C_YELLOW"F키"C_WHITE"를 눌러 아이템을 탈취할 수 있습니다.");
@@ -305,15 +305,15 @@ public pDeathHandler_Player(playerid, killerid, reason)
 //-----< pKeyStateChangeHandler >-----------------------------------------------
 public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 {
-	if (IsPlayerInAnyVehicle(playerid)) return 1;
-	if (newkeys == KEY_SECONDARY_ATTACK)
+	if(IsPlayerInAnyVehicle(playerid)) return 1;
+	if(newkeys == KEY_SECONDARY_ATTACK)
 	{
-		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-			if (IsPlayerConnected(i) && GetPVarInt(i, "LoggedIn") && Dead[i])
+		for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+			if(IsPlayerConnected(i) && GetPVarInt(i, "LoggedIn") && Dead[i])
 			{
 				new Float:x, Float:y, Float:z;
 				GetPlayerPos(i, x, y, z);
-				if (IsPlayerInRangeOfPoint(playerid, 2.0, x, y, z) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i))
+				if(IsPlayerInRangeOfPoint(playerid, 2.0, x, y, z) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i))
 				{
 					PlunderId[playerid] = i;
 					ShowPlayerItemList(playerid, i, DialogId_Player(4), "All");
@@ -326,12 +326,12 @@ public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_Player(playerid)
 {
-	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(!GetPVarInt(playerid, "LoggedIn")) return 1;
 	
 	SetPVarInt(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
 
-	if (!GetPVarInt(playerid, "FirstSpawn"))
+	if(!GetPVarInt(playerid, "FirstSpawn"))
 	{
 		SetPVarInt(playerid, "FirstSpawn", true);
 		SetPlayerSkin(playerid, GetPVarInt(playerid, "pSkin"));
@@ -340,7 +340,7 @@ public pSpawnHandler_Player(playerid)
 		SetPlayerArmour(playerid, GetPVarFloat(playerid, "pArmour"));
 	}
 
-	if (GetPVarInt(playerid, "RestoreSpawn"))
+	if(GetPVarInt(playerid, "RestoreSpawn"))
 	{
 		new receive[6][16];
 		split(GetPVarString(playerid, "pLastPos"), receive, ',');
@@ -351,7 +351,7 @@ public pSpawnHandler_Player(playerid)
 		SetPVarInt(playerid, "RestoreSpawn", false);
 	}
 
-	if (Dead[playerid])
+	if(Dead[playerid])
 	{
 		SetPlayerPos(playerid, DeadPos[playerid][0], DeadPos[playerid][1], DeadPos[playerid][2]);
 		SetPlayerFacingAngle(playerid, DeadPos[playerid][3]);
@@ -369,8 +369,8 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 		str[256];
 	cmd = strtok(cmdtext, idx);
 
-	if (!GetPVarInt(playerid, "LoggedIn")) return 0;
-	else if (!strcmp(cmd, "/비번변경", true) || !strcmp(cmd, "/암호변경", true))
+	if(!GetPVarInt(playerid, "LoggedIn")) return 0;
+	else if(!strcmp(cmd, "/비번변경", true) || !strcmp(cmd, "/암호변경", true))
 	{
 		format(str, sizeof(str), "\
 		\n\
@@ -385,9 +385,9 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 //-----< dRequestHandler >------------------------------------------------------
 public dRequestHandler_Player(playerid, dialogid, olddialogid)
 {
-	if (dialogid != DialogId_Player(4))
+	if(dialogid != DialogId_Player(4))
 		PlunderId[playerid] = INVALID_PLAYER_ID;
-	if (olddialogid == DialogId_Player(3))
+	if(olddialogid == DialogId_Player(3))
 	{
 		Kick(playerid);
 		return 0;
@@ -398,12 +398,12 @@ public dRequestHandler_Player(playerid, dialogid, olddialogid)
 public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext[])
 {
 	new str[256];
-	switch (dialogid - DialogId_Player(0))
+	switch(dialogid - DialogId_Player(0))
 	{
 		case 0:
-			if (!GetPVarInt(playerid, "Registered"))
+			if(!GetPVarInt(playerid, "Registered"))
 			{
-				if (strlen(inputtext) >= 8)
+				if(strlen(inputtext) >= 8)
 				{
 					new year, month, day;
 					getdate(year, month, day);
@@ -422,18 +422,18 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				else
 					ShowPlayerLoginDialog(playerid, true);
 			}
-			else if (!GetPVarInt(playerid, "LoggedIn"))
+			else if(!GetPVarInt(playerid, "LoggedIn"))
 			{
 				format(str, sizeof(str), "SELECT * FROM playerdata WHERE Name='%s' AND Varname='pPassword' And Value=SHA1('%s')", GetPlayerNameA(playerid), inputtext);
 				mysql_query(str);
 				mysql_store_result();
-				if (mysql_num_rows() == 1)
+				if(mysql_num_rows() == 1)
 				{
 					SetPVarInt(playerid, "LoggedIn", true);
-					for (new i = 0; i < sizeof(LoginTextDraw); i++)
+					for(new i = 0; i < sizeof(LoginTextDraw); i++)
 						TextDrawHideForPlayer(playerid, LoginTextDraw[i]);
 					LoadPlayerData(playerid);
-					if (strlen(GetPVarString(playerid, "pLastPos")) > 10)
+					if(strlen(GetPVarString(playerid, "pLastPos")) > 10)
 						ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 					else
 						SpawnPlayer_(playerid);
@@ -443,8 +443,8 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				mysql_free_result();
 			}
 		case 1:
-			if (response)
-				if (strlen(inputtext) >= 8)
+			if(response)
+				if(strlen(inputtext) >= 8)
 				{
 					InsertPlayerData(playerid, "pPassword", PLAYER_VARTYPE_STRING, 0, 0.0, inputtext, "SHA1");
 					SendClientMessage(playerid, COLOR_LIGHTBLUE, "비밀번호가 성공적으로 변경되었습니다.");
@@ -461,19 +461,19 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				}
 		case 2:
 		{
-			if (listitem == 1)
+			if(listitem == 1)
 				SetPVarInt(playerid, "RestoreSpawn", true);
 			SpawnPlayer_(playerid);
 		}
 		case 3: return Kick(playerid);
 		case 4:
 		{
-			if (response)
+			if(response)
 			{
-				if (!listitem) return ShowPlayerItemList(playerid, PlunderId[playerid], DialogId_Player(4));
+				if(!listitem) return ShowPlayerItemList(playerid, PlunderId[playerid], DialogId_Player(4));
 				new itemid = DialogData[playerid][listitem],
 					plunderid = PlunderId[playerid];
-				if (!IsPlayerConnected(plunderid)) return 1;
+				if(!IsPlayerConnected(plunderid)) return 1;
 				GivePlayerItemToPlayer(plunderid, playerid, itemid, "가방");
 				SendClientMessage(playerid, COLOR_WHITE, "아이템을 탈취했습니다.");
 			}
@@ -481,14 +481,14 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 		}
 		case 5:
 		{
-			if (PlunderTime[playerid] && !GetPVarInt(playerid, "pAdmin") || !GetPVarInt(playerid, "Spawned"))
+			if(PlunderTime[playerid] && !GetPVarInt(playerid, "pAdmin") || !GetPVarInt(playerid, "Spawned"))
 				return ShowPlayerPlunderStatus(playerid);
 			Dead[playerid] = false;
 			PlunderTime[playerid] = 0;
 			SpawnPlayer_(playerid);
 			ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "리스폰되었습니다.", "확인", chNullString);
-			for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-				if (PlunderId[i] == playerid)
+			for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+				if(PlunderId[i] == playerid)
 				{
 					PlunderId[i] = INVALID_PLAYER_ID;
 					ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "알림", "사자가 리스폰되었습니다.", "확인", chNullString);
@@ -500,9 +500,9 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 //-----< pTimerTickHandler >----------------------------------------------------
 public pTimerTickHandler_Player(nsec, playerid)
 {
-	if (!IsPlayerConnected(playerid) || !GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(!IsPlayerConnected(playerid) || !GetPVarInt(playerid, "LoggedIn")) return 1;
 
-	if (nsec == 1000)
+	if(nsec == 1000)
 	{
 		new Float:pos[4],
 			interior = GetPlayerInterior(playerid),
@@ -510,7 +510,7 @@ public pTimerTickHandler_Player(nsec, playerid)
 			Float:health, Float:armour,
 			str[64];
 
-		if (GetPVarInt(playerid, "Spawned"))
+		if(GetPVarInt(playerid, "Spawned"))
 		{
 			GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 			GetPlayerFacingAngle(playerid, pos[3]);
@@ -522,11 +522,11 @@ public pTimerTickHandler_Player(nsec, playerid)
 			SetPVarFloat(playerid, "pArmour", armour);
 		}
 
-		if (PlunderTime[playerid])
+		if(PlunderTime[playerid])
 		{
 			PlunderTime[playerid]--;
 			ShowPlayerPlunderStatus(playerid);
-			switch (DeadAnim[playerid])
+			switch(DeadAnim[playerid])
 			{
 				case 0: ApplyAnimation(playerid, "CRACK", "crckidle1", 4.1, 0, 1, 1, 1, 1, true);
 				case 1: ApplyAnimation(playerid, "CRACK", "crckidle2", 4.1, 0, 1, 1, 1, 1, true);
@@ -544,14 +544,14 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 		Float:health;
 	GetPlayerHealth(playerid, health);
 
-	if (weaponid == 14)
+	if(weaponid == 14)
 		damage = 0.0;
-	else if (weaponid == 34)
+	else if(weaponid == 34)
 		damage = health;
-	else if (IsMeleeWeapon(weaponid))
+	else if(IsMeleeWeapon(weaponid))
 		damage = (amount / 100) * GetPVarInt(issuerid, "pPower");
 
-	if (health - damage < 1)
+	if(health - damage < 1)
 		KillerId[playerid] = issuerid;
 	GivePlayerDamage(playerid, damage);
 	return 1;
@@ -591,18 +591,18 @@ stock SavePlayerData(playerid)
 {
 	new count = GetTickCount();
 	new str[3840];
-	if (IsPlayerNPC(playerid)) return 1;
-	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(IsPlayerNPC(playerid)) return 1;
+	if(!GetPVarInt(playerid, "LoggedIn")) return 1;
 	
-	for (new i = 0; i < NumSaveDatas[playerid]; i++)
-		if (strlen(PlayerData[playerid][i][pdVarname]) && PlayerData[playerid][i][pdSave])
+	for(new i = 0; i < NumSaveDatas[playerid]; i++)
+		if(strlen(PlayerData[playerid][i][pdVarname]) && PlayerData[playerid][i][pdSave])
 		{
 			new varname[64];
 			strcpy(varname, PlayerData[playerid][i][pdVarname]);
 
 			format(str, sizeof(str), "UPDATE playerdata SET");
 			format(str, sizeof(str), "%s Vartype=%d", str, GetPVarType(playerid, varname));
-			switch (GetPVarType(playerid, varname))
+			switch(GetPVarType(playerid, varname))
 			{
 				case PLAYER_VARTYPE_INT:	format(str, sizeof(str), "%s,Value=%d", str, GetPVarInt(playerid, varname));
 				case PLAYER_VARTYPE_STRING: format(str, sizeof(str), "%s,Value='%s'", str, escape(GetPVarString(playerid, varname)));
@@ -624,13 +624,13 @@ stock LoadPlayerData(playerid)
 	new str[1024],
 		receive[5][512],
 		idx;
-	if (IsPlayerNPC(playerid)) return 1;
-	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(IsPlayerNPC(playerid)) return 1;
+	if(!GetPVarInt(playerid, "LoggedIn")) return 1;
 	
 	format(str, sizeof(str), "SELECT * FROM playerdata WHERE Name='%s'", GetPlayerNameA(playerid));
 	mysql_query(str);
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -638,7 +638,7 @@ stock LoadPlayerData(playerid)
 
 		strcpy(PlayerData[playerid][i][pdVarname], receive[idx++]);
 		PlayerData[playerid][i][pdVartype] = strval(receive[idx++]);
-		switch (PlayerData[playerid][i][pdVartype])
+		switch(PlayerData[playerid][i][pdVartype])
 		{
 			case PLAYER_VARTYPE_INT:	SetPVarInt(playerid, PlayerData[playerid][i][pdVarname], strval(receive[idx++]));
 			case PLAYER_VARTYPE_STRING: SetPVarString(playerid, PlayerData[playerid][i][pdVarname], receive[idx++]);
@@ -646,7 +646,7 @@ stock LoadPlayerData(playerid)
 		}
 		PlayerData[playerid][i][pdSave] = false;
 	}
-	if (!GetPVarInt(playerid, "pRegDate"))
+	if(!GetPVarInt(playerid, "pRegDate"))
 	{
 		new year, month, day;
 		getdate(year, month, day);
@@ -674,9 +674,9 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 	"C_LIGHTBLUE"%s님, 안녕하세요!\n\
 	"C_YELLOW"Nogov"C_WHITE"에 오신 것을 환영합니다.\n\
 	", GetPlayerNameA(playerid));
-	if (GetPVarInt(playerid, "Registered"))
+	if(GetPVarInt(playerid, "Registered"))
 	{
-		if (wrong)
+		if(wrong)
 			strcat(str, "\
 			\n\
 			비밀번호가 옳바르지 않습니다.\n\
@@ -694,7 +694,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 	}
 	else
 	{
-		if (wrong)
+		if(wrong)
 			strcat(str, "\
 			\n\
 			비밀번호를 8자리 이상 입력하세요.\n\
@@ -709,7 +709,7 @@ stock ShowPlayerLoginDialog(playerid, bool:wrong)
 			");
 		ShowPlayerDialog(playerid, DialogId_Player(0), DIALOG_STYLE_PASSWORD, "Login", str, "가입", chNullString);
 	}
-	for (new i = 0; i < sizeof(LoginTextDraw); i++)
+	for(new i = 0; i < sizeof(LoginTextDraw); i++)
 		TextDrawShowForPlayer(playerid, LoginTextDraw[i]);
 	return 1;
 }
@@ -729,7 +729,7 @@ stock ShowPlayerPlunderStatus(playerid)
 		당신은 죽었습니다.\n\
 		리스폰하지 않고 접속을 종료하면 모든 아이템을 잃게 됩니다.\
 		");
-	if (PlunderTime[playerid])
+	if(PlunderTime[playerid])
 		format(str, sizeof(str), "%s\n\n"C_GREY"\
 			%d초 후에 리스폰할 수 있습니다.\
 			", str, PlunderTime[playerid]);
@@ -741,7 +741,7 @@ stock ShowPlayerPlunderStatus(playerid)
 //-----< IsMeleeWeapon >--------------------------------------------------------
 stock IsMeleeWeapon(weaponid)
 {
-	if (weaponid >= 0 && weaponid <= 15) return true;
+	if(weaponid >= 0 && weaponid <= 15) return true;
 	return false;
 }
 //-----< IdBan >----------------------------------------------------------------
@@ -761,7 +761,7 @@ stock IdBan(playerid, reason[], notice=0, orderer[]="시스템")
 	Kick(playerid);
 	
 	format(str, sizeof(str), "%s님이 %s님에 의해 %s까지 아이디밴되었습니다.", pname, orderer, str);
-	switch (notice)
+	switch(notice)
 	{
 		case 1:
 			SendAdminMessage(COLOR_RED, str, 1);
@@ -771,8 +771,8 @@ stock IdBan(playerid, reason[], notice=0, orderer[]="시스템")
 		{
 			SendAdminMessage(COLOR_RED, str, 0);
 			format(str, sizeof(str), "%s님이 아이디밴되었습니다.", pname);
-			for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-				if (GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
+			for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+				if(GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
 					SendClientMessage(playerid, COLOR_RED, str);
 		}
 	}
@@ -794,7 +794,7 @@ stock IpBan(playerid, reason[], notice=0, orderer[]="시스템")
 	Kick(playerid);
 	
 	format(str, sizeof(str), "%s님이 %s님에 의해 %s까지 밴되었습니다.", pname, orderer, str);
-	switch (notice)
+	switch(notice)
 	{
 		case 1:
 			SendAdminMessage(COLOR_RED, str, 1);
@@ -804,8 +804,8 @@ stock IpBan(playerid, reason[], notice=0, orderer[]="시스템")
 		{
 			SendAdminMessage(COLOR_RED, str, 0);
 			format(str, sizeof(str), "%s님이 밴되었습니다.", pname);
-			for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-				if (GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
+			for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+				if(GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
 					SendClientMessage(playerid, COLOR_RED, str);
 		}
 	}
@@ -815,8 +815,8 @@ stock IpBan(playerid, reason[], notice=0, orderer[]="시스템")
 stock ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 {
 	new str[512], typetext[64];
-	if (type == 1) typetext = "ID";
-	else if (type == 2) typetext = "IP";
+	if(type == 1) typetext = "ID";
+	else if(type == 2) typetext = "IP";
 	format(str, sizeof(str), "\
 	사용중인 "C_RED"%s"C_WHITE"는 다음과 같은 이유로 차단되어 있습니다.\n\
 	\n\
@@ -832,29 +832,29 @@ stock ShowPlayerBanDialog(playerid, name[], reason[], date[], type)
 //-----< SetPlayerData >--------------------------------------------------------
 stock SetPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[])
 {
-	if (varname[0] != 'p' || !GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(varname[0] != 'p' || !GetPVarInt(playerid, "LoggedIn")) return 1;
 	new breaks;
-	switch (vartype)
+	switch(vartype)
 	{
 		case PLAYER_VARTYPE_INT:	breaks = (int_value == GetPVarInt(playerid, varname)) ? true : false;
 		case PLAYER_VARTYPE_FLOAT:	breaks = (float_value == GetPVarFloat(playerid, varname)) ? true : false;
 		case PLAYER_VARTYPE_STRING:	breaks = (!strcmp(string_value, GetPVarString(playerid, varname), true)) ? true : false;
 	}
-	if (breaks) return 1;
+	if(breaks) return 1;
 	new j = MAX_PLAYER_DATAS;
-	for (new i = 0; i < MAX_PLAYER_DATAS; i++)
+	for(new i = 0; i < MAX_PLAYER_DATAS; i++)
 	{
-		if (strlen(PlayerData[playerid][i][pdVarname])
+		if(strlen(PlayerData[playerid][i][pdVarname])
 		&& !strcmp(PlayerData[playerid][i][pdVarname], varname, true))
 		{
 			PlayerData[playerid][i][pdSave] = true;
-			if (NumSaveDatas[playerid] < i)
+			if(NumSaveDatas[playerid] < i)
 				NumSaveDatas[playerid] = i+1;
 			return 1;
 		}
-		else if (!strlen(PlayerData[playerid][i][pdVarname]) && j > i) j = i;
+		else if(!strlen(PlayerData[playerid][i][pdVarname]) && j > i) j = i;
 	}
-	if (j == MAX_PLAYER_DATAS)
+	if(j == MAX_PLAYER_DATAS)
 	{
 		printf("%s님의 플레이어 데이터 수가 한도(%d)를 초과했습니다.", GetPlayerNameA(playerid), MAX_PLAYER_DATAS);
 		return 1;
@@ -871,13 +871,13 @@ stock InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_valu
 	new str[1024], tmp[512];
 	format(str, sizeof(str), "INSERT INTO playerdata (Name,Varname,Vartype,Value)");
 	format(str, sizeof(str), "%s VALUES ('%s','%s',%d,", str, GetPlayerNameA(playerid), escape(varname), vartype);
-	switch (vartype)
+	switch(vartype)
 	{
 		case PLAYER_VARTYPE_INT:	format(tmp, sizeof(tmp), "'%d')", int_value);
 		case PLAYER_VARTYPE_FLOAT:  format(tmp, sizeof(tmp), "'%f')", float_value);
 		case PLAYER_VARTYPE_STRING: format(tmp, sizeof(tmp), "'%s')", string_value);
 	}
-	if (strlen(encryption))
+	if(strlen(encryption))
 		format(str, sizeof(str), "%s%s(%s)", str, encryption, tmp);
 	else
 		format(str, sizeof(str), "%s%s", str, tmp);
@@ -887,10 +887,10 @@ stock InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_valu
 //-----< DeletePlayerData >-----------------------------------------------------
 stock DeletePlayerData(playerid, varname[])
 {
-	if (varname[0] != 'p' || !GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(varname[0] != 'p' || !GetPVarInt(playerid, "LoggedIn")) return 1;
 	new str[256];
-	for (new i = 0; i < MAX_PLAYER_DATAS; i++)
-		if (strlen(PlayerData[playerid][i][pdVarname])
+	for(new i = 0; i < MAX_PLAYER_DATAS; i++)
+		if(strlen(PlayerData[playerid][i][pdVarname])
 		&& !strcmp(PlayerData[playerid][i][pdVarname], varname, true))
 		{
 			format(str, sizeof(str), "DELETE FROM playerdata WHERE Name='%s' And Varname='%s'", GetPlayerNameA(playerid), varname);

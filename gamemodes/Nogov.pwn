@@ -130,7 +130,7 @@
 #define mplResponseHandler				58
 
 #define MAX_CALLBACKS					58
-#define CALL_HANDLER(%0,%1)				for (new i = 0; i <= CallbacksIndex; i++) if (CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
+#define CALL_HANDLER(%0,%1)				for(new i = 0; i <= CallbacksIndex; i++) if(CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
 
@@ -184,8 +184,8 @@ public OnGameModeInit()
 	Timer_OneSecTimer = GetTickCount();
 
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][gInitHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][gInitHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "gInitHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "");
@@ -196,8 +196,8 @@ public OnGameModeInit()
 public OnGameModeExit()
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][gExitHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][gExitHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "gExitHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "");
@@ -208,8 +208,8 @@ public OnGameModeExit()
 public OnPlayerRequestClass(playerid, classid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pRequestClassHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestClassHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, classid);
@@ -220,8 +220,8 @@ public OnPlayerRequestClass(playerid, classid)
 public OnPlayerConnect(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pConnectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pConnectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pConnectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -232,8 +232,8 @@ public OnPlayerConnect(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pDisconnectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pDisconnectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pDisconnectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, reason);
@@ -244,8 +244,8 @@ public OnPlayerDisconnect(playerid, reason)
 public OnPlayerSpawn(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pSpawnHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pSpawnHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pSpawnHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -256,8 +256,8 @@ public OnPlayerSpawn(playerid)
 public OnPlayerDeath(playerid, killerid, reason)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pDeathHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pDeathHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pDeathHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, killerid, reason);
@@ -268,8 +268,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 public OnVehicleSpawn(vehicleid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vSpawnHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vSpawnHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vSpawnHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", vehicleid);
@@ -280,8 +280,8 @@ public OnVehicleSpawn(vehicleid)
 public OnVehicleDeath(vehicleid, killerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vDeathHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vDeathHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vDeathHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", vehicleid, killerid);
@@ -292,11 +292,11 @@ public OnVehicleDeath(vehicleid, killerid)
 public OnPlayerText(playerid, text[])
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pTextHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pTextHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pTextHandler", CallbacksList[i][CBName]);
-			if (!CallLocalFunction(funcstr, "ds", playerid, FixBlankString(text))) return 0;
+			if(!CallLocalFunction(funcstr, "ds", playerid, FixBlankString(text))) return 0;
 		}
 	return 1;
 }
@@ -304,11 +304,11 @@ public OnPlayerText(playerid, text[])
 public OnPlayerCommandText(playerid, cmdtext[])
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pCommandTextHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pCommandTextHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pCommandTextHandler", CallbacksList[i][CBName]);
-			if (CallLocalFunction(funcstr, "ds", playerid, FixBlankString(cmdtext))) return 1;
+			if(CallLocalFunction(funcstr, "ds", playerid, FixBlankString(cmdtext))) return 1;
 		}
 	SendClientMessage(playerid, COLOR_WHITE, "[SERVER] 존재하지 않는 명령어입니다.");
 	return 1;
@@ -317,8 +317,8 @@ public OnPlayerCommandText(playerid, cmdtext[])
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pEnterVehicleHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEnterVehicleHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pEnterVehicleHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, vehicleid, ispassenger);
@@ -329,8 +329,8 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pExitVehicleHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pExitVehicleHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pExitVehicleHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, vehicleid);
@@ -341,8 +341,8 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pStateChangeHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pStateChangeHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pStateChangeHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, newstate, oldstate);
@@ -353,8 +353,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 public OnPlayerEnterCheckpoint(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pEnterCheckpointHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEnterCheckpointHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pEnterCheckpointHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -365,8 +365,8 @@ public OnPlayerEnterCheckpoint(playerid)
 public OnPlayerLeaveCheckpoint(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pLeaveCheckpointHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pLeaveCheckpointHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pLeaveCheckpointHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -377,8 +377,8 @@ public OnPlayerLeaveCheckpoint(playerid)
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pEnterRaceCheckpointHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEnterRaceCheckpointHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pEnterRaceCheckpointHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -389,8 +389,8 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 public OnPlayerLeaveRaceCheckpoint(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pLeaveRaceCheckpointHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pLeaveRaceCheckpointHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pLeaveRaceCheckpointHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -401,8 +401,8 @@ public OnPlayerLeaveRaceCheckpoint(playerid)
 public OnRconCommand(cmd[])
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][RconCommandHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][RconCommandHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "RconCommandHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "s", FixBlankString(cmd));
@@ -413,11 +413,11 @@ public OnRconCommand(cmd[])
 public OnPlayerRequestSpawn(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pRequestClassHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pRequestClassHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pRequestSpawnHandler", CallbacksList[i][CBName]);
-			if (!CallLocalFunction(funcstr, "d", playerid)) return 0;
+			if(!CallLocalFunction(funcstr, "d", playerid)) return 0;
 		}
 	return 1;
 }
@@ -425,8 +425,8 @@ public OnPlayerRequestSpawn(playerid)
 public OnObjectMoved(objectid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][oMovedHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][oMovedHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "oMovedHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", objectid);
@@ -437,8 +437,8 @@ public OnObjectMoved(objectid)
 public OnPlayerObjectMoved(playerid, objectid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pObjectMovedHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pObjectMovedHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pObjectMovedHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, objectid);
@@ -449,8 +449,8 @@ public OnPlayerObjectMoved(playerid, objectid)
 public OnPlayerPickUpPickup(playerid, pickupid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pPickUpPickupHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pPickUpPickupHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pPickUpPickupHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, pickupid);
@@ -461,8 +461,8 @@ public OnPlayerPickUpPickup(playerid, pickupid)
 public OnVehicleMod(playerid, vehicleid, componentid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vModHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vModHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vModHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, vehicleid, componentid);
@@ -473,8 +473,8 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vPaintjobHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vPaintjobHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vPaintjobHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, vehicleid, paintjobid);
@@ -485,8 +485,8 @@ public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vResprayHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vResprayHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vResprayHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dddd", playerid, vehicleid, color1, color2);
@@ -497,8 +497,8 @@ public OnVehicleRespray(playerid, vehicleid, color1, color2)
 public OnPlayerSelectedMenuRow(playerid, row)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pSelectedMenuRowHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pSelectedMenuRowHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pSelectedMenuRowHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, row);
@@ -509,8 +509,8 @@ public OnPlayerSelectedMenuRow(playerid, row)
 public OnPlayerExitedMenu(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pExitedMenuHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pExitedMenuHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pExitedMenuHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -521,8 +521,8 @@ public OnPlayerExitedMenu(playerid)
 public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pInteriorChangeHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pInteriorChangeHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pInteriorChangeHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, newinteriorid, oldinteriorid);
@@ -533,8 +533,8 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pKeyStateChangeHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pKeyStateChangeHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pKeyStateChangeHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, newkeys, oldkeys);
@@ -545,8 +545,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 public OnRconLoginAttempt(ip[], password[], success)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][RconLoginAttempHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][RconLoginAttempHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "RconLoginAttempHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ssd", FixBlankString(ip), FixBlankString(password), success);
@@ -557,8 +557,8 @@ public OnRconLoginAttempt(ip[], password[], success)
 public OnPlayerUpdate(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pUpdateHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pUpdateHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pUpdateHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -569,8 +569,8 @@ public OnPlayerUpdate(playerid)
 public OnPlayerStreamIn(playerid, forplayerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pStreamInHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pStreamInHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pStreamInHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, forplayerid);
@@ -581,8 +581,8 @@ public OnPlayerStreamIn(playerid, forplayerid)
 public OnPlayerStreamOut(playerid, forplayerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pStreamOutHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pStreamOutHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pStreamOutHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, forplayerid);
@@ -593,8 +593,8 @@ public OnPlayerStreamOut(playerid, forplayerid)
 public OnVehicleStreamIn(vehicleid, forplayerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vStreamInHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vStreamInHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vStreamInHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", vehicleid, forplayerid);
@@ -605,8 +605,8 @@ public OnVehicleStreamIn(vehicleid, forplayerid)
 public OnVehicleStreamOut(vehicleid, forplayerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][vStreamOutHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][vStreamOutHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "vStreamOutHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", vehicleid, forplayerid);
@@ -617,8 +617,8 @@ public OnVehicleStreamOut(vehicleid, forplayerid)
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][dResponseHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][dResponseHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "dResponseHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dddds", playerid, dialogid, response, listitem, FixBlankString(inputtext));
@@ -629,8 +629,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pTakeDamageHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pTakeDamageHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pTakeDamageHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddfd", playerid, issuerid, amount, weaponid);
@@ -641,8 +641,8 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pGiveDamageHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pGiveDamageHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pGiveDamageHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddfd", playerid, damagedid, amount, weaponid);
@@ -653,8 +653,8 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid)
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pClickMapHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pClickMapHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pClickMapHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dfff", playerid, fX, fY, fZ);
@@ -665,8 +665,8 @@ public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
 public OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pClickTDHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pClickTDHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pClickTDHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, clickedid);
@@ -677,8 +677,8 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pClickPlayerTDHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pClickPlayerTDHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerTDHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, playertextid);
@@ -689,8 +689,8 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pClickPlayerHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pClickPlayerHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pClickPlayerHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, clickedplayerid, source);
@@ -701,8 +701,8 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 public OnPlayerEditObject(playerid, playerobject, objectid, response, Float:fX, Float:fY, Float:fZ, Float:fRotX, Float:fRotY, Float:fRotZ)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pEditObjectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEditObjectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pEditObjectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddddffffff", playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
@@ -713,8 +713,8 @@ public OnPlayerEditObject(playerid, playerobject, objectid, response, Float:fX, 
 public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pEditAttachedObjectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEditAttachedObjectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pEditAttachedObjectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dddddfffffffff", playerid, response, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
@@ -725,30 +725,30 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
 public OnTimerTick()
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][tTickHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][tTickHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", 100);
 		}
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 		for(new j = 0; j <= CallbacksIndex; j++)
-			if (CallbacksList[j][CBIndex][pTimerTickHandler])
+			if(CallbacksList[j][CBIndex][pTimerTickHandler])
 			{
 				format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
 				CallLocalFunction(funcstr, "dd", 100, i);
 			}
-	if ((GetTickCount() - Timer_OneSecTimer) / 1000)
+	if((GetTickCount() - Timer_OneSecTimer) / 1000)
 	{
-		for (new i = 0; i <= CallbacksIndex; i++)
-			if (CallbacksList[i][CBIndex][tTickHandler])
+		for(new i = 0; i <= CallbacksIndex; i++)
+			if(CallbacksList[i][CBIndex][tTickHandler])
 			{
 				format(funcstr, sizeof(funcstr), "%s_%s", "tTickHandler", CallbacksList[i][CBName]);
 				CallLocalFunction(funcstr, "d", 1000);
 			}
-		for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+		for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 			for(new j = 0; j <= CallbacksIndex; j++)
-				if (CallbacksList[j][CBIndex][pTimerTickHandler])
+				if(CallbacksList[j][CBIndex][pTimerTickHandler])
 				{
 					format(funcstr, sizeof(funcstr), "%s_%s", "pTimerTickHandler", CallbacksList[j][CBName]);
 					CallLocalFunction(funcstr, "dd", 1000, i);
@@ -761,8 +761,8 @@ public OnTimerTick()
 public Audio_OnClientConnect(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aConnectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aConnectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aConnectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -773,8 +773,8 @@ public Audio_OnClientConnect(playerid)
 public Audio_OnClientDisconnect(playerid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aDisconnectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aDisconnectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aDisconnectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "d", playerid);
@@ -785,8 +785,8 @@ public Audio_OnClientDisconnect(playerid)
 public Audio_OnTransferFile(playerid, file[], current, total, result)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aTransferFileHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aTransferFileHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aTransferFileHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dsddd", playerid, file, current, total, result);
@@ -797,8 +797,8 @@ public Audio_OnTransferFile(playerid, file[], current, total, result)
 public Audio_OnPlay(playerid, handleid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aPlayHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aPlayHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aPlayHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, handleid);
@@ -809,8 +809,8 @@ public Audio_OnPlay(playerid, handleid)
 public Audio_OnStop(playerid, handleid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aStopHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aStopHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aStopHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, handleid);
@@ -821,8 +821,8 @@ public Audio_OnStop(playerid, handleid)
 public Audio_OnTrackChange(playerid, handleid, track[])
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aTrackChangeHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aTrackChangeHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aTrackChangeHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dds", playerid, handleid, track);
@@ -833,8 +833,8 @@ public Audio_OnTrackChange(playerid, handleid, track[])
 public Audio_OnRadioStationChange(playerid, station)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aRadioStationChangeHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aRadioStationChangeHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aRadioStationChangeHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "dd", playerid, station);
@@ -845,8 +845,8 @@ public Audio_OnRadioStationChange(playerid, station)
 public Audio_OnGetPosition(playerid, handleid, seconds)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][aGetPositionHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][aGetPositionHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "aGetPositionHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, handleid, seconds);
@@ -857,11 +857,11 @@ public Audio_OnGetPosition(playerid, handleid, seconds)
 public OnDialogRequest(playerid, dialogid, olddialogid)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][dRequestHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][dRequestHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "dRequestHandler", CallbacksList[i][CBName]);
-			if (!CallLocalFunction(funcstr, "ddd", playerid, dialogid, olddialogid)) return 0;
+			if(!CallLocalFunction(funcstr, "ddd", playerid, dialogid, olddialogid)) return 0;
 		}
 	return 1;
 }
@@ -869,8 +869,8 @@ public OnDialogRequest(playerid, dialogid, olddialogid)
 public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][pSelectObjectHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pSelectObjectHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pSelectObjectHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddddfff", playerid, type, objectid, modelid, fX, fY, fZ);
@@ -881,8 +881,8 @@ public OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:f
 public OnMpListResponse(playerid, mplistid, selecteditem)
 {
 	new funcstr[64];
-	for (new i = 0; i <= CallbacksIndex; i++)
-		if (CallbacksList[i][CBIndex][mplResponseHandler])
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][mplResponseHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "mplResponseHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, mplistid, selecteditem);
@@ -899,8 +899,8 @@ stock AddHandler(name[], ...)
 {
 	new num = numargs();
 	strcpy(CallbacksList[++CallbacksIndex][CBName], name);
-	for (new i = 1; i < num; i++)
-		if (getarg(i) >= 1 && getarg(i) <= MAX_CALLBACKS)
+	for(new i = 1; i < num; i++)
+		if(getarg(i) >= 1 && getarg(i) <= MAX_CALLBACKS)
 			CallbacksList[CallbacksIndex][CBIndex][getarg(i)] = 1;
 }
 //-----<  >---------------------------------------------------------------------

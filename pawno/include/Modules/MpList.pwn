@@ -92,9 +92,9 @@ public pConnectHandler_MpList(playerid)
 //-----< pClickTDHandler >------------------------------------------------------
 public pClickTDHandler_MpList(playerid, Text:clickedid)
 {
-	if (!MplActive[playerid]) return 0;
+	if(!MplActive[playerid]) return 0;
 
-	if (clickedid == Text:INVALID_TEXT_DRAW)
+	if(clickedid == Text:INVALID_TEXT_DRAW)
 	{
 		MplDestroySelectionMenu(playerid);
 		MplActive[playerid] = false;
@@ -107,13 +107,13 @@ public pClickTDHandler_MpList(playerid, Text:clickedid)
 //-----< pClickPlayerTDHandler >------------------------------------------------
 public pClickPlayerTDHandler_MpList(playerid, PlayerText:playertextid)
 {
-	if (!MplActive[playerid]) return 0;
+	if(!MplActive[playerid]) return 0;
 
 	new curpage = MplPage[playerid];
 
-	if (playertextid == MplNextButtonTextDrawId[playerid])
+	if(playertextid == MplNextButtonTextDrawId[playerid])
 	{
-		if (curpage < (MplGetNumberOfPages(playerid) - 1))
+		if(curpage < (MplGetNumberOfPages(playerid) - 1))
 		{
 			MplPage[playerid] = curpage + 1;
 			MplShowPlayerModelPreviews(playerid);
@@ -124,9 +124,9 @@ public pClickPlayerTDHandler_MpList(playerid, PlayerText:playertextid)
 		return 1;
 	}
 
-	if (playertextid == MplPrevButtonTextDrawId[playerid])
+	if(playertextid == MplPrevButtonTextDrawId[playerid])
 	{
-		if (curpage > 0)
+		if(curpage > 0)
 		{
 			MplPage[playerid] = curpage - 1;
 			MplShowPlayerModelPreviews(playerid);
@@ -138,9 +138,9 @@ public pClickPlayerTDHandler_MpList(playerid, PlayerText:playertextid)
 	}
 
 	new x = 0;
-	while (x != SELECTION_MPLITEMS)
+	while(x != SELECTION_MPLITEMS)
 	{
-		if (playertextid == MplSelectionItems[playerid][x])
+		if(playertextid == MplSelectionItems[playerid][x])
 		{
 			CallLocalFunction("OnMpListResponse", "ddd", playerid, MplId[playerid], MplPageItems[playerid][x + (SELECTION_MPLITEMS * MplPage[playerid])]);
 			PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0);
@@ -165,7 +165,7 @@ stock ShowPlayerMpList(playerid, mplistid, caption[], items[], colors[], size=si
 	MplDestroySelectionMenu(playerid);
 	strcpy(MplHeaderText[playerid], caption);
 	MplNumberOfPageItems[playerid] = size;
-	for (new i = 0; i < MplNumberOfPageItems[playerid]; i++)
+	for(new i = 0; i < MplNumberOfPageItems[playerid]; i++)
 	{
 		MplPageItems[playerid][i] = items[i];
 		MplPageColors[playerid][i] = colors[i];
@@ -182,7 +182,7 @@ stock ShowPlayerMpList(playerid, mplistid, caption[], items[], colors[], size=si
 stock MplGetNumberOfPages(playerid)
 {
 	new size = MplNumberOfPageItems[playerid];
-	if ((size >= SELECTION_MPLITEMS) && (size % SELECTION_MPLITEMS) == 0)
+	if((size >= SELECTION_MPLITEMS) && (size % SELECTION_MPLITEMS) == 0)
 		return (size / SELECTION_MPLITEMS);
 	else return (size / SELECTION_MPLITEMS) + 1;
 }
@@ -269,9 +269,9 @@ stock PlayerText:MplCreateModelPreviewTextDraw(playerid, modelindex, vehcol, Flo
 stock MplDestroyPlayerModelPreviews(playerid)
 {
 	new x = 0;
-	while (x != SELECTION_MPLITEMS)
+	while(x != SELECTION_MPLITEMS)
 	{
-		if (MplSelectionItems[playerid][x] != PlayerText:INVALID_TEXT_DRAW)
+		if(MplSelectionItems[playerid][x] != PlayerText:INVALID_TEXT_DRAW)
 		{
 			PlayerTextDrawDestroy(playerid, MplSelectionItems[playerid][x]);
 			MplSelectionItems[playerid][x] = PlayerText:INVALID_TEXT_DRAW;
@@ -290,9 +290,9 @@ stock MplShowPlayerModelPreviews(playerid)
 
 	MplDestroyPlayerModelPreviews(playerid);
 
-	while (x != SELECTION_MPLITEMS && itemat < MplNumberOfPageItems[playerid])
+	while(x != SELECTION_MPLITEMS && itemat < MplNumberOfPageItems[playerid])
 	{
-		if (linetracker == 0)
+		if(linetracker == 0)
 		{
 			BaseX = MPL_DIALOG_BASE_X + 25.0;
 			BaseY += MPL_SPRITE_DIM_Y * 1.0;
@@ -300,7 +300,7 @@ stock MplShowPlayerModelPreviews(playerid)
 		MplSelectionItems[playerid][x] = MplCreateModelPreviewTextDraw(playerid, MplPageItems[playerid][itemat], MplPageColors[playerid][itemat], BaseX, BaseY, MPL_SPRITE_DIM_X, MPL_SPRITE_DIM_Y);
 		BaseX += MPL_SPRITE_DIM_X + 1.0;
 		linetracker++;
-		if (linetracker == MPLITEMS_PER_LINE) linetracker = 0;
+		if(linetracker == MPLITEMS_PER_LINE) linetracker = 0;
 		itemat++;
 		x++;
 	}

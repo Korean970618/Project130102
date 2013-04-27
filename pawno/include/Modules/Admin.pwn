@@ -49,11 +49,11 @@ forward mplResponseHandler_Admin(playerid, mplistid, selecteditem);
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Admin(playerid, cmdtext[])
 {
-	if (CallLocalFunction("OnPlayerAdminCommandText", "ds", playerid, FixBlankString(cmdtext)))
+	if(CallLocalFunction("OnPlayerAdminCommandText", "ds", playerid, FixBlankString(cmdtext)))
 	{
 		new str[256];
 		format(str, sizeof(str), "명령어 사용: %s", cmdtext);
-		if (GetPVarInt(playerid, "pAgent"))
+		if(GetPVarInt(playerid, "pAgent"))
 			AgentLog(playerid, str);
 		AdminLog(playerid, str);
 		return 1;
@@ -69,10 +69,10 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		str[256];
 	cmd = strtok(cmdtext, idx);
 
-	if (!GetPVarInt(playerid, "pAgent")) return 0;
-	else if (!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
+	if(!GetPVarInt(playerid, "pAgent")) return 0;
+	else if(!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
 	{
-		if (GetPVarInt(playerid, "pAgentMode"))
+		if(GetPVarInt(playerid, "pAgentMode"))
 		{
 			DeletePVar(playerid, "pAgentMode");
 			UnloadPlayerItemData(playerid);
@@ -83,17 +83,17 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		}
 		SetPVarInt(playerid, "pAgentMode", true);
 		LoadPlayerItemData(playerid);
-		for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-			if (IsValidPlayerItemID(playerid, i))
+		for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+			if(IsValidPlayerItemID(playerid, i))
 				DestroyPlayerItem(playerid, i);
 		SendClientMessage(playerid, COLOR_YELLOW, "에이전트 모드를 시작합니다.");
 		AgentLog(playerid, "에이전트 모드를 시작합니다.");
 		return 1;
 	}
 
-	if (GetPVarInt(playerid, "pAdmin") < 1
+	if(GetPVarInt(playerid, "pAdmin") < 1
 	&& !IsGrantedCommand(playerid, cmd)) return 0;
-	else if (!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
+	else if(!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 		new help[2048];
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n\
@@ -118,16 +118,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	//
 	// 유저
 	//
-	else if (!strcmp(cmd, "/체력", true))
+	else if(!strcmp(cmd, "/체력", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /체력 [플레이어] [양]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /체력 [플레이어] [양]");
 		new Float:h = floatstr(cmd);
 		new Float:bh = GetPlayerHealthA(destid);
@@ -137,16 +137,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 체력이 설정되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/아머", true))
+	else if(!strcmp(cmd, "/아머", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /아머 [플레이어] [양]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /아머 [플레이어] [양]");
 		new Float:a = floatstr(cmd);
 		new Float:ba = GetPlayerArmourA(destid);
@@ -156,41 +156,41 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 아머가 설정되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/정보수정", true))
+	else if(!strcmp(cmd, "/정보수정", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		SetPVarInt(playerid, "EditPVar_destid", destid);
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
 		SetPVarString(playerid, "EditPVar_varname", cmd);
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
 		SetPVarInt(playerid, "EditPVar_array", strval(cmd));
 		strcpy(cmd, stringslice_c(cmdtext, 4));
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
 		SetPVarString(playerid, "EditPVar_value", cmd);
 		format(str, sizeof(str), "정보수정: %s(%d)", GetPlayerNameA(destid), destid);
 		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, str, "INTEGER\nFLOAT\nSTRING", "확인", "취소");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/정보검사", true))
+	else if(!strcmp(cmd, "/정보검사", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보검사 [플레이어] [정보] [배열]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보검사 [플레이어] [정보] [배열]");
 		new varname[64];
 		strcpy(varname, cmd);
@@ -206,16 +206,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_YELLOW, str);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/인테리어", true))
+	else if(!strcmp(cmd, "/인테리어", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /인테리어 [플레이어] [값]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /인테리어 [플레이어] [값]");
 		new interior = strval(cmd);
 		new binterior = GetPlayerInterior(destid);
@@ -225,16 +225,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 인테리어가 변경되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/버추얼월드", true))
+	else if(!strcmp(cmd, "/버추얼월드", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /버추얼월드 [플레이어] [값]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /버추얼월드 [플레이어] [값]");
 		new virtualworld = strval(cmd);
 		new bvirtualworld = GetPlayerVirtualWorld(destid);
@@ -244,16 +244,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 버추얼월드가 변경되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/스킨", true))
+	else if(!strcmp(cmd, "/스킨", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스킨 [플레이어] [값]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스킨 [플레이어] [값]");
 		new skin = strval(cmd);
 		new bskin = GetPlayerSkin(destid);
@@ -263,13 +263,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 스킨이 변경되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/리스폰", true))
+	else if(!strcmp(cmd, "/리스폰", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /리스폰 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		SpawnPlayer_(destid);
 		format(str, sizeof(str), "%s님을 리스폰시켰습니다.", GetPlayerNameA(destid));
@@ -277,13 +277,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 리스폰되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/얼림", true))
+	else if(!strcmp(cmd, "/얼림", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /얼림 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		TogglePlayerControllable(playerid, 0);
 		format(str, sizeof(str), "%s님을 얼렸습니다.", GetPlayerNameA(destid));
@@ -291,13 +291,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 얼었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/녹임", true))
+	else if(!strcmp(cmd, "/녹임", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /녹임 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		TogglePlayerControllable(playerid, 1);
 		format(str, sizeof(str), "%s님을 녹였습니다.", GetPlayerNameA(destid));
@@ -305,17 +305,17 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 녹았습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/무기", true))
+	else if(!strcmp(cmd, "/무기", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /무기 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		new list[MAX_WEAPONS], colors[MAX_WEAPONS], items;
-		for (new i = 0; i < MAX_WEAPONS; i++)
-			if (GetWeaponObjectModelID(i) != 1575)
+		for(new i = 0; i < MAX_WEAPONS; i++)
+			if(GetWeaponObjectModelID(i) != 1575)
 			{
 				list[items] = GetWeaponObjectModelID(i);
 				items++;
@@ -324,16 +324,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		ShowPlayerMpList(playerid, MpListId_Admin(0), "Weapons", list, colors, items);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/명령어권한부여", true))
+	else if(!strcmp(cmd, "/명령어권한부여", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
 		GrantCommand(destid, cmd);
 		format(str, sizeof(str), "%s님에게 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", GetPlayerNameA(destid), cmd);
@@ -342,16 +342,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_YELLOW, str);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/명령어권한회수", true))
+	else if(!strcmp(cmd, "/명령어권한회수", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
 		RevokeCommand(destid, cmd);
 		format(str, sizeof(str), "%s님으로부터 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", GetPlayerNameA(destid), cmd);
@@ -360,16 +360,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_YELLOW, str);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/고정가속도", true))
+	else if(!strcmp(cmd, "/고정가속도", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
 		SetPVarFloat(playerid, "pAccel", floatstr(cmd));
 		format(str, sizeof(str), "관리자에 의해 고정가속도 설정 - %.4f", floatstr(cmd));
@@ -381,15 +381,15 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	//
 	// 행동
 	//
-	else if (!strcmp(cmd, "/날기", true))
+	else if(!strcmp(cmd, "/날기", true))
 	{
-		if (GetPVarType(playerid, "FlyMode")) CancelFlyMode(playerid);
+		if(GetPVarType(playerid, "FlyMode")) CancelFlyMode(playerid);
 		else FlyMode(playerid);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
+	else if(!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
 	{
-		if (GetPlayerVirtualWorld(playerid) != VirtualWorld_Position(0))
+		if(GetPlayerVirtualWorld(playerid) != VirtualWorld_Position(0))
 		{
 			SetPVarInt(playerid, "pClockingVw", GetPlayerVirtualWorld(playerid));
 			SetPlayerVirtualWorld(playerid, VirtualWorld_Position(0));
@@ -409,13 +409,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	//
 	// 이동
 	//
-	else if (!strcmp(cmd, "/출두", true) || !strcmp(cmd, "/가", true)  || !strcmp(cmd, "/가자", true))
+	else if(!strcmp(cmd, "/출두", true) || !strcmp(cmd, "/가", true)  || !strcmp(cmd, "/가자", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /출두 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		new Float:x, Float:y, Float:z, Float:a;
 		GetPlayerPos(destid, x, y, z);
@@ -429,13 +429,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(destid));
 		return 1;
 	}
-	else if (!strcmp(cmd, "/소환", true))
+	else if(!strcmp(cmd, "/소환", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /소환 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		new Float:x, Float:y, Float:z, Float:a;
 		GetPlayerPos(playerid, x, y, z);
@@ -450,7 +450,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 소환되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/마크", true))
+	else if(!strcmp(cmd, "/마크", true))
 	{
 		GetPlayerPos(playerid, Mark[playerid][0], Mark[playerid][1], Mark[playerid][2]);
 		GetPlayerFacingAngle(playerid, Mark[playerid][3]);
@@ -459,7 +459,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_WHITE, "현재 위치가 마크되었습니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/마크로", true))
+	else if(!strcmp(cmd, "/마크로", true))
 	{
 		SetPlayerPos(playerid, Mark[playerid][0], Mark[playerid][1], Mark[playerid][2]);
 		SetPlayerFacingAngle(playerid, Mark[playerid][3]);
@@ -468,54 +468,54 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SetPlayerVirtualWorld(playerid, MarkVirtualWorld[playerid]);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/텔레포트", true))
+	else if(!strcmp(cmd, "/텔레포트", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /텔레포트 [좌표]");
 		new pos[3][10];
 		split(cmd, pos, ',');
 		SetPlayerPos(playerid, floatstr(pos[0]), floatstr(pos[1]), floatstr(pos[2]));
 		return 1;
 	}
-	else if (!strcmp(cmd, "/로산", true))
+	else if(!strcmp(cmd, "/로산", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1531.4265, -1676.7639, 13.3828 + 2.0);
 		else
 			SetPlayerPos(playerid, 1531.4265, -1676.7639, 13.3828 + 2.0);
 		SetPlayerInterior(playerid, 0);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/샌피", true))
+	else if(!strcmp(cmd, "/샌피", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			SetVehiclePos(GetPlayerVehicleID(playerid), -1422.2572, -289.8291, 14.1484 + 2.0);
 		else
 			SetPlayerPos(playerid, -1422.2572, -289.8291, 14.1484 + 2.0);
 		SetPlayerInterior(playerid, 0);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/라벤", true))
+	else if(!strcmp(cmd, "/라벤", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1679.5079, 1448.0795, 47.7813 + 2.0);
 		else
 			SetPlayerPos(playerid, 1679.5079, 1448.0795, 47.7813 + 2.0);
 		SetPlayerInterior(playerid, 0);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/건물로", true))
+	else if(!strcmp(cmd, "/건물로", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /건물로 [건물번호]");
 		destid = strval(cmd);
-		if (!IsValidPropertyID(destid))
+		if(!IsValidPropertyID(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 건물입니다.");
-		if (GetPVarInt(playerid, "pAgent"))
+		if(GetPVarInt(playerid, "pAgent"))
 		{
-			if (!GetPropertyEnable(destid))
+			if(!GetPropertyEnable(destid))
 				return SendClientMessage(playerid, COLOR_WHITE, "이미 다른 에이전트가 출두했습니다.");
 			else
 				TogglePropertyEnable(destid, false);
@@ -526,29 +526,29 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	//
 	// 서버
 	//
-	else if (!strcmp(cmd, "/건물생성", true))
+	else if(!strcmp(cmd, "/건물생성", true))
 	{
 		CreateProperty();
 		SendClientMessage(playerid, COLOR_WHITE, "건물을 생성했습니다. '/건물설정'에서 설정하세요.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/건물설정", true))
+	else if(!strcmp(cmd, "/건물설정", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return ShowPropertyList(playerid, DialogId_Admin(1));
 		destid = strval(cmd);
-		if (!IsValidPropertyID(destid))
-		for (new i = 0, t = GetMaxProperties(); i < t; i++)
-			if (IsValidPropertyID(i) && GetPropertyDBID(i) == destid)
+		if(!IsValidPropertyID(destid))
+		for(new i = 0, t = GetMaxProperties(); i < t; i++)
+			if(IsValidPropertyID(i) && GetPropertyDBID(i) == destid)
 				return ShowPropertyModifier(playerid, i);
 		SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 건물입니다.");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/아이템생성", true))
+	else if(!strcmp(cmd, "/아이템생성", true))
 	{
 		/*strcpy(cmd, stringslice_c(cmdtext, 1));
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /아이템생성 [이름]");
 		new Float:x, Float:y, Float:z, Float:a;
 		GetPlayerPos(playerid, x, y, z);
@@ -557,10 +557,10 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		ShowItemModelList(playerid, DialogId_Admin(2));
 		return 1;
 	}
-	else if (!strcmp(cmd, "/아이템제거", true))
+	else if(!strcmp(cmd, "/아이템제거", true))
 	{
 		new itemid = GetPlayerNearestItem(playerid);
-		if (!IsValidItemID(itemid))
+		if(!IsValidItemID(itemid))
 			return SendClientMessage(playerid, COLOR_WHITE, "근처에 떨어진 아이템이 없습니다.");
 		DestroyItem(itemid);
 		return 1;
@@ -568,39 +568,39 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	//
 	// 디버그
 	//
-	else if (!strcmp(cmd, "/부착오브젝트", true))
+	else if(!strcmp(cmd, "/부착오브젝트", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /부착오브젝트 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		DialogData[playerid][0] = destid;
 		ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/음악", true))
+	else if(!strcmp(cmd, "/음악", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /음악 [플레이어] ([URL])");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		strcpy(cmd, stringslice_c(cmdtext, 2));
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return StopAudioStreamForPlayer(destid);
 		PlayAudioStreamForPlayer(destid, cmd);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/카메라정보", true))
+	else if(!strcmp(cmd, "/카메라정보", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /카메라정보 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		new Float:px, Float:py, Float:pz,
 			Float:vx, Float:vy, Float:vz,
@@ -627,16 +627,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "카메라정보", dstr, "확인", chNullString);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/가속도", true))
+	else if(!strcmp(cmd, "/가속도", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /가속도 [플레이어] ([값])");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 		{
 			new Float:x, Float:y, Float:z;
 			GetPlayerVelocity(destid, x, y, z);
@@ -651,28 +651,28 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/애님인덱스", true))
+	else if(!strcmp(cmd, "/애님인덱스", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /애님인덱스 [플레이어] ([값])");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		format(str, sizeof(str), "%s님의 애니메이션 인덱스: %d", GetPlayerNameA(destid), GetPlayerAnimationIndex(destid));
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/스페셜액션", true))
+	else if(!strcmp(cmd, "/스페셜액션", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /스페셜액션 [플레이어] ([값])");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 		{
 			format(str, sizeof(str), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), GetPlayerSpecialAction(destid));
 			SendClientMessage(playerid, COLOR_WHITE, str);
@@ -683,18 +683,18 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		return 1;
 	}
-	else if (!strcmp(cmd, "/텍스트드로우", true))
+	else if(!strcmp(cmd, "/텍스트드로우", true))
 	{
 		ShowPlayerDialog(playerid, DialogId_Admin(10), DIALOG_STYLE_LIST, "TextDraw", "목록\n편집\n제거\n보이기\n숨기기\n추가", "확인", "취소");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/오브젝트선택", true))
+	else if(!strcmp(cmd, "/오브젝트선택", true))
 	{
 		cmd = strtok(cmdtext, idx);
-		if (!strlen(cmd))
+		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /오브젝트선택 [플레이어]");
 		destid = ReturnUser(cmd);
-		if (!IsPlayerConnected(destid))
+		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		SelectObject(destid);
 		return 1;
@@ -705,20 +705,20 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[])
 {
 	new str[256], destid, receive[4][16];
-	switch (dialogid - DialogId_Admin(0))
+	switch(dialogid - DialogId_Admin(0))
 	{
 		case 0:
 		{
-			if (response)
+			if(response)
 			{
 				destid = GetPVarInt(playerid, "EditPVar_destid");
-				if (!IsPlayerConnected(destid))
+				if(!IsPlayerConnected(destid))
 					return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 				new varname[64];
 				strcpy(varname, GetPVarString(playerid, "EditPVar_varname"));
 				new array = GetPVarInt(playerid, "EditPVar_array");
 				strcpy(str, GetPVarString(playerid, "EditPVar_value"));
-				switch (listitem)
+				switch(listitem)
 				{
 					case 0:
 						SetPVarInt(destid, varname, strval(str), array);
@@ -735,10 +735,10 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			SetPVarString(playerid, "EditPVar_value", chNullString);
 		}
 		case 1:
-			if (response)
+			if(response)
 				ShowPropertyModifier(playerid, DialogData[playerid][listitem]);
 		case 2:
-			if (response && listitem)
+			if(response && listitem)
 			{
 				new Float:x, Float:y, Float:z, Float:a;
 				GetPlayerPos(playerid, x, y, z);
@@ -746,10 +746,10 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 				CreateItem(listitem - 1, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), chEmpty);
 			}
 		case 3:
-			if (response)
+			if(response)
 			{
 				destid = DialogData[playerid][0];
-				switch (listitem)
+				switch(listitem)
 				{
 					case 0: ShowAttachedObjectList(playerid, destid, DialogId_Admin(4));
 					case 1: ShowAttachedObjectList(playerid, destid, DialogId_Admin(6));
@@ -758,13 +758,13 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			}
 		case 4:
 		{
-			if (response)
+			if(response)
 			{
 				destid = DialogData[playerid][0];
-				if (!listitem)
+				if(!listitem)
 					return ShowAttachedObjectList(playerid, destid, DialogId_Admin(4));
 				new index = listitem - 1;
-				if (!IsPlayerAttachedObjectSlotUsed(destid, index))
+				if(!IsPlayerAttachedObjectSlotUsed(destid, index))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "사용하지 않는 인덱스입니다.");
 					ShowAttachedObjectList(playerid, destid, DialogId_Admin(4));
@@ -775,18 +775,18 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			else ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
 		}
 		case 5:
-			if (!response)
+			if(!response)
 				ShowAttachedObjectList(playerid, destid, DialogId_Admin(4));
 		case 6:
 		{
-			if (response)
+			if(response)
 			{
 				destid = DialogData[playerid][0];
-				if (!listitem)
+				if(!listitem)
 					return ShowAttachedObjectList(playerid, destid, DialogId_Admin(6));
 				new index = listitem - 1;
 				DialogData[playerid][1] = index;
-				if (!IsPlayerAttachedObjectSlotUsed(destid, index))
+				if(!IsPlayerAttachedObjectSlotUsed(destid, index))
 				{
 					AttachedObjectInfo[destid][index][aoModel]		= 0;
 					AttachedObjectInfo[destid][index][aoBone]		= 1;
@@ -809,13 +809,13 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		case 7:
 		{
 			destid = DialogData[playerid][0];
-			if (response)
+			if(response)
 			{
 				new index = DialogData[playerid][1];
-				if (!listitem)
+				if(!listitem)
 					return ShowAttachedObjectModifier(playerid, destid, index, DialogId_Admin(7), DIALOG_STYLE_LIST);
 				DialogData[playerid][2] = listitem;
-				switch (listitem)
+				switch(listitem)
 				{
 					case 1: format(str, sizeof(str), "현재 Model: %d", AttachedObjectInfo[destid][index][aoModel]);
 					case 2: format(str, sizeof(str), "현재 Bone: %d", AttachedObjectInfo[destid][index][aoBone]);
@@ -843,34 +843,34 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		{
 			destid = DialogData[playerid][0];
 			new index = DialogData[playerid][1];
-			if (response && strlen(inputtext))
+			if(response && strlen(inputtext))
 			{
-				switch (DialogData[playerid][2])
+				switch(DialogData[playerid][2])
 				{
 					case 1: AttachedObjectInfo[destid][index][aoModel] = strval(inputtext);
 					case 2: AttachedObjectInfo[destid][index][aoBone] = strval(inputtext);
 					case 3:
 					{
 						split(inputtext, receive, ',');
-						for (new i = 0; i < 3; i++)
+						for(new i = 0; i < 3; i++)
 							AttachedObjectInfo[destid][index][aoOffset][i] = floatstr(receive[i]);
 					}
 					case 4:
 					{
 						split(inputtext, receive, ',');
-						for (new i = 0; i < 3; i++)
+						for(new i = 0; i < 3; i++)
 							AttachedObjectInfo[destid][index][aoRot][i] = floatstr(receive[i]);
 					}
 					case 5:
 					{
 						split(inputtext, receive, ',');
-						for (new i = 0; i < 3; i++)
+						for(new i = 0; i < 3; i++)
 							AttachedObjectInfo[destid][index][aoScale][i] = floatstr(receive[i]);
 					}
 					case 6:
 					{
 						split(inputtext, receive, ',');
-						for (new i = 0; i < 2; i++)
+						for(new i = 0; i < 2; i++)
 							AttachedObjectInfo[destid][index][aoMColor][i] = strval(receive[i]);
 					}
 				}
@@ -884,10 +884,10 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		}
 		case 9:
 		{
-			if (response)
+			if(response)
 			{
 				destid = DialogData[playerid][0];
-				if (!listitem)
+				if(!listitem)
 					return ShowAttachedObjectList(playerid, destid, DialogId_Admin(9));
 				RemovePlayerAttachedObject(playerid, listitem - 1);
 				ShowAttachedObjectList(playerid, destid, DialogId_Admin(9));
@@ -895,9 +895,9 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			else ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
 		}
 		case 10:
-			if (response)
+			if(response)
 			{
-				if (listitem == 5)
+				if(listitem == 5)
 				{
 					TextDrawCreate(1.0, 1.0, "New TextDraw");
 					OnPlayerCommandText(playerid, "/텍스트드로우");
@@ -908,12 +908,12 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			}
 		case 11:
 		{
-			if (response)
+			if(response)
 			{
 				destid = DialogData[playerid][1] = listitem - 1;
-				if (TextDrawInfo[destid][tdID] == Text:INVALID_TEXT_DRAW || !listitem)
+				if(TextDrawInfo[destid][tdID] == Text:INVALID_TEXT_DRAW || !listitem)
 					return OnDialogResponse(playerid, DialogId_Admin(11), true, listitem, chEmpty);
-				switch (DialogData[playerid][0])
+				switch(DialogData[playerid][0])
 				{
 					case 0: ShowTextDrawModifier(playerid, destid, DialogId_Admin(12), DIALOG_STYLE_MSGBOX);
 					case 1: ShowTextDrawModifier(playerid, destid, DialogId_Admin(13), DIALOG_STYLE_LIST);
@@ -929,17 +929,17 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			else OnPlayerCommandText(playerid, "/텍스트드로우");
 		}
 		case 12:
-			if (!response)
+			if(!response)
 				OnDialogResponse(playerid, DialogId_Admin(10), true, DialogData[playerid][0], chEmpty);
 		case 13:
 		{
-			if (response)
+			if(response)
 			{
 				destid = DialogData[playerid][1];
-				if (!listitem)
+				if(!listitem)
 					return OnDialogResponse(playerid, DialogId_Admin(11), true, destid + 1, chEmpty);
 				DialogData[playerid][2] = listitem - 1;
-				switch (DialogData[playerid][2])
+				switch(DialogData[playerid][2])
 				{
 					case 0: format(str, sizeof(str), "현재 Position: %.4f,%.4f", TextDrawInfo[destid][tdPos][0], TextDrawInfo[destid][tdPos][1]);
 					case 1: format(str, sizeof(str), "현재 Text: %s", TextDrawInfo[destid][tdText]);
@@ -965,8 +965,8 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		case 14:
 		{
 			destid = DialogData[playerid][1];
-			if (response && strlen(inputtext))
-				switch (DialogData[playerid][2])
+			if(response && strlen(inputtext))
+				switch(DialogData[playerid][2])
 				{
 					case 0:
 					{
@@ -1011,26 +1011,26 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		case 15:
 		{
 			new mode = DialogData[playerid][0];
-			if (response)
+			if(response)
 			{
 				destid = ReturnUser(inputtext);
-				if (!IsPlayerConnected(destid) && strval(inputtext) != -1)
+				if(!IsPlayerConnected(destid) && strval(inputtext) != -1)
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 				}
 				else
-					switch (mode)
+					switch(mode)
 					{
 						case 0:
 						{
-							if (strval(inputtext) == -1)
+							if(strval(inputtext) == -1)
 								TextDrawShowForAll(DialogData[playerid][1]);
 							else
 								TextDrawShowForPlayer(playerid, DialogData[playerid][1]);
 						}
 						case 1:
 						{
-							if (strval(inputtext) == -1)
+							if(strval(inputtext) == -1)
 								TextDrawHideForAll(DialogData[playerid][1]);
 							else
 								TextDrawHideForPlayer(playerid, DialogData[playerid][1]);
@@ -1041,7 +1041,7 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		}
 		case 16:
 		{
-			if (response)
+			if(response)
 			{
 				GivePlayerWeapon(MpListData[playerid][0], MpListData[playerid][1], strval(inputtext));
 				format(str, sizeof(str), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
@@ -1062,12 +1062,12 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 {
 	new str[256];
-	switch (MpListId_Admin(0) - mplistid)
+	switch(MpListId_Admin(0) - mplistid)
 	{
 		case 0:
 		{
-			for (new i = 0; i < MAX_WEAPONS; i++)
-				if (GetWeaponObjectModelID(i) == selecteditem)
+			for(new i = 0; i < MAX_WEAPONS; i++)
+				if(GetWeaponObjectModelID(i) == selecteditem)
 				{
 					MpListData[playerid][1] = i;
 					format(str, sizeof(str), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
@@ -1085,10 +1085,10 @@ public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 //-----< SendAdminMessage >-----------------------------------------------------
 stock SendAdminMessage(color, message[], level=1)
 {
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 	{
 		new alevel = GetPVarInt(i, "pAdmin");
-		if (alevel && alevel >= level
+		if(alevel && alevel >= level
 		||	!level && GetPVarInt(i, "pAgent"))
 			SendClientMessage(i, color, message);
 	}
@@ -1101,7 +1101,7 @@ stock ShowAttachedObjectList(playerid, destid, dialogid)
 	strtab(str, "Index", 7);
 	strtab(str, "Model", 7);
 	strcat(str, "Bone");
-	for (new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
 	{
 		if(IsPlayerAttachedObjectSlotUsed(destid, i))
 		{
@@ -1146,11 +1146,11 @@ stock ShowTextDrawList(playerid, dialogid)
 	strcpy(str, chNullString);
 	strtab(str, "ID", 5);
 	strcat(str, "Text");
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
+	for(new i = 0; i < MAX_TEXT_DRAWS; i++)
 	{
 		strcat(str, "\n");
 		strtab(str, valstr_(i), 5);
-		if (TextDrawInfo[i][tdID] != Text:INVALID_TEXT_DRAW)
+		if(TextDrawInfo[i][tdID] != Text:INVALID_TEXT_DRAW)
 			strcat(str, TextDrawInfo[i][tdText]);
 		else
 			strcat(str, "None");
@@ -1192,12 +1192,12 @@ stock AdminLog(playerid, result[])
 	getdate(year, month, day);
 	format(str, sizeof(str), "Logs/AdminLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
 	fHandle = fopen(str, io_append);
-	if (fHandle)
+	if(fHandle)
 	{
 		gettime(hour, minute, second);
 		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
 		fwrite(fHandle, str);
-		for (new i = 0, t = strlen(result); i < t; i++)
+		for(new i = 0, t = strlen(result); i < t; i++)
 			fputchar(fHandle, result[i], false);
 	}
 	fclose(fHandle);
@@ -1212,12 +1212,12 @@ stock AgentLog(playerid, result[])
 	getdate(year, month, day);
 	format(str, sizeof(str), "Logs/AgentLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
 	fHandle = fopen(str, io_append);
-	if (fHandle)
+	if(fHandle)
 	{
 		gettime(hour, minute, second);
 		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
 		fwrite(fHandle, str);
-		for (new i = 0, t = strlen(result); i < t; i++)
+		for(new i = 0, t = strlen(result); i < t; i++)
 			fputchar(fHandle, result[i], false);
 	}
 	fclose(fHandle);

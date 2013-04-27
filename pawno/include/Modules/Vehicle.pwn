@@ -97,8 +97,8 @@ stock SaveVehicleDataById(vehicleid)
 //-----< SaveVehicleData >------------------------------------------------------
 stock SaveVehicleData()
 {
-	for (new i = 0, t = GetMaxVehicles(); i < t; i++)
-		if (IsValidVehicleID(i))
+	for(new i = 0, t = GetMaxVehicles(); i < t; i++)
+		if(IsValidVehicleID(i))
 			SaveVehicleDataById(i);
 	return 1;
 }
@@ -112,7 +112,7 @@ stock LoadVehicleData()
 		splited[6][16];
 	mysql_query("SELECT * FROM vehicledata");
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -123,7 +123,7 @@ stock LoadVehicleData()
 		VehicleInfo[i][vModel] = strval(receive[idx++]);
 
 		split(receive[idx++], splited, ',');
-		for (new j = 0; j < 4; j++)
+		for(new j = 0; j < 4; j++)
 			VehicleInfo[i][vPos][j] = floatstr(splited[j]);
 		VehicleInfo[i][vInterior] = strval(splited[4]);
 		VehicleInfo[i][vVirtualWorld] = strval(splited[5]);
@@ -153,8 +153,8 @@ stock UnloadVehicleDataById(vehicleid)
 //-----< UnloadVehicleData >----------------------------------------------------
 stock UnloadVehicleData()
 {
-	for (new i = 0, t = GetMaxVehicles(); i < t; i++)
-		if (IsValidVehicleID(i))
+	for(new i = 0, t = GetMaxVehicles(); i < t; i++)
+		if(IsValidVehicleID(i))
 			UnloadVehicleDataById(i);
 	return 1;
 }
@@ -162,8 +162,8 @@ stock UnloadVehicleData()
 stock CreateVehicle_(vehicletype, Float:x, Float:y, Float:z, Float:rotation, interiorid, worldid, color1, color2, respawn_delay=-1)
 {
 	new str[5];
-	for (new i = 0, t = GetMaxVehicles(); i < t; i++)
-		if (!IsValidVehicleID(i))
+	for(new i = 0, t = GetMaxVehicles(); i < t; i++)
+		if(!IsValidVehicleID(i))
 		{
 			mysql_query("INSERT INTO vehicledata (Model) VALUES (0)");
 			mysql_query("SELECT ID FROM vehicledata WHERE Model=0");

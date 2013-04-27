@@ -36,7 +36,7 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 	new cmd[256],idx;
 	cmd = strtok(cmdtext,idx);
 
-	if (strcmp(cmd, "/애니도움말", true) == 0 || strcmp(cmd, "/animhelp", true) == 0)
+	if(strcmp(cmd, "/애니도움말", true) == 0 || strcmp(cmd, "/animhelp", true) == 0)
 	{
 		new help[2560];
 
@@ -75,23 +75,23 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/정상", true)==0)
+	else if(strcmp(cmd, "/정상", true)==0)
 	{
 		ClearAnimations(playerid, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/손", true) == 0)
+	else if(strcmp(cmd, "/손", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "ROB_BANK", "SHP_HandsUp_Scr", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/걷기", true) == 0)
+	else if(strcmp(cmd, "/걷기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -114,49 +114,49 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/설치", true) == 0)
+	else if(strcmp(cmd, "/설치", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_Plant_Loop", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/웃기", true) == 0)
+	else if(strcmp(cmd, "/웃기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "RAPPING", "Laugh_01", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/수갑애니", true) == 0)
+	else if(strcmp(cmd, "/수갑애니", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "pass_Smoke_in_car", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/화이팅", true) == 0)
+	else if(strcmp(cmd, "/화이팅", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "OTB", "wtchrace_win", 4.1, 0, 1, 1, 1, 1, true);
 	 	return 1;
 	}
 
-	else if (strcmp(cmd, "/엎드리기", true) == 0)
+	else if(strcmp(cmd, "/엎드리기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 	 	ApplyAnimation(playerid, "PED", "Drown", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/금지", true) == 0)
+	else if(strcmp(cmd, "/금지", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -169,33 +169,33 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/억울", true) == 0)
+	else if(strcmp(cmd, "/억울", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "OTB", "betslp_tnk", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/조직", true) == 0)
+	else if(strcmp(cmd, "/조직", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "DEALER", "DEALER_IDLE", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/조직인사", true) == 0)
+	else if(strcmp(cmd, "/조직인사", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FAT", "IDLE_tired", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/말", true) == 0)
+	else if(strcmp(cmd, "/말", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -207,65 +207,65 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/먹기", true) == 0)
+	else if(strcmp(cmd, "/먹기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/승리", true) == 0)
+	else if(strcmp(cmd, "/승리", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "ON_LOOKERS", "Pointup_in", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/경준", true) == 0 ||strcmp(cmd, "/경찰조준", true) == 0)
+	else if(strcmp(cmd, "/경준", true) == 0 ||strcmp(cmd, "/경찰조준", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "ARRESTgun", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/구토", true) == 0)
+	else if(strcmp(cmd, "/구토", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/기절하기", true) == 0)
+	else if(strcmp(cmd, "/기절하기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "KO_shot_face", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/두려움", true) == 0)
+	else if(strcmp(cmd, "/두려움", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "cower", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/배째", true) == 0)
+	else if(strcmp(cmd, "/배째", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "FLOOR_hit", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/엿", true) == 0)
+	else if(strcmp(cmd, "/엿", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -277,65 +277,65 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/복싱", true) == 0)
+	else if(strcmp(cmd, "/복싱", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "GYMNASIUM", "GYMshadowbox", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/백스텝", true) == 0)
+	else if(strcmp(cmd, "/백스텝", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "FightShB", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/땅치기", true) == 0)
+	else if(strcmp(cmd, "/땅치기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FIGHT_B", "FightB_G", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/가라데", true) == 0)
+	else if(strcmp(cmd, "/가라데", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FIGHT_D", "FightD_2", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/총맞고걷기", true) == 0)
+	else if(strcmp(cmd, "/총맞고걷기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "SWEET", "LaFin_Sweet", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/환호", true) == 0)
+	else if(strcmp(cmd, "/환호", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "STRIP", "PUN_HOLLER", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/날아가기", true) == 0)
+	else if(strcmp(cmd, "/날아가기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "BIKE_fallR", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/걷어차기", true) == 0)
+	else if(strcmp(cmd, "/걷어차기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -347,33 +347,33 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/총들기", true) == 0)
+	else if(strcmp(cmd, "/총들기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "SILENCED", "Silence_fire", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/다리꼬우기", true) == 0)
+	else if(strcmp(cmd, "/다리꼬우기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "SUNBATHE", "SitnWait_in_W", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/땅파기", true) == 0)
+	else if(strcmp(cmd, "/땅파기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "CHAINSAW", "WEAPON_csawlo", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/총조준", true) == 0)
+	else if(strcmp(cmd, "/총조준", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -389,9 +389,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/자위", true) == 0)
+	else if(strcmp(cmd, "/자위", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -403,17 +403,17 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/총맞음", true) == 0)
+	else if(strcmp(cmd, "/총맞음", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "KO_shot_stom", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/앉기", true) == 0 || strcmp(cmd, "/seat", true) == 0)
+	else if(strcmp(cmd, "/앉기", true) == 0 || strcmp(cmd, "/seat", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -429,9 +429,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/기대기", true) == 0)
+	else if(strcmp(cmd, "/기대기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -443,9 +443,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/구르기", true) == 0)
+	else if(strcmp(cmd, "/구르기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -457,9 +457,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/바지지퍼", true) == 0)
+	else if(strcmp(cmd, "/바지지퍼", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -471,9 +471,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/엿보기", true) == 0)
+	else if(strcmp(cmd, "/엿보기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -485,9 +485,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/인사", true) == 0)
+	else if(strcmp(cmd, "/인사", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -501,151 +501,151 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/불붙이기", true) == 0)
+	else if(strcmp(cmd, "/불붙이기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "SMOKING", "M_smk_in", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/컴퓨터", true) == 0)
+	else if(strcmp(cmd, "/컴퓨터", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "INT_OFFICE", "OFF_Sit_Type_Loop", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/쓰기", true) == 0)
+	else if(strcmp(cmd, "/쓰기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "OTB", "betslp_in", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/머리박기", true) == 0)
+	else if(strcmp(cmd, "/머리박기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "CAR_dead_LHS", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/지목하기", true) == 0)
+	else if(strcmp(cmd, "/지목하기", true) == 0)
 	{
 		ApplyAnimation(playerid, "ON_LOOKERS", "point_in", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/놀라기", true) == 0)
+	else if(strcmp(cmd, "/놀라기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "handscower", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/투항", true) == 0)
+	else if(strcmp(cmd, "/투항", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "POLICE", "crm_drgbst_01", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/양팔들기", true) == 0)
+	else if(strcmp(cmd, "/양팔들기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "RIOT", "RIOT_ANGRY", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/엎어지기", true) == 0)
+	else if(strcmp(cmd, "/엎어지기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FOOD", "FF_Die_Bkw", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/고글", true) == 0)
+	else if(strcmp(cmd, "/고글", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "goggles", "goggles_put_on", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/좌절", true) == 0)
+	else if(strcmp(cmd, "/좌절", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "SWEET", "Sweet_injuredloop", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/살피기", true) == 0)
+	else if(strcmp(cmd, "/살피기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "ON_LOOKERS", "Pointup_in", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/대걸레질", true) == 0)
+	else if(strcmp(cmd, "/대걸레질", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "CHAINSAW", "CSAW_3", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/묶임", true) == 0)
+	else if(strcmp(cmd, "/묶임", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BIKE_DBZ", "Pass_Driveby_RHS", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/던지기", true) == 0)
+	else if(strcmp(cmd, "/던지기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "GRENADE", "WEAPON_throw", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/응원", true) == 0)
+	else if(strcmp(cmd, "/응원", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "ON_LOOKERS", "shout_02", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/술마심", true) == 0)
+	else if(strcmp(cmd, "/술마심", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "WALK_DRUNK", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/바닥쓸기", true) == 0)
+	else if(strcmp(cmd, "/바닥쓸기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "CAR_crawloutRHS", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/밀기", true) == 0)
+	else if(strcmp(cmd, "/밀기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -657,17 +657,17 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/덤블링", true) == 0)
+	else if(strcmp(cmd, "/덤블링", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "EV_dive", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/쓰러지기", true) == 0)
+	else if(strcmp(cmd, "/쓰러지기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -679,49 +679,49 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/히치하이킹", true) == 0)
+	else if(strcmp(cmd, "/히치하이킹", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "IDLE_taxi", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/악수", true) == 0)
+	else if(strcmp(cmd, "/악수", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "PED", "Jetpack_Idle", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/술잔들기", true) == 0)
+	else if(strcmp(cmd, "/술잔들기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BAR", "Barcustom_get", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/물건꺼내기", true) == 0)
+	else if(strcmp(cmd, "/물건꺼내기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BAR", "Barserve_bottle", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/술따르기", true) == 0)
+	else if(strcmp(cmd, "/술따르기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BAR", "Barserve_glass", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/주유하기", true) == 0)
+	else if(strcmp(cmd, "/주유하기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -733,103 +733,103 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/마시기", true) == 0)
+	else if(strcmp(cmd, "/마시기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BAR", "dnk_stndF_loop", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/랩", true) == 0)
+	else if(strcmp(cmd, "/랩", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "benchpress", "gym_bp_celebrate", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/차에서손내밀기", true) == 0)
+	else if(strcmp(cmd, "/차에서손내밀기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "CAR", "Tap_hand", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/배치기", true) == 0)
+	else if(strcmp(cmd, "/배치기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "GANGS", "hndshkea", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/갱인사", true) == 0)
+	else if(strcmp(cmd, "/갱인사", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "GANGS", "hndshkfa", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/물건집기", true) == 0)
+	else if(strcmp(cmd, "/물건집기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/팔짱", true) == 0)
+	else if(strcmp(cmd, "/팔짱", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "OTB", "wtchrace_loop", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
-	else if (strcmp(cmd, "/복종", true) == 0)
+	else if(strcmp(cmd, "/복종", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "COP_AMBIENT", "Copbrowse_in", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
-	else if (strcmp(cmd, "/노숙", true) == 0)
+	else if(strcmp(cmd, "/노숙", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/piss", true) == 0 || strcmp(cmd, "/오줌", true) == 0)
+	else if(strcmp(cmd, "/piss", true) == 0 || strcmp(cmd, "/오줌", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		SetPlayerSpecialAction(playerid, 68);
 		return 1;
 	}
 
-	else if (strcmp(cmd, "/잠", true) == 0)
+	else if(strcmp(cmd, "/잠", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "INT_HOUSE", "BED_In_L", 4.1, 0, 0, 1, 0, 1, true);
   		return 1;
 	}
 
-	else if (strcmp(cmd, "/조직앉기", true) == 0)
+	else if(strcmp(cmd, "/조직앉기", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "JST_BUISNESS", "girl_02", 4.1, 0, 1, 1, 1, 1, true);
   		return 1;
 	}
 
-	else if (strcmp(cmd, "/교통정리", true) == 0)
+	else if(strcmp(cmd, "/교통정리", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -843,25 +843,25 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/bomb", true))
+	else if(!strcmp(cmd, "/bomb", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_Plant_Loop", 4.1, 1, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animairport", true))
+	else if(!strcmp(cmd, "/animairport", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "AIRPORT", "thrw_barl_thrw", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
- 	else if (!strcmp(cmd, "/animattractors", true))
+ 	else if(!strcmp(cmd, "/animattractors", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -874,9 +874,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbar", true))
+	else if(!strcmp(cmd, "/animbar", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -898,9 +898,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbaseball", true))
+	else if(!strcmp(cmd, "/animbaseball", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -921,9 +921,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbdfire", true))
+	else if(!strcmp(cmd, "/animbdfire", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -946,9 +946,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbeach", true))
+	else if(!strcmp(cmd, "/animbeach", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -963,9 +963,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbenchpress", true))
+	else if(!strcmp(cmd, "/animbenchpress", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -982,9 +982,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbf", true))
+	else if(!strcmp(cmd, "/animbf", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -998,9 +998,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbiked", true))
+	else if(!strcmp(cmd, "/animbiked", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1029,9 +1029,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbikeh", true))
+	else if(!strcmp(cmd, "/animbikeh", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1059,9 +1059,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbikeleap", true))
+	else if(!strcmp(cmd, "/animbikeleap", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1080,9 +1080,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbikes", true))
+	else if(!strcmp(cmd, "/animbikes", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1112,9 +1112,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbikev", true))
+	else if(!strcmp(cmd, "/animbikev", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1142,9 +1142,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbikedbz", true))
+	else if(!strcmp(cmd, "/animbikedbz", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1158,9 +1158,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbmx", true))
+	else if(!strcmp(cmd, "/animbmx", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1188,9 +1188,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbomber", true))
+	else if(!strcmp(cmd, "/animbomber", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1206,9 +1206,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbox", true))
+	else if(!strcmp(cmd, "/animbox", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1228,9 +1228,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbsktball", true))
+	else if(!strcmp(cmd, "/animbsktball", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1281,9 +1281,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbuddy", true))
+	else if(!strcmp(cmd, "/animbuddy", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1298,9 +1298,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animbus", true))
+	else if(!strcmp(cmd, "/animbus", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1319,9 +1319,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcamera", true))
+	else if(!strcmp(cmd, "/animcamera", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1345,9 +1345,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcar", true))
+	else if(!strcmp(cmd, "/animcar", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1368,9 +1368,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcarry", true))
+	else if(!strcmp(cmd, "/animcarry", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1387,9 +1387,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcarchat", true))
+	else if(!strcmp(cmd, "/animcarchat", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1420,9 +1420,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcasino", true))
+	else if(!strcmp(cmd, "/animcasino", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1457,9 +1457,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animchainsaw", true))
+	else if(!strcmp(cmd, "/animchainsaw", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1480,9 +1480,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animchoppa", true))
+	else if(!strcmp(cmd, "/animchoppa", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1510,9 +1510,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animclothes", true))
+	else if(!strcmp(cmd, "/animclothes", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1535,9 +1535,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcoach", true))
+	else if(!strcmp(cmd, "/animcoach", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1553,9 +1553,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcolt", true))
+	else if(!strcmp(cmd, "/animcolt", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1572,9 +1572,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcopambient", true))
+	else if(!strcmp(cmd, "/animcopambient", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1596,9 +1596,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcopdvbyz", true))
+	else if(!strcmp(cmd, "/animcopdvbyz", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1612,9 +1612,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcrack", true))
+	else if(!strcmp(cmd, "/animcrack", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1634,9 +1634,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animcrib", true))
+	else if(!strcmp(cmd, "/animcrib", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1651,9 +1651,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdamjump", true))
+	else if(!strcmp(cmd, "/animdamjump", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1668,9 +1668,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdancing", true))
+	else if(!strcmp(cmd, "/animdancing", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1693,9 +1693,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdealer", true))
+	else if(!strcmp(cmd, "/animdealer", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1712,9 +1712,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdildo", true))
+	else if(!strcmp(cmd, "/animdildo", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1733,9 +1733,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdodge", true))
+	else if(!strcmp(cmd, "/animdodge", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1749,9 +1749,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdozer", true))
+	else if(!strcmp(cmd, "/animdozer", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1771,9 +1771,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animdrivebys", true))
+	else if(!strcmp(cmd, "/animdrivebys", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1791,9 +1791,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfat", true))
+	else if(!strcmp(cmd, "/animfat", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1821,9 +1821,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfightb", true))
+	else if(!strcmp(cmd, "/animfightb", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1843,9 +1843,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfightc", true))
+	else if(!strcmp(cmd, "/animfightc", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1867,9 +1867,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfightd", true))
+	else if(!strcmp(cmd, "/animfightd", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1889,9 +1889,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfighte", true))
+	else if(!strcmp(cmd, "/animfighte", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1905,9 +1905,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfinale", true))
+	else if(!strcmp(cmd, "/animfinale", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1933,9 +1933,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfinale2", true))
+	else if(!strcmp(cmd, "/animfinale2", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1953,17 +1953,17 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animflame", true))
+	else if(!strcmp(cmd, "/animflame", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "FLAME", "FLAME_fire", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animflowers", true))
+	else if(!strcmp(cmd, "/animflowers", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -1976,9 +1976,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfood", true))
+	else if(!strcmp(cmd, "/animfood", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2021,9 +2021,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animfreeweights", true))
+	else if(!strcmp(cmd, "/animfreeweights", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2042,9 +2042,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animgangs", true))
+	else if(!strcmp(cmd, "/animgangs", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2087,9 +2087,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animghands", true))
+	else if(!strcmp(cmd, "/animghands", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2119,9 +2119,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animghetto", true))
+	else if(!strcmp(cmd, "/animghetto", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2138,17 +2138,17 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animgog", true))
+	else if(!strcmp(cmd, "/animgog", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "goggles", "goggles_put_on", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animgraffity", true))
+	else if(!strcmp(cmd, "/animgraffity", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2160,9 +2160,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animgraveyard", true))
+	else if(!strcmp(cmd, "/animgraveyard", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2174,9 +2174,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		}
 		return 1;
 	}
-	else if (strcmp(cmd, "/animgrenade", true) == 0)
+	else if(strcmp(cmd, "/animgrenade", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2189,9 +2189,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animgym", true))
+	else if(!strcmp(cmd, "/animgym", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2225,9 +2225,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animhaircut", true))
+	else if(!strcmp(cmd, "/animhaircut", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2250,9 +2250,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animheist", true))
+	else if(!strcmp(cmd, "/animheist", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2272,9 +2272,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animinthouse", true))
+	else if(!strcmp(cmd, "/animinthouse", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2294,9 +2294,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animintoffice", true))
+	else if(!strcmp(cmd, "/animintoffice", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2316,9 +2316,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animintshop", true))
+	else if(!strcmp(cmd, "/animintshop", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2336,9 +2336,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animjst", true))
+	else if(!strcmp(cmd, "/animjst", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2352,9 +2352,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animkart", true))
+	else if(!strcmp(cmd, "/animkart", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2368,9 +2368,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animkissing", true))
+	else if(!strcmp(cmd, "/animkissing", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2395,9 +2395,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animknife", true))
+	else if(!strcmp(cmd, "/animknife", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2423,9 +2423,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animlapdan", true))
+	else if(!strcmp(cmd, "/animlapdan", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2437,9 +2437,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animlapdan2", true))
+	else if(!strcmp(cmd, "/animlapdan2", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2451,9 +2451,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animlapdan3", true))
+	else if(!strcmp(cmd, "/animlapdan3", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2465,9 +2465,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animlowrider", true))
+	else if(!strcmp(cmd, "/animlowrider", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2516,9 +2516,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animmdchase", true))
+	else if(!strcmp(cmd, "/animmdchase", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2553,9 +2553,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animmddend", true))
+	else if(!strcmp(cmd, "/animmddend", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2573,17 +2573,17 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animmedic", true))
+	else if(!strcmp(cmd, "/animmedic", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
+		if(IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 
 		ApplyAnimation(playerid, "MEDIC", "CPR", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animmisc", true))
+	else if(!strcmp(cmd, "/animmisc", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2634,9 +2634,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animmtb", true))
+	else if(!strcmp(cmd, "/animmtb", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2664,9 +2664,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animmusculcar", true))
+	else if(!strcmp(cmd, "/animmusculcar", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2693,9 +2693,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animnevaddda", true))
+	else if(!strcmp(cmd, "/animnevaddda", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2707,9 +2707,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animonlookers", true))
+	else if(!strcmp(cmd, "/animonlookers", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2748,9 +2748,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animotb", true))
+	else if(!strcmp(cmd, "/animotb", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2771,9 +2771,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animparachute", true))
+	else if(!strcmp(cmd, "/animparachute", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2805,9 +2805,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animpark", true))
+	else if(!strcmp(cmd, "/animpark", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2820,9 +2820,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animpaulnmac", true))
+	else if(!strcmp(cmd, "/animpaulnmac", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -2844,9 +2844,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animped", true))
+	else if(!strcmp(cmd, "/animped", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3151,9 +3151,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animplayerdvbys", true))
+	else if(!strcmp(cmd, "/animplayerdvbys", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3167,9 +3167,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animplayidles", true))
+	else if(!strcmp(cmd, "/animplayidles", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3184,9 +3184,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animpolice", true))
+	else if(!strcmp(cmd, "/animpolice", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
+		if(IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
 		{
@@ -3205,9 +3205,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animpool", true))
+	else if(!strcmp(cmd, "/animpool", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3238,9 +3238,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animpoor", true))
+	else if(!strcmp(cmd, "/animpoor", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3252,9 +3252,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animpython", true))
+	else if(!strcmp(cmd, "/animpython", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3269,9 +3269,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animquad", true))
+	else if(!strcmp(cmd, "/animquad", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3298,9 +3298,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animquadbz", true))
+	else if(!strcmp(cmd, "/animquadbz", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3314,9 +3314,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animrapping", true))
+	else if(!strcmp(cmd, "/animrapping", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3334,9 +3334,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animrifle", true))
+	else if(!strcmp(cmd, "/animrifle", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3351,9 +3351,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animriot", true))
+	else if(!strcmp(cmd, "/animriot", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3370,9 +3370,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animrobbank", true))
+	else if(!strcmp(cmd, "/animrobbank", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3387,9 +3387,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animrocket", true))
+	else if(!strcmp(cmd, "/animrocket", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3404,9 +3404,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animrustler", true))
+	else if(!strcmp(cmd, "/animrustler", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3421,9 +3421,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animryder", true))
+	else if(!strcmp(cmd, "/animryder", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3449,9 +3449,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animscratching", true))
+	else if(!strcmp(cmd, "/animscratching", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3473,9 +3473,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animshamal", true))
+	else if(!strcmp(cmd, "/animshamal", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3489,9 +3489,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animshop", true))
+	else if(!strcmp(cmd, "/animshop", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3526,9 +3526,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animshotgun", true))
+	else if(!strcmp(cmd, "/animshotgun", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3541,9 +3541,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsilenced", true))
+	else if(!strcmp(cmd, "/animsilenced", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3557,9 +3557,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animskate", true))
+	else if(!strcmp(cmd, "/animskate", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3572,9 +3572,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsmoking", true))
+	else if(!strcmp(cmd, "/animsmoking", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3592,17 +3592,17 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsniper", true))
+	else if(!strcmp(cmd, "/animsniper", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		ApplyAnimation(playerid, "SNIPER", "WEAPON_sniper", 4.1, 0, 1, 1, 1, 1, true);
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animspraycan", true))
+	else if(!strcmp(cmd, "/animspraycan", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3614,9 +3614,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animstrip", true))
+	else if(!strcmp(cmd, "/animstrip", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3646,9 +3646,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsunbathe", true))
+	else if(!strcmp(cmd, "/animsunbathe", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3676,9 +3676,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animswat", true))
+	else if(!strcmp(cmd, "/animswat", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3711,9 +3711,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsweet", true))
+	else if(!strcmp(cmd, "/animsweet", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3730,9 +3730,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animswim", true))
+	else if(!strcmp(cmd, "/animswim", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3749,9 +3749,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsword", true))
+	else if(!strcmp(cmd, "/animsword", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3771,9 +3771,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animtank", true))
+	else if(!strcmp(cmd, "/animtank", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3789,9 +3789,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animtattoos", true))
+	else if(!strcmp(cmd, "/animtattoos", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3857,9 +3857,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		}
 		return 1;
 	}
-	else if (strcmp(cmd, "/animtec", true) == 0)
+	else if(strcmp(cmd, "/animtec", true) == 0)
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3873,9 +3873,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animtrain", true))
+	else if(!strcmp(cmd, "/animtrain", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3889,9 +3889,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animtruck", true))
+	else if(!strcmp(cmd, "/animtruck", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3918,9 +3918,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animuzi", true))
+	else if(!strcmp(cmd, "/animuzi", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3935,9 +3935,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animvan", true))
+	else if(!strcmp(cmd, "/animvan", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3955,9 +3955,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animvending", true))
+	else if(!strcmp(cmd, "/animvending", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3973,9 +3973,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animvortex", true))
+	else if(!strcmp(cmd, "/animvortex", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -3989,9 +3989,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animwayfarer", true))
+	else if(!strcmp(cmd, "/animwayfarer", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -4019,9 +4019,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animweap", true))
+	else if(!strcmp(cmd, "/animweap", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -4048,9 +4048,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animwuzi", true))
+	else if(!strcmp(cmd, "/animwuzi", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -4072,9 +4072,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animsnm", true))
+	else if(!strcmp(cmd, "/animsnm", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))
@@ -4092,9 +4092,9 @@ public pCommandTextHandler_Animation(playerid, cmdtext[])
 		return 1;
 	}
 
-	else if (!strcmp(cmd, "/animblowjob", true))
+	else if(!strcmp(cmd, "/animblowjob", true))
 	{
-		if (IsPlayerInAnyVehicle(playerid))
+		if( IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "차에 탄 채로 애니메이션을 사용할 수 없습니다.");
 		cmd = strtok(cmdtext, idx);
 		switch(strval(cmd))

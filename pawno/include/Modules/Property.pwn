@@ -91,7 +91,7 @@ public gInitHandler_Property()
 public pConnectHandler_Property(playerid)
 {
 	PropertyModifyDest[playerid] = -1;
-	for (new i = 0; i < MAX_PROPERTIES; i++)
+	for(new i = 0; i < MAX_PROPERTIES; i++)
 		WarnedPropertyTimer[playerid][i] = 0;
 	return 1;
 }
@@ -99,39 +99,39 @@ public pConnectHandler_Property(playerid)
 public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 {
 	new str[256];
-	if (newkeys == KEY_SECONDARY_ATTACK)
-		for (new i = 0, t = GetMaxProperties(); i < t; i++)
-			if (IsValidPropertyID(i))
+	if(newkeys == KEY_SECONDARY_ATTACK)
+		for(new i = 0, t = GetMaxProperties(); i < t; i++)
+			if(IsValidPropertyID(i))
 			{
 				new isen, isex;
-				if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2])
+				if(IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEn])
 					isen = true;
-				else if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
+				else if(IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEx])
 					isex = true;
 
-				if (isen)
+				if(isen)
 				{
-					if (PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
+					if(PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
 						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
 					SetPlayerPos(playerid, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2]);
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEx][3]);
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEx]);
 					SetPlayerVirtualWorld(playerid, PropertyInfo[i][pVirtualWorldEx]);
-					if (!strlen(PropertyInfo[i][pOwnername]) && !WarnedPropertyTimer[playerid][i])
+					if(!strlen(PropertyInfo[i][pOwnername]) && !WarnedPropertyTimer[playerid][i])
 					{
 						TogglePropertyEnable(i, true);
 						WarnedPropertyTimer[playerid][i] = SetTimerEx("CancelPropertyWarn", 5000, false, "dd", playerid, i);
 						format(str, sizeof(str), "* %s(%d)님이 빈 집 %d번으로 입장하셨습니다.", GetPlayerNameA(playerid), playerid, i);
-						for (new j = 0, u = GetMaxPlayers(); j < u; j++)
-							if (GetPVarInt_(j, "pAgentMode"))
+						for(new j = 0, u = GetMaxPlayers(); j < u; j++)
+							if(GetPVarInt_(j, "pAgentMode"))
 								SendClientMessage(j, COLOR_ORANGE, str);
 					}
 				}
-				else if (isex)
+				else if(isex)
 				{
-					if (PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
+					if(PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
 						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
 					SetPlayerPos(playerid, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2]);
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEn][3]);
@@ -149,16 +149,16 @@ public pCommandTextHandler_Property(playerid, cmdtext[])
 		destid;
 	cmd = strtok(cmdtext, idx);
 	
-	if (!strcmp(cmd, "/건물도움말", true))
+	if(!strcmp(cmd, "/건물도움말", true))
 	{
 		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "건물 도움말", "/건물설정", "닫기", "");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/건물설정", true) && !GetPVarInt(playerid, "pAdmin"))
+	else if(!strcmp(cmd, "/건물설정", true) && !GetPVarInt(playerid, "pAdmin"))
 	{
-		for (new i = 0, t = GetMaxProperties(); i < t; i++)
-			if (IsValidPropertyID(i) && !strcmp(PropertyInfo[i][pOwnername], GetPlayerNameA(playerid), true) && strlen(PropertyInfo[i][pOwnername]))
-				if (IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2])
+		for(new i = 0, t = GetMaxProperties(); i < t; i++)
+			if(IsValidPropertyID(i) && !strcmp(PropertyInfo[i][pOwnername], GetPlayerNameA(playerid), true) && strlen(PropertyInfo[i][pOwnername]))
+				if(IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEn]
 				|| IsPlayerInRangeOfPoint(playerid, 1.0, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2])
 				&& GetPlayerVirtualWorld(playerid) == PropertyInfo[i][pVirtualWorldEx])
@@ -166,7 +166,7 @@ public pCommandTextHandler_Property(playerid, cmdtext[])
 					destid = i;
 					break;
 				}
-		if (!IsValidPropertyID(destid))
+		if(!IsValidPropertyID(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "소유한 건물의 문 앞에서 사용하세요.");
 		ShowPropertyModifier(playerid, destid);
 		return 1;
@@ -179,18 +179,18 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 {
 	new str[512],
 		propid = PropertyModifyDest[playerid];
-	if (propid < 0) return 1;
-	switch (dialogid - DialogId_Property(0))
+	if(propid < 0) return 1;
+	switch(dialogid - DialogId_Property(0))
 	{
 		case 0:
-			if (response)
-				if (!GetPVarInt(playerid, "pAdmin") && (listitem >= 1 && listitem <= 4 || listitem >= 8 && listitem <= 10))
+			if(response)
+				if(!GetPVarInt(playerid, "pAdmin") && (listitem >= 1 && listitem <= 4 || listitem >= 8 && listitem <= 10))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "관리자만 설정할 수 있는 항목입니다.");
 					ShowPropertyModifier(playerid, propid);
 				}
 				else
-					switch (listitem)
+					switch(listitem)
 					{
 						case 0:
 						{
@@ -264,7 +264,7 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 						{
 							strcpy(PropertyInfo[propid][pPropname], PropertyModify[playerid][pPropname]);
 							strcpy(PropertyInfo[propid][pOwnername], PropertyModify[playerid][pOwnername]);
-							for (new i = 0; i < 4; i++)
+							for(new i = 0; i < 4; i++)
 							{
 								PropertyInfo[propid][pPosEn][i] = PropertyModify[playerid][pPosEn][i];
 								PropertyInfo[propid][pPosEx][i] = PropertyModify[playerid][pPosEx][i];
@@ -290,19 +290,19 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 					}
 		case 1:
 		{
-			if (response)
+			if(response)
 				strcpy(PropertyModify[playerid][pPropname], inputtext);
 			ShowPropertyModifier(playerid, propid);
 		}
 		case 2:
 		{
-			if (response)
+			if(response)
 				strcpy(PropertyModify[playerid][pOwnername], inputtext);
 			ShowPropertyModifier(playerid, propid);
 		}
 		case 3:
 		{
-			if (response)
+			if(response)
 				strcpy(PropertyModify[playerid][pMemo], inputtext);
 			ShowPropertyModifier(playerid, propid);
 		}
@@ -362,8 +362,8 @@ stock SavePropertyDataById(propid)
 //-----< SavePropertyData >-----------------------------------------------------
 stock SavePropertyData()
 {
-	for (new i = 0, t = GetMaxProperties; i < t; i++)
-		if (IsValidPropertyID(i))
+	for(new i = 0, t = GetMaxProperties; i < t; i++)
+		if(IsValidPropertyID(i))
 			SavePropertyDataById(i);
 	return 1;
 }
@@ -378,7 +378,7 @@ stock LoadPropertyData()
 	UnloadPropertyData();
 	mysql_query("SELECT * FROM propertydata");
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -389,13 +389,13 @@ stock LoadPropertyData()
 		strcpy(PropertyInfo[i][pOwnername], receive[idx++]);
 		
 		split(receive[idx++], splited, ',');
-		for (new j = 0; j < 4; j++)
+		for(new j = 0; j < 4; j++)
 			PropertyInfo[i][pPosEn][j] = floatstr(splited[j]);
 		PropertyInfo[i][pInteriorEn] = strval(splited[4]);
 		PropertyInfo[i][pVirtualWorldEn] = strval(splited[5]);
 		
 		split(receive[idx++], splited, ',');
-		for (new j = 0; j < 4; j++)
+		for(new j = 0; j < 4; j++)
 			PropertyInfo[i][pPosEx][j] = floatstr(splited[j]);
 		PropertyInfo[i][pInteriorEx] = strval(splited[4]);
 		PropertyInfo[i][pVirtualWorldEx] = strval(splited[5]);
@@ -405,9 +405,9 @@ stock LoadPropertyData()
 		PropertyInfo[i][pLocked] = strval(receive[idx++]);
 		strcpy(PropertyInfo[i][pMemo], receive[idx++]);
 		
-		if (PropertyInfo[i][pShowPickupEn])
+		if(PropertyInfo[i][pShowPickupEn])
 			PropertyInfo[i][pPickupEn] = CreateDynamicPickup(1239, 1, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2], -1, PropertyInfo[i][pVirtualWorldEn]);
-		if (PropertyInfo[i][pShowPickupEx])
+		if(PropertyInfo[i][pShowPickupEx])
 			PropertyInfo[i][pPickupEx] = CreateDynamicPickup(1239, 1, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2], -1, PropertyInfo[i][pVirtualWorldEx]);
 		PropertyInfo[i][pEnable] = false;
 	}
@@ -425,8 +425,8 @@ stock UnloadPropertyDataById(propid)
 //-----< UnloadPropertyData >---------------------------------------------------
 stock UnloadPropertyData()
 {
-	for (new i = 0, t = GetMaxProperties(); i < t; i++)
-		if (IsValidPropertyID(i))
+	for(new i = 0, t = GetMaxProperties(); i < t; i++)
+		if(IsValidPropertyID(i))
 			UnloadPropertyDataById(i);
 	return 1;
 }
@@ -452,15 +452,15 @@ stock ShowPropertyList(playerid, dialogid)
 	new str[5120],
 		tmp[128], idx;
 	ResetPlayerDialogData(playerid);
-	for (new i = 0, t = GetMaxProperties(); i < t; i++)
-		if (IsValidPropertyID(i))
+	for(new i = 0, t = GetMaxProperties(); i < t; i++)
+		if(IsValidPropertyID(i))
 		{
 			format(tmp, sizeof(tmp), "[%04d] %s\n", PropertyInfo[i][pID], PropertyInfo[i][pPropname]);
 			strcat(str, tmp);
 			DialogData[playerid][idx] = i;
 			idx++;
 		}
-	if (!idx)
+	if(!idx)
 		SendClientMessage(playerid, COLOR_WHITE, "생성된 건물이 없습니다.");
 	else
 		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "건물 목록", str, "선택", "닫기");
@@ -471,12 +471,12 @@ stock ShowPropertyModifier(playerid, propid)
 {
 	new str[2560];
 
-	if (PropertyModifyDest[playerid] != propid)
+	if(PropertyModifyDest[playerid] != propid)
 	{
 		PropertyModifyDest[playerid] = propid;
 		strcpy(PropertyModify[playerid][pPropname], PropertyInfo[propid][pPropname]);
 		strcpy(PropertyModify[playerid][pOwnername], PropertyInfo[propid][pOwnername]);
-		for (new i = 0; i < 4; i++)
+		for(new i = 0; i < 4; i++)
 		{
 			PropertyModify[playerid][pPosEn][i] = PropertyInfo[propid][pPosEn][i];
 			PropertyModify[playerid][pPosEx][i] = PropertyInfo[propid][pPosEx][i];
@@ -492,30 +492,30 @@ stock ShowPropertyModifier(playerid, propid)
 	}
 	
 	format(str, sizeof(str), "건물 이름:\t\t%s", PropertyModify[playerid][pPropname]);
-	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
+	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
 	format(str, sizeof(str), "%s\n주인 이름:\t\t%s", str, PropertyModify[playerid][pOwnername]);
 	format(str, sizeof(str), "%s\n입구 좌표:\t\t%.4f,%.4f,%.4f / %.4f / %d / %d", str,
 		PropertyModify[playerid][pPosEn][0], PropertyModify[playerid][pPosEn][1], PropertyModify[playerid][pPosEn][2],
 		PropertyModify[playerid][pPosEn][3], PropertyModify[playerid][pInteriorEn], PropertyModify[playerid][pVirtualWorldEn]);
 	format(str, sizeof(str), "%s\n입구 픽업:\t\t", str);
-	if (PropertyModify[playerid][pShowPickupEn]) strcat(str, "보임");
+	if(PropertyModify[playerid][pShowPickupEn]) strcat(str, "보임");
 	else strcat(str, "숨김");
 	format(str, sizeof(str), "%s\n출구 좌표:\t\t%.4f,%.4f,%.4f / %.4f / %d / %d", str,
 		PropertyModify[playerid][pPosEx][0], PropertyModify[playerid][pPosEx][1], PropertyModify[playerid][pPosEx][2],
 		PropertyModify[playerid][pPosEx][3], PropertyModify[playerid][pInteriorEx], PropertyModify[playerid][pVirtualWorldEx]);
 	format(str, sizeof(str), "%s\n출구 픽업:\t\t", str);
-	if (PropertyModify[playerid][pShowPickupEx]) strcat(str, "보임");
+	if(PropertyModify[playerid][pShowPickupEx]) strcat(str, "보임");
 	else strcat(str, "숨김");
-	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
+	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
 	format(str, sizeof(str), "%s\n잠금:\t\t\t", str);
-	if (PropertyModify[playerid][pLocked]) strcat(str, "잠금");
+	if(PropertyModify[playerid][pLocked]) strcat(str, "잠금");
 	else strcat(str, "열림");
 	format(str, sizeof(str), "%s\n메모:\t\t\t%s", str, PropertyModify[playerid][pMemo]);
-	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
+	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
 	strcat(str, "\n> 입구로 이동하기");
 	strcat(str, "\n> 출구로 이동하기");
 	strcat(str, "\n> 건물 제거하기");
-	if (!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
+	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
 	strcat(str, "\n> 저장하기");
 	strcat(str, "\n> 취소하기");
 	

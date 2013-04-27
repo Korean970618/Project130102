@@ -52,7 +52,7 @@ public gInitHandler_InitExit()
 	EnableStuntBonusForAll(false);
 	DisableInteriorEnterExits();
 	
-	for (new i; i < 20; i++)
+	for(new i; i < 20; i++)
 		SendClientMessageToAll(COLOR_WHITE, " ");
 	SendClientMessageToAll(COLOR_WHITE, "게임모드를 로딩중입니다.");
 	return 1;
@@ -60,15 +60,15 @@ public gInitHandler_InitExit()
 //-----< gExitHandler_InitExit >------------------------------------------------
 public gExitHandler_InitExit()
 {
-	for (new i; i < GetMaxPlayers(); i++)
+	for(new i; i < GetMaxPlayers(); i++)
 	{
-		if (IsPlayerNPC(i))
+		if(IsPlayerNPC(i))
 			Kick(i);
 		ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "Rebooting", "서버를 리붓중입니다.\n잠시만 기다려 주세요.", "확인", chNullString);
-		for (new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
+		for(new j; j<MAX_PLAYER_ATTACHED_OBJECTS; j++)
 			RemovePlayerAttachedObject(i, j);
 	}
-	for (new i; i < 20; i++)
+	for(new i; i < 20; i++)
 		SendClientMessageToAll(COLOR_WHITE, " ");
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");

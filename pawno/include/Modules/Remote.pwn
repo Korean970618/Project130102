@@ -74,14 +74,14 @@ public pConnectHandler_Remote(playerid)
 	ControlInfo[playerid][cSpawning]		= false;
 	ControlInfo[playerid][cInterior]		= 0;
 	ControlInfo[playerid][cVirtualWorld]	= 0;
-	for (new i = 0; i < 4; i++)
+	for(new i = 0; i < 4; i++)
 		ControlInfo[playerid][cPos][i]		= 0.0;
 	return 1;
 }
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_Remote(playerid)
 {
-	if (ControlInfo[playerid][cSpawning])
+	if(ControlInfo[playerid][cSpawning])
 	{
 		ControlInfo[playerid][cSpawning] = false;
 		SetPlayerInterior(playerid, ControlInfo[playerid][cInterior]);
@@ -96,7 +96,7 @@ public pSpawnHandler_Remote(playerid)
 public pDisconnectHandler_Remote(playerid, reason)
 {
 	new controller = RemoteInfo[playerid][rController];
-	if (controller != INVALID_PLAYER_ID)
+	if(controller != INVALID_PLAYER_ID)
 	{
 		SendClientMessage(controller, COLOR_YELLOW, "원격 대상자가 접속을 종료했습니다.");
 		StopRemote(controller);
@@ -108,15 +108,15 @@ public pDisconnectHandler_Remote(playerid, reason)
 public pUpdateHandler_Remote(playerid)
 {
 	new controller = RemoteInfo[playerid][rController];
-	if (IsPlayerConnected(controller))
+	if(IsPlayerConnected(controller))
 	{
 		new sta = GetPlayerState(playerid);
-		if (RemoteInfo[playerid][rState] != sta)
+		if(RemoteInfo[playerid][rState] != sta)
 		{
 			RemoteInfo[playerid][rState] = sta;
 			SetPlayerInterior(controller, GetPlayerInterior(playerid));
 			SetPlayerVirtualWorld(controller, GetPlayerVirtualWorld(playerid));
-			switch (sta)
+			switch(sta)
 			{
 				case PLAYER_STATE_DRIVER:
 					PlayerSpectateVehicle(controller, GetPlayerVehicleID(playerid));
@@ -133,14 +133,14 @@ public pUpdateHandler_Remote(playerid)
 			}
 		}
 	}
-	else if (RemoteInfo[playerid][rController] != INVALID_PLAYER_ID)
+	else if(RemoteInfo[playerid][rController] != INVALID_PLAYER_ID)
 		RemoteInfo[playerid][rController] = INVALID_PLAYER_ID;
 	return 1;
 }
 //-----< pTextHandler >---------------------------------------------------------
 public pTextHandler_Remote(playerid, text[])
 {
-	if (IsPlayerConnected(RemoteInfo[playerid][rController])
+	if(IsPlayerConnected(RemoteInfo[playerid][rController])
 	&& RemoteInfo[playerid][rTextAccess])
 	{
 		CallLocalFunction("OnPlayerText", "ds", playerid, FixBlankString(text));
@@ -151,7 +151,7 @@ public pTextHandler_Remote(playerid, text[])
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Remote(playerid, cmdtext[])
 {
-	if (IsPlayerConnected(RemoteInfo[playerid][rController])
+	if(IsPlayerConnected(RemoteInfo[playerid][rController])
 	&&  RemoteInfo[playerid][rCommandAccess])
 	{
 		CallLocalFunction("OnPlayerCommandText", "ds", playerid, FixBlankString(cmdtext));

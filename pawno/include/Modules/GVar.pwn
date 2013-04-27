@@ -81,7 +81,7 @@ stock CreateGVarDataTable()
 stock SaveGVarDataById(varid)
 {
 	new str[512];
-	if (!GVar[varid][gID])
+	if(!GVar[varid][gID])
 	{
 		mysql_query("INSERT INTO gvardata () VALUES ()");
 		GVar[varid][gID] = mysql_insert_id();
@@ -98,8 +98,8 @@ stock SaveGVarDataById(varid)
 //-----< SaveGVarData >---------------------------------------------------------
 stock SaveGVarData()
 {
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
-		if (GVar[i][gID])
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
+		if(GVar[i][gID])
 			SaveGVarById(i);
 	return 1;
 }
@@ -112,7 +112,7 @@ stock LoadGVarData()
 		idx;
 	mysql_query("SELECT * FROM gvardata");
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -131,18 +131,18 @@ stock LoadGVarData()
 stock SetGVarString(varname[], value[])
 {
 	new varid = sizeof(GVar);
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
 	{
-		if (GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
+		if(GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
 		{
 			strcpy(GVar[i][gStringValue], value);
 			SaveGVarDataById(i);
 			return value;
 		}
-		else if (!GVar[i][gID] && varid > i)
+		else if(!GVar[i][gID] && varid > i)
 			varid = i;
 	}
-	if (varid < sizeof(GVar))
+	if(varid < sizeof(GVar))
 	{
 		strcpy(GVar[varid][gName], varname);
 		strcpy(GVar[varid][gStringValue], value);
@@ -154,8 +154,8 @@ stock SetGVarString(varname[], value[])
 stock GetGVarString(varname[])
 {
 	new value[512];
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
-	    if (GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
+	    if(GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
 	    {
 	        strcpy(value, GVar[i][gStringValue]);
 	        break;
@@ -166,18 +166,18 @@ stock GetGVarString(varname[])
 stock SetGVarInt(varname[], value)
 {
 	new varid = sizeof(GVar);
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
 	{
-		if (GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
+		if(GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
 		{
 			GVar[i][gIntValue] = value;
 			SaveGVarDataById(i);
 			return value;
 		}
-		else if (!GVar[i][gID] && varid > i)
+		else if(!GVar[i][gID] && varid > i)
 			varid = i;
 	}
-	if (varid < sizeof(GVar))
+	if(varid < sizeof(GVar))
 	{
 		strcpy(GVar[varid][gName], varname);
 		GVar[varid][gIntValue] = value;
@@ -189,8 +189,8 @@ stock SetGVarInt(varname[], value)
 stock GetGVarInt(varname[])
 {
 	new value;
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
-	    if (GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
+	    if(GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
 	    {
 	        value = GVar[i][gIntValue];
 	        break;
@@ -201,18 +201,18 @@ stock GetGVarInt(varname[])
 stock Float:SetGVarFloat(varname[], Float:value)
 {
 	new varid = sizeof(GVar);
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
 	{
-		if (GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
+		if(GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
 		{
 			GVar[i][gFloatValue] = value;
 			SaveGVarDataById(i);
 			return value;
 		}
-		else if (!GVar[i][gID] && varid > i)
+		else if(!GVar[i][gID] && varid > i)
 			varid = i;
 	}
-	if (varid < sizeof(GVar))
+	if(varid < sizeof(GVar))
 	{
 		strcpy(GVar[varid][gName], varname);
 		GVar[varid][gFloatValue] = value;
@@ -224,8 +224,8 @@ stock Float:SetGVarFloat(varname[], Float:value)
 stock Float:GetGVarFloat(varname[])
 {
 	new Float:value;
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
-	    if (GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
+	    if(GVar[i][gID] && !strcmp(GVar[i][gName], varname, true))
 	    {
 	        value = GVar[i][gFloatValue];
 	        break;
@@ -235,8 +235,8 @@ stock Float:GetGVarFloat(varname[])
 //-----< DeleteGVar >-----------------------------------------------------------
 stock DeleteGVar(varname[])
 {
-	for (new i = 0, t = sizeof(GVar); i < t; i++)
-		if (GVar[i][gID] && !strcmp(GVar[i][gName], varname))
+	for(new i = 0, t = sizeof(GVar); i < t; i++)
+		if(GVar[i][gID] && !strcmp(GVar[i][gName], varname))
 		{
 			GVar[i][gID] = 0;
 			break;

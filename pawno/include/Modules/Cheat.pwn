@@ -56,13 +56,13 @@ public pConnectHandler_Cheat(playerid)
 public pUpdateHandler_Cheat(playerid)
 {
 	new vehicleid = GetPlayerVehicleID(playerid);
-	if (vehicleid != LastVehicle[playerid])
+	if(vehicleid != LastVehicle[playerid])
 	{
 		NumPlayerVehicles[playerid]++;
 		LastVehicle[playerid] = vehicleid;
 		KillTimer(HandlePlayerVehicles[playerid]);
 		HandlePlayerVehicles[playerid] = SetTimerEx("PlayerVehiclesTimer", 1000, false, "d", playerid);
-		if (NumPlayerVehicles[playerid] >= 5)
+		if(NumPlayerVehicles[playerid] >= 5)
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Vehicle Cleo Detected.");
 			TimerPlayerVehicles(playerid);
@@ -83,8 +83,8 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 {
 	new weaponid = GetPlayerWeapon(playerid),
 		ammo = GetPlayerAmmo(playerid);
-	if (weaponid == 0) return 1;
-	else if (WeaponInfo[playerid][weaponid] < ammo)
+	if(weaponid == 0) return 1;
+	else if(WeaponInfo[playerid][weaponid] < ammo)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Weapon Cheat Detected.");
 		IpBan(playerid, "Weapon Cheat");
@@ -92,7 +92,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	WeaponInfo[playerid][weaponid] = ammo;
 	
 	new interiorid = GetPlayerInterior(playerid);
-	if (InteriorInfo[playerid] != interiorid)
+	if(InteriorInfo[playerid] != interiorid)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Interior Cheat Detected.");
 		IpBan(playerid, "Interior Cheat");
@@ -100,7 +100,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	InteriorInfo[playerid] = interiorid;
 	
 	new Float:health = GetPlayerHealthA(playerid);
-	if (HealthInfo[playerid] < health)
+	if(HealthInfo[playerid] < health)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Health Cheat Detected.");
 		IpBan(playerid, "Health Cheat");
@@ -108,7 +108,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 	HealthInfo[playerid] = health;
 	
 	new Float:armour = GetPlayerArmourA(playerid);
-	if (ArmourInfo[playerid] < armour)
+	if(ArmourInfo[playerid] < armour)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Armour Cheat Detected.");
 		IpBan(playerid, "Armour Cheat");
@@ -120,7 +120,7 @@ public pKeyStateChangeHandler_Cheat(playerid, newkeys, oldkeys)
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_Cheat(playerid)
 {
-	if (!GetPVarInt(playerid, "FirstSpawn"))
+	if(!GetPVarInt(playerid, "FirstSpawn"))
 	{
 		SetCameraBehindPlayer(playerid);
 		TogglePlayerControllable(playerid, false);
@@ -135,7 +135,7 @@ public CheckS0beit(playerid)
 	GetPlayerCameraFrontVector(playerid, x, y, z);
 	#pragma unused x
 	#pragma unused y
-	if (z < -0.8) SendClientMessage(playerid, COLOR_WHITE, "S0beit Detected.");
+	if(z < -0.8) SendClientMessage(playerid, COLOR_WHITE, "S0beit Detected.");
 }
 //-----<  >---------------------------------------------------------------------
 

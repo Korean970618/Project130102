@@ -154,12 +154,12 @@ public pSpawnHandler_Item(playerid)
 //-----< pConnectHandler >------------------------------------------------------
 public pConnectHandler_Item(playerid)
 {
-	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 	{
 		PlayerItemInfo[playerid][i][iID] = 0;
 		PlayerItemInfo[playerid][i][iItemmodel] = 0;
 		strcpy(PlayerItemInfo[playerid][i][iOwnername], chNullString);
-		for (new j = 0; j < 4; j++)
+		for(new j = 0; j < 4; j++)
 			PlayerItemInfo[playerid][i][iPos][j] = 0.0;
 		PlayerItemInfo[playerid][i][iInterior] = 0;
 		PlayerItemInfo[playerid][i][iVirtualWorld] = 0;
@@ -172,13 +172,13 @@ public pConnectHandler_Item(playerid)
 public pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 {
 	new str[256];
-	if (IsPlayerInAnyVehicle(playerid)) return 1;
-	if (newkeys == KEY_SECONDARY_ATTACK)
+	if(IsPlayerInAnyVehicle(playerid)) return 1;
+	if(newkeys == KEY_SECONDARY_ATTACK)
 	{
 		new itemid = GetPlayerNearestItem(playerid);
-		if (GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt(playerid, "pWeight"))
+		if(GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt(playerid, "pWeight"))
 		{
-			if (GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight])
+			if(GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight])
 				SendClientMessage(playerid, COLOR_WHITE, "가방이 너무 무겁습니다.");
 			else
 			{
@@ -197,12 +197,12 @@ public pCommandTextHandler_Item(playerid, cmdtext[])
 	new cmd[256], idx;
 	cmd = strtok(cmdtext, idx);
 	
-	if (!strcmp(cmd, "/가방", true))
+	if(!strcmp(cmd, "/가방", true))
 	{
 		ShowPlayerItemList(playerid, playerid, DialogId_Item(0), "가방");
 		return 1;
 	}
-	else if (!strcmp(cmd, "/손", true))
+	else if(!strcmp(cmd, "/손", true))
 	{
 		ShowPlayerItemList(playerid, playerid, DialogId_Item(3), "손");
 		return 1;
@@ -213,12 +213,12 @@ public pCommandTextHandler_Item(playerid, cmdtext[])
 public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
 {
 	new str[256];
-	switch (dialogid - DialogId_Item(0))
+	switch(dialogid - DialogId_Item(0))
 	{
 		case 0:
-			if (response)
+			if(response)
 			{
-				if (!listitem) return ShowPlayerItemList(playerid, playerid, DialogId_Item(0), "가방");
+				if(!listitem) return ShowPlayerItemList(playerid, playerid, DialogId_Item(0), "가방");
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
 				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
@@ -226,10 +226,10 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			}
 		case 1:
 		{
-			if (response)
+			if(response)
 			{
 				new itemid = DialogData[playerid][0];
-				switch (listitem)
+				switch(listitem)
 				{
 					case 0:
 					{
@@ -244,9 +244,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					{
 						new Float:x, Float:y, Float:z;
 						GetPlayerVelocity(playerid, x, y, z);
-						if (IsValidItemID(GetPlayerNearestItem(playerid)))
+						if(IsValidItemID(GetPlayerNearestItem(playerid)))
 							SendClientMessage(playerid, COLOR_WHITE, "다른 아이템 근처에선 버릴 수 없습니다.");
-						else if (z != 0.0)
+						else if(z != 0.0)
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else DropPlayerItem(playerid, itemid);
 					}
@@ -261,48 +261,48 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				modelid = PlayerItemInfo[playerid][itemid][iItemmodel],
 				items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
 				weight = ItemModelInfo[modelid][imWeight];
-			if (response)
+			if(response)
 			{
-				for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-					if (IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
+				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
 					{
 						strcpy(both, ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imName]);
 						break;
 					}
-				for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-					if (IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
+				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
 					{
 						strcpy(left, ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imName]);
 						break;
 					}
-				for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-					if (IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
+				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
 					{
 						strcpy(right, ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imName]);
 						break;
 					}
-				if (strlen(both))
+				if(strlen(both))
 				{
 					format(str, sizeof(str), "양손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", both);
 					SendClientMessage(playerid, COLOR_WHITE, str);
 					return 1;
 				}
-				else if (strlen(left) && (listitem == 0 || listitem == 2))
+				else if(strlen(left) && (listitem == 0 || listitem == 2))
 				{
 					format(str, sizeof(str), "왼손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", left);
 					SendClientMessage(playerid, COLOR_WHITE, str);
 					return 1;
 				}
-				else if (strlen(right) && (listitem == 1 || listitem == 2))
+				else if(strlen(right) && (listitem == 1 || listitem == 2))
 				{
 					format(str, sizeof(str), "오른손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", right);
 					SendClientMessage(playerid, COLOR_WHITE, str);
 					return 1;
 				}
 				weight = (listitem == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
-				if (items + weight > GetPVarInt(playerid, "pHealth"))
+				if(items + weight > GetPVarInt(playerid, "pHealth"))
 				{
-					if (items > weight)
+					if(items > weight)
 						SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
 					else
 					{
@@ -311,7 +311,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					}
 					return 1;
 				}
-				switch (listitem)
+				switch(listitem)
 				{
 					case 0:
 					{
@@ -348,9 +348,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
 		}
 		case 3:
-			if (response)
+			if(response)
 			{
-				if (!listitem) return ShowPlayerItemList(playerid, playerid, DialogId_Item(3), "손");
+				if(!listitem) return ShowPlayerItemList(playerid, playerid, DialogId_Item(3), "손");
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
 				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
@@ -358,23 +358,23 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			}
 		case 4:
 		{
-			if (response)
+			if(response)
 			{
 				new itemid = DialogData[playerid][0];
-				switch (listitem)
+				switch(listitem)
 				{
 					case 0:
 					{
 						new htext[32];
 						strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-						if (!strcmp(htext, "왼손", true))
+						if(!strcmp(htext, "왼손", true))
 							RemovePlayerAttachedObject(playerid, 0);
-						else if (!strcmp(htext, "오른손", true))
+						else if(!strcmp(htext, "오른손", true))
 							RemovePlayerAttachedObject(playerid, 1);
-						else if (!strcmp(htext, "양손", true))
+						else if(!strcmp(htext, "양손", true))
 						{
 							RemovePlayerAttachedObject(playerid, 0);
-							if (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+							if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
 								SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 						}
 						strcpy(PlayerItemInfo[playerid][itemid][iSaveType], "가방");
@@ -390,22 +390,22 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					{
 						new Float:x, Float:y, Float:z;
 						GetPlayerVelocity(playerid, x, y, z);
-						if (IsValidItemID(GetPlayerNearestItem(playerid)))
+						if(IsValidItemID(GetPlayerNearestItem(playerid)))
 							SendClientMessage(playerid, COLOR_WHITE, "다른 아이템 근처에선 버릴 수 없습니다.");
-						else if (z != 0.0)
+						else if(z != 0.0)
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else
 						{
 							new htext[32];
 							strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-							if (!strcmp(htext, "왼손", true))
+							if(!strcmp(htext, "왼손", true))
 								RemovePlayerAttachedObject(playerid, 0);
-							else if (!strcmp(htext, "오른손", true))
+							else if(!strcmp(htext, "오른손", true))
 								RemovePlayerAttachedObject(playerid, 1);
-							else if (!strcmp(htext, "양손", true))
+							else if(!strcmp(htext, "양손", true))
 							{
 								RemovePlayerAttachedObject(playerid, 0);
-								if (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+								if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
 									SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 							}
 							DropPlayerItem(playerid, itemid);
@@ -416,14 +416,14 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			else ShowPlayerItemList(playerid, playerid, DialogId_Item(3), "손");
 		}
 		case 5:
-			if (!response)
+			if(!response)
 			{
 				new itemid = DialogData[playerid][0];
 				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
 					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
 		case 6:
-			if (!response)
+			if(!response)
 			{
 				new itemid = DialogData[playerid][0];
 				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
@@ -480,8 +480,8 @@ stock SaveItemModelDataById(modelid)
 //-----< SaveItemModelData >----------------------------------------------------
 stock SaveItemModelData()
 {
-	for (new i = 0, t = GetMaxItemModels(); i < t; i++)
-		if (IsValidItemModelID(i))
+	for(new i = 0, t = GetMaxItemModels(); i < t; i++)
+		if(IsValidItemModelID(i))
 			SaveItemModelDataById(i);
 	return 1;
 }
@@ -496,7 +496,7 @@ stock LoadItemModelData()
 		splited[9][32];
 	mysql_query("SELECT * FROM itemmodeldata");
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -510,7 +510,7 @@ stock LoadItemModelData()
 		strcpy(ItemModelInfo[id][imInfo], receive[idx++]);
 
 		split(receive[idx++], splited, ',');
-		for (new j = 0; j < 3; j++)
+		for(new j = 0; j < 3; j++)
 		{
 			ItemModelInfo[id][imOffset1][j] = floatstr(splited[(j*3)]);
 			ItemModelInfo[id][imRot1][j] = floatstr(splited[(j*3)+1]);
@@ -518,7 +518,7 @@ stock LoadItemModelData()
 		}
 
 		split(receive[idx++], splited, ',');
-		for (new j = 0; j < 3; j++)
+		for(new j = 0; j < 3; j++)
 		{
 			ItemModelInfo[id][imOffset2][j] = floatstr(splited[(j*3)]);
 			ItemModelInfo[id][imRot2][j] = floatstr(splited[(j*3)+1]);
@@ -580,8 +580,8 @@ stock SaveItemDataById(itemid)
 //-----< SaveItemData >---------------------------------------------------------
 stock SaveItemData()
 {
-	for (new i = 0, t = GetMaxItems(); i < t; i++)
-		if (IsValidItemID(i))
+	for(new i = 0, t = GetMaxItems(); i < t; i++)
+		if(IsValidItemID(i))
 			SaveItemDataById(i);
 	return 1;
 }
@@ -596,7 +596,7 @@ stock LoadItemData()
 	UnloadItemData();
 	mysql_query("SELECT * FROM itemdata");
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -606,7 +606,7 @@ stock LoadItemData()
 		ItemInfo[i][iItemmodel] = strval(receive[idx++]);
 
 		split(receive[idx++], splited, ',');
-		for (new j = 0; j < 4; j++)
+		for(new j = 0; j < 4; j++)
 			ItemInfo[i][iPos][j] = floatstr(splited[j]);
 		ItemInfo[i][iInterior] = strval(splited[4]);
 		ItemInfo[i][iVirtualWorld] = strval(splited[5]);
@@ -637,8 +637,8 @@ stock UnloadItemDataById(itemid)
 //-----< UnloadItemData >-------------------------------------------------------
 stock UnloadItemData()
 {
-	for (new i = 0, t = GetMaxItems(); i < t; i++)
-		if (IsValidItemID(i))
+	for(new i = 0, t = GetMaxItems(); i < t; i++)
+		if(IsValidItemID(i))
 			UnloadItemDataById(i);
 	return 1;
 }
@@ -665,7 +665,7 @@ stock DestroyItem(itemid)
 //-----< SetItemHealth >--------------------------------------------------------
 stock SetItemHealth(itemid, health)
 {
-	if (!health)
+	if(!health)
 		return DestroyItem(itemid);
 	ItemInfo[itemid][iHealth] = health;
 	return 1;
@@ -696,7 +696,7 @@ stock CreatePlayerItemDataTable()
 stock SavePlayerItemDataById(playerid, itemid)
 {
 	new str[1024];
-	if (!GetPVarInt(playerid, "LoggedIn")) return 1;
+	if(!GetPVarInt(playerid, "LoggedIn")) return 1;
 	format(str, sizeof(str), "UPDATE playeritemdata SET");
 	format(str, sizeof(str), "%s Itemmodel=%d", str, PlayerItemInfo[playerid][itemid][iItemmodel]);
 	format(str, sizeof(str), "%s,Ownername='%s'", str, escape(PlayerItemInfo[playerid][itemid][iOwnername]));
@@ -711,8 +711,8 @@ stock SavePlayerItemDataById(playerid, itemid)
 //-----< SavePlayerItemData >---------------------------------------------------
 stock SavePlayerItemData(playerid)
 {
-	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-		if (IsValidPlayerItemID(playerid, i))
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(playerid, i))
 			SavePlayerItemDataById(playerid, i);
 	return 1;
 }
@@ -726,7 +726,7 @@ stock LoadPlayerItemData(playerid)
 	format(str, sizeof(str), "SELECT * FROM playeritemdata WHERE Ownername='%s' AND VirtualItem=%d", GetPlayerNameA(playerid), GetPVarInt(playerid, "pAgentMode"));
 	mysql_query(str);
 	mysql_store_result();
-	for (new i = 0, t = mysql_num_rows(); i < t; i++)
+	for(new i = 0, t = mysql_num_rows(); i < t; i++)
 	{
 		mysql_fetch_row(str, "|");
 		split(str, receive, '|');
@@ -742,17 +742,17 @@ stock LoadPlayerItemData(playerid)
 		PlayerItemInfo[playerid][i][iHealth] = strval(receive[idx++]);
 		
 		new modelid = PlayerItemInfo[playerid][i][iItemmodel];
-		if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
+		if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
 			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
 				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
 				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
 				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
-		else if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
+		else if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
 			SetPlayerAttachedObject(playerid, 1, ItemModelInfo[modelid][imModel], 6,
 				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
 				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
 				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
-		else if (!strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
+		else if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
 		{
 			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
 				ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
@@ -772,8 +772,8 @@ stock UnloadPlayerItemDataById(playerid, itemid)
 //-----< UnloadPlayerItemData >-------------------------------------------------
 stock UnloadPlayerItemData(playerid)
 {
-	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-		if (IsValidPlayerItemID(playerid, i))
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(playerid, i))
 			UnloadPlayerItemDataById(playerid, i);
 	return 1;
 }
@@ -800,7 +800,7 @@ stock DestroyPlayerItem(playerid, itemid)
 //-----< SetPlayerItemHealth >--------------------------------------------------
 stock SetPlayerItemHealth(playerid, itemid, health)
 {
-	if (!health)
+	if(!health)
 		return DestroyPlayerItem(playerid, itemid);
 	PlayerItemInfo[playerid][itemid][iHealth] = health;
 	return 1;
@@ -815,7 +815,7 @@ stock GetPlayerItemHealth(playerid, itemid)
 stock GivePlayerItem(playerid, itemid, savetype[]="가방")
 {
 	new str[128];
-	if (!IsValidItemID(itemid)) return 0;
+	if(!IsValidItemID(itemid)) return 0;
 	
 	format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s에 넣었습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], savetype);
 	SendClientMessage(playerid, COLOR_WHITE, str);
@@ -834,7 +834,7 @@ stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
 stock DropPlayerItem(playerid, itemid)
 {
 	new str[128];
-	if (!IsValidPlayerItemID(playerid, itemid)) return 0;
+	if(!IsValidPlayerItemID(playerid, itemid)) return 0;
 	
 	format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 버렸습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
 	SendClientMessage(playerid, COLOR_WHITE, str);
@@ -850,8 +850,8 @@ stock DropPlayerItem(playerid, itemid)
 stock GetPlayerItemsWeight(playerid, savetype[]="All")
 {
 	new returns;
-	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-		if (IsValidPlayerItemID(playerid, i) && (GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype) || !strcmp(savetype, "All", true)))
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(playerid, i) && (GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype) || !strcmp(savetype, "All", true)))
 			returns += ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imWeight];
 	return returns;
 }
@@ -862,9 +862,9 @@ stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 	strtab(str, "번호", 5);
 	strtab(str, "이름", 16);
 	strcat(str, "무게");
-	for (new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-		if (IsValidPlayerItemID(destid, i)
-		&& (GetItemSaveTypeCode(savetype) == GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType])
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(destid, i)
+		&&(GetItemSaveTypeCode(savetype) == GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType])
 		|| !strcmp(savetype, "All", true)))
 		{
 			strcat(str, "\n");
@@ -875,7 +875,7 @@ stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 			strcat(str, tmp);
 			DialogData[playerid][idx++] = i;
 		}
-	if (!strcmp(savetype, "All", true))
+	if(!strcmp(savetype, "All", true))
 		strcpy(tmp, "아이템");
 	else strcpy(tmp, savetype);
 	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, tmp, str, "확인", "뒤로");
@@ -904,7 +904,7 @@ stock ShowItemModelList(playerid, dialogid)
 	strtab(str, "이름", 16);
 	strtab(str, "무게", 5);
 	strcat(str, "설명");
-	for (new i = 0; i < sizeof(ItemModelInfo); i++)
+	for(new i = 0; i < sizeof(ItemModelInfo); i++)
 	{
 		strcat(str, "\n");
 		format(tmp, sizeof(tmp), "%04d", i);
@@ -922,8 +922,8 @@ stock GetPlayerNearestItem(playerid, Float:distance=1.0)
 {
 	new returns = -1,
 		Float:idistance = distance+0.1;
-	for (new i = 0, t = GetMaxItems(); i < t; i++)
-		if (IsValidItemID(i)
+	for(new i = 0, t = GetMaxItems(); i < t; i++)
+		if(IsValidItemID(i)
 		&& IsPlayerInRangeOfPoint(playerid, idistance-0.1, ItemInfo[i][iPos][0], ItemInfo[i][iPos][1], ItemInfo[i][iPos][2]))
 		{
 			idistance = GetPlayerDistanceFromPoint(playerid, ItemInfo[i][iPos][0], ItemInfo[i][iPos][1], ItemInfo[i][iPos][2]);
@@ -935,12 +935,12 @@ stock GetPlayerNearestItem(playerid, Float:distance=1.0)
 stock GetItemSaveTypeCode(savetype[])
 {
 	new code = 0;
-	if (!strlen(savetype)) return code;
-	else if (!strcmp(savetype, "가방", true)) 	code = 1;
-	else if (!strcmp(savetype, "손", true))	 code = 2;
-	else if (!strcmp(savetype, "왼손", true))	code = 2;
-	else if (!strcmp(savetype, "오른손", true)) code = 2;
-	else if (!strcmp(savetype, "양손", true))   code = 2;
+	if(!strlen(savetype)) return code;
+	else if(!strcmp(savetype, "가방", true)) 	code = 1;
+	else if(!strcmp(savetype, "손", true))	 code = 2;
+	else if(!strcmp(savetype, "왼손", true))	code = 2;
+	else if(!strcmp(savetype, "오른손", true)) code = 2;
+	else if(!strcmp(savetype, "양손", true))   code = 2;
 	return code;
 }
 //-----<  >---------------------------------------------------------------------
@@ -953,7 +953,7 @@ stock GetMaxItemModels()
 //-----< IsValidItemID >--------------------------------------------------------
 stock IsValidItemID(itemid)
 {
-	if (itemid < 0 || itemid >= GetMaxItems()) return false;
+	if(itemid < 0 || itemid >= GetMaxItems()) return false;
 	return (ItemInfo[itemid][iID])?true:false;
 }
 //-----< GetMaxItems >----------------------------------------------------------
@@ -962,7 +962,7 @@ stock GetMaxItems()
 //-----< IsValidPlayerItemID >--------------------------------------------------
 stock IsValidPlayerItemID(playerid, itemid)
 {
-	if (itemid < 0 || itemid >= GetMaxPlayerItems()) return false;
+	if(itemid < 0 || itemid >= GetMaxPlayerItems()) return false;
 	return (PlayerItemInfo[playerid][itemid][iID])?true:false;
 }
 //-----< GetMaxPlayerItems >----------------------------------------------------
