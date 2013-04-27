@@ -124,6 +124,7 @@ stock LoadGVarData()
 		GVar[i][gIntValue] = strval(receive[idx++]);
 		GVar[i][gFloatValue] = floatstr(receive[idx++]);
 	}
+	mysql_free_result();
 	printf("gvardata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 }
 //-----<  >---------------------------------------------------------------------

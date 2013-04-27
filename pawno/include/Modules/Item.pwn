@@ -527,6 +527,7 @@ stock LoadItemModelData()
 		
 		ItemModelInfo[id][imMaxHealth] = strval(receive[idx++]);
 	}
+	mysql_free_result();
 	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
@@ -623,6 +624,7 @@ stock LoadItemData()
 			INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0,
 			ItemInfo[i][iVirtualWorld], ItemInfo[i][iInterior]);
 	}
+	mysql_free_result();
 	printf("itemdata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
@@ -761,6 +763,7 @@ stock LoadPlayerItemData(playerid)
 			SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 		}
 	}
+	mysql_free_result();
 	return 1;
 }
 //-----< UnloadPlayerItemDataById >---------------------------------------------

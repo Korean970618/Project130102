@@ -710,6 +710,7 @@ stock LoadPlayerData(playerid)
 		}
 		PlayerData[playerid][i][pdSave] = false;
 	}
+	mysql_free_result();
 	if(!GetPVarInt(playerid, "pRegDate"))
 	{
 		new year, month, day;

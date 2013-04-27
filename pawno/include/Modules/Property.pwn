@@ -411,6 +411,7 @@ stock LoadPropertyData()
 			PropertyInfo[i][pPickupEx] = CreateDynamicPickup(1239, 1, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2], -1, PropertyInfo[i][pVirtualWorldEx]);
 		PropertyInfo[i][pEnable] = false;
 	}
+	mysql_free_result();
 	printf("propertydata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
