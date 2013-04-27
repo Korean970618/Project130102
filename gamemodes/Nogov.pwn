@@ -157,7 +157,7 @@ main()
 	AntiDeAMX();
 	printf("\n---------------------------------\n");
 	printf(" %s v%s\n", SCRIPT_NAME, SCRIPT_VERSION);
-	printf(" \tCoded by PureunBa");
+	printf(" \tCoded by sBum");
 	printf(" \tpureunba.tistory.com\n");
 	printf("---------------------------------\n");
 	return 1;
