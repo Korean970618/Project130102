@@ -40,6 +40,7 @@
 	SetPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[])
 	InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[], encryption[]="")
 	DeletePlayerData(playerid, varname[])
+	LoginTryLog(playerid, success)
 
 */
 
@@ -380,6 +381,55 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 		ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
 		return 1;
 	}
+	else if(!strcmp(cmd, "/로그인기록", true))
+	{
+		new caption[128], info[2048],
+			rows, receive[6][32],
+			date[32], ip[15], success, checked;
+		format(caption, sizeof(caption), "로그인 기록 "C_BLUE"(현재 IP: %s)", GetPlayerIpA(playerid));
+		format(str, sizeof(str), "SELECT * FROM logintrydata WHERE Name='%s'", GetPlayerNameA(playerid));
+		mysql_query(str);
+		mysql_store_result();
+		rows = mysql_num_rows();
+		if (rows < 1)
+			strcpy(info, "로그인 기록이 없습니다.");
+		else
+		{
+			strcpy(info, chNullString);
+			strcat(info, C_LIGHTGREEN);
+			strtab(info, "일시", 32);
+			strtab(info, "결과", 4);
+			strcat(info, "IP");
+			for (new i = 0; i < rows; i++)
+			{
+				mysql_fetch_row(str, "|");
+				split(str, receive, '|');
+				idx = 2;
+				strcpy(date, chNullString);
+				strcpy(ip, chNullString);
+				success = false;
+				checked = false;
+				
+				strcpy(date, receive[idx++]);
+				strcpy(ip, receive[idx++]);
+				success = strval(receive[idx++]);
+				checked = strval(receive[idx++]);
+				
+				strcat(info, "\n");
+				if (checked)
+					strcat(info, C_WHITE);
+				else
+					strcat(info, C_GREY);
+				strtab(info, date, 32);
+				if (success)
+					strtab(info, "성공", 4);
+				else
+					strtab(info, "실패", 4);
+			}
+		}
+		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
+		mysql_free_result();
+	}
 	return 0;
 }
 //-----< dRequestHandler >------------------------------------------------------
@@ -437,9 +487,13 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 						ShowPlayerDialog(playerid, DialogId_Player(2), DIALOG_STYLE_LIST, "로그인", "리스폰\n위치 복구", "선택", chNullString);
 					else
 						SpawnPlayer_(playerid);
+					LoginTryLog(playerid, true);
 				}
 				else
+				{
 					ShowPlayerLoginDialog(playerid, true);
+					LoginTryLog(playerid, false);
+				}
 				mysql_free_result();
 			}
 		case 1:
@@ -565,16 +619,16 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 stock CreatePlayerDataTable()
 {
 	new str[3840];
-	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS playerdata (");
-	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY,");
-	strcat(str, "Name varchar(32) NOT NULL default ' ',");
-	strcat(str, "Varname varchar(64) NOT NULL default ' ',");
-	strcat(str, "Vartype int(1) NOT NULL default '0',");
-	strcat(str, "Value varchar(512) NOT NULL default ' '");
+	strcpy(str, "CREATE TABLE IF NOT EXISTS playerdata (");
+	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
+	strcat(str, ",Name varchar(32) NOT NULL default ' '");
+	strcat(str, ",Varname varchar(64) NOT NULL default ' '");
+	strcat(str, ",Vartype int(1) NOT NULL default '0'");
+	strcat(str, ",Value varchar(512) NOT NULL default ' '");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
-	format(str, sizeof(str), "CREATE TABLE IF NOT EXISTS bandata (");
+	strcpy(str, "CREATE TABLE IF NOT EXISTS bandata (");
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",Name varchar(32) NOT NULL  default ' '");
@@ -582,6 +636,16 @@ stock CreatePlayerDataTable()
 	strcat(str, ",Date varchar(16) NOT NULL default ' '");
 	strcat(str, ",Type int(1) NOT NULL default '0'");
 	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
+	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
+	mysql_query(str);
+	
+	strcpy(str, "CREATE TABLE IF NOT EXISTS logintrydata (");
+	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
+	strcat(str, ",Name varchar(32) NOT NULL default ' '");
+	strcat(str, ",Date varchar(32) NOT NULL default ' '");
+	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
+	strcat(str, ",Success int(1) NOT NULL default '0'");
+	strcat(str, ",Checked int(1) NOT NULL default '0'");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -900,6 +964,19 @@ stock DeletePlayerData(playerid, varname[])
 			PlayerData[playerid][i][pdSave] = false;
 			break;
 		}
+	return 1;
+}
+//-----< LoginTryLog >----------------------------------------------------------
+stock LoginTryLog(playerid, success)
+{
+	new str[256],
+		year, month, day, hour, minute, second;
+	getdate(year, month, day);
+	gettime(hour, minute, second);
+	format(str, sizeof(str), "INSERT INTO logintrydata (Name,Date,IP,Success,Checked)");
+	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%s',%d,0)", str,
+	GetPlayerNameA(playerid), year, month, day, hour, minute, second, GetPlayerIpA(playerid), success);
+	mysql_query(str);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
