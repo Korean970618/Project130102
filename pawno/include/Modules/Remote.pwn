@@ -143,7 +143,7 @@ public pTextHandler_Remote(playerid, text[])
 	if (IsPlayerConnected(RemoteInfo[playerid][rController])
 	&& RemoteInfo[playerid][rTextAccess])
 	{
-		OnPlayerText(ControlInfo[playerid][cDest], text);
+		CallLocalFunction("OnPlayerText", "ds", playerid, FixBlankString(text));
 		return 0;
 	}
 	return 1;
@@ -154,7 +154,7 @@ public pCommandTextHandler_Remote(playerid, cmdtext[])
 	if (IsPlayerConnected(RemoteInfo[playerid][rController])
 	&&  RemoteInfo[playerid][rCommandAccess])
 	{
-		OnPlayerCommandText(playerid, cmdtext);
+		CallLocalFunction("OnPlayerCommandText", "ds", playerid, FixBlankString(cmdtext));
 		return 1;
 	}
 	return 0;
