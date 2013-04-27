@@ -64,6 +64,7 @@
 #include "Modules/Animation.pwn"
 #include "Modules/Grant.pwn"
 #include "Modules/Cheat.pwn"
+#include "Modules/Remote.pwn"
 
 
 
@@ -177,6 +178,7 @@ public OnGameModeInit()
 	AddHandler("Cheat",				pKeyStateChangeHandler, pSpawnHandler);
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",		 	pCommandTextHandler);
+	AddHandler("Remote",			pConnectHandler, pSpawnHandler, pDisconnectHandler, pUpdateHandler, pTextHandler, pCommandTextHandler, pKeyStateChangeHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);
 	Timer_OneSecTimer = GetTickCount();
