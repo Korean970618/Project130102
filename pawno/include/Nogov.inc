@@ -101,6 +101,7 @@
 	native GetWeaponNameA(weaponid);
 	native udb_hash(buf[]);
 	native GetWeaponSlotID(weaponid);
+	native GetWeaponHand(weaponid);
 
 */
 
@@ -1603,8 +1604,8 @@ stock GetWeaponSlotID(weaponid)
 {
 	switch(weaponid)
 	{
-		case 0..1:	  return 0;
-		case 2..9:	  return 1;
+		case 0..1:	  	return 0;
+		case 2..9:	  	return 1;
 		case 10..15:	return 10;
 		case 16..18:	return 8;
 		case 22..24:	return 2;
@@ -1620,5 +1621,22 @@ stock GetWeaponSlotID(weaponid)
 		case 44..46:	return 11;
 	}
 	return 0;
+}
+//-----< GetWeaponHand >--------------------------------------------------------
+stock GetWeaponHand(weaponid)
+{
+	switch(weaponid)
+	{
+		case 1..21:		return 'r';
+		case 22:		return 'b';
+		case 23..24:	return 'r';
+		case 25..28:	return 'b';
+		case 29:		return 'r';
+		case 30..34:	return 'b';
+		case 35..36:	return 'r';
+		case 37..38:	return 'b';
+		case 39..45:	return 'r';
+	}
+	return 'n';
 }
 //-----<  >---------------------------------------------------------------------
