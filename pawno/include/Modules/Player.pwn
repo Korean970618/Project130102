@@ -41,6 +41,9 @@
 	InsertPlayerData(playerid, varname[], vartype, int_value, Float:float_value, string_value[], encryption[]="")
 	DeletePlayerData(playerid, varname[])
 	LoginTryLog(playerid, success)
+	DamageLog(playerid, status[], issuerid, weaponid, Float:damage)
+	ShowPlayerLoginTryLog(playerid, destid)
+	ShowPlayerDamageLog(playerid, destid)
 
 */
 
@@ -301,6 +304,7 @@ public pDeathHandler_Player(playerid, killerid, reason)
 		ShowPlayerItemList(killerid, playerid, DialogId_Player(4), "All");
 	}
 	ShowPlayerPlunderStatus(playerid);
+	DamageLog(playerid, "사망", killerid, reason, 0.0);
 	return 1;
 }
 //-----< pKeyStateChangeHandler >-----------------------------------------------
@@ -383,52 +387,8 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 	}
 	else if(!strcmp(cmd, "/로그인기록", true))
 	{
-		new caption[128], info[2048],
-			rows, receive[6][32],
-			date[32], ip[15], success, checked;
-		format(caption, sizeof(caption), "로그인 기록 "C_BLUE"(현재 IP: %s)", GetPlayerIpA(playerid));
-		format(str, sizeof(str), "SELECT * FROM logintrydata WHERE Name='%s'", GetPlayerNameA(playerid));
-		mysql_query(str);
-		mysql_store_result();
-		rows = mysql_num_rows();
-		if(rows < 1)
-			strcpy(info, "로그인 기록이 없습니다.");
-		else
-		{
-			strcpy(info, chNullString);
-			strcat(info, C_LIGHTGREEN);
-			strtab(info, "일시", 32);
-			strtab(info, "결과", 4);
-			strcat(info, "IP");
-			for(new i = 0; i < rows; i++)
-			{
-				mysql_fetch_row(str, "|");
-				split(str, receive, '|');
-				idx = 2;
-				strcpy(date, chNullString);
-				strcpy(ip, chNullString);
-				success = false;
-				checked = false;
-				
-				strcpy(date, receive[idx++]);
-				strcpy(ip, receive[idx++]);
-				success = strval(receive[idx++]);
-				checked = strval(receive[idx++]);
-				
-				strcat(info, "\n");
-				if(checked)
-					strcat(info, C_WHITE);
-				else
-					strcat(info, C_GREY);
-				strtab(info, date, 32);
-				if(success)
-					strtab(info, "성공", 4);
-				else
-					strtab(info, "실패", 4);
-			}
-		}
-		ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
-		mysql_free_result();
+		ShowPlayerLoginTryLog(playerid, playerid);
+		return 1;
 	}
 	return 0;
 }
@@ -608,6 +568,7 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 	if(health - damage < 1)
 		KillerId[playerid] = issuerid;
 	GivePlayerDamage(playerid, damage);
+	DamageLog(playerid, "타격", issuerid, weaponid, damage);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -639,7 +600,7 @@ stock CreatePlayerDataTable()
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
-	strcpy(str, "CREATE TABLE IF NOT EXISTS logintrydata (");
+	strcpy(str, "CREATE TABLE IF NOT EXISTS logintrylog (");
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",Name varchar(32) NOT NULL default ' '");
 	strcat(str, ",Date varchar(32) NOT NULL default ' '");
@@ -648,6 +609,18 @@ stock CreatePlayerDataTable()
 	strcat(str, ",Checked int(1) NOT NULL default '0'");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
+	
+	strcpy(str, "CREATE TABLE IF NOT EXISTS damagelog (");
+	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
+	strcat(str, ",Name varchar(32) NOT NULL default ' '");
+	strcat(str, ",Date varchar(32) NOT NULL default ' '");
+	strcat(str, ",Status varchar(4) NOT NULL default '타격'");
+	strcat(str, ",Issuer varchar(32) NOT NULL default ' '");
+	strcat(str, ",WeaponID int(3) NOT NULL default '0'");
+	strcat(str, ",Damage float(16,4) NOT NULL default '0.0'");
+	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
+	mysql_query(str);
+	
 	return 1;
 }
 //-----< SavePlayerData >-------------------------------------------------------
@@ -974,10 +947,128 @@ stock LoginTryLog(playerid, success)
 		year, month, day, hour, minute, second;
 	getdate(year, month, day);
 	gettime(hour, minute, second);
-	format(str, sizeof(str), "INSERT INTO logintrydata (Name,Date,IP,Success,Checked)");
+	format(str, sizeof(str), "INSERT INTO logintrylog (Name,Date,IP,Success,Checked)");
 	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%s',%d,0)", str,
 	GetPlayerNameA(playerid), year, month, day, hour, minute, second, GetPlayerIpA(playerid), success);
 	mysql_query(str);
+	return 1;
+}
+//-----< DamageLog >------------------------------------------------------------
+stock DamageLog(playerid, status[], issuerid, weaponid, Float:damage)
+{
+	new str[256],
+		year, month, day, hour, minute, second;
+	getdate(year, month, day);
+	gettime(hour, minute, second);
+	format(str, sizeof(str), "INSERT INTO damagelog (Name,Date,Status,Issuer,WeaponID,Damage)");
+	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%s','%s',%d,%.4f)", str,
+	GetPlayerNameA(playerid), year, month, day, hour, minute, second, escape(status), GetPlayerNameA(issuerid), weaponid, damage);
+	mysql_query(str);
+	return 1;
+}
+//-----< ShowPlayerLoginTryLog >------------------------------------------------
+stock ShowPlayerLoginTryLog(playerid, destid)
+{
+	new str[256],
+		caption[128], info[2048],
+		rows, receive[6][32], idx,
+		date[32], ip[15], success, checked;
+	format(caption, sizeof(caption), "%s 로그인 기록 "C_BLUE"(현재 IP: %s)", GetPlayerNameA(destid), GetPlayerIpA(destid));
+	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s'", GetPlayerNameA(destid));
+	mysql_query(str);
+	mysql_store_result();
+	rows = mysql_num_rows();
+	if(rows < 1)
+		strcpy(info, "로그인 기록이 없습니다.");
+	else
+	{
+		strcpy(info, chNullString);
+		strcat(info, C_LIGHTGREEN);
+		strtab(info, "일시", 32);
+		strtab(info, "결과", 4);
+		strcat(info, "IP");
+		for(new i = rows-1; i >= 0; i--)
+		{
+			mysql_fetch_row(str, "|");
+			split(str, receive, '|');
+			idx = 2;
+			strcpy(date, chNullString);
+			strcpy(ip, chNullString);
+			success = false;
+			checked = false;
+
+			strcpy(date, receive[idx++]);
+			strcpy(ip, receive[idx++]);
+			success = strval(receive[idx++]);
+			checked = strval(receive[idx++]);
+
+			strcat(info, "\n");
+			if(checked)
+				strcat(info, C_WHITE);
+			else
+				strcat(info, C_GREY);
+			strtab(info, date, 32);
+			if(success)
+				strtab(info, "성공", 4);
+			else
+				strtab(info, "실패", 4);
+		}
+	}
+	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
+	mysql_free_result();
+	return 1;
+}
+//-----< ShowPlayerDamageLog >--------------------------------------------------
+stock ShowPlayerDamageLog(playerid, destid)
+{
+	new str[256],
+		caption[128], info[2048],
+		rows, receive[7][32], idx,
+		date[32], status[4], issuer[MAX_PLAYER_NAME], weaponid, Float:damage;
+	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s'", GetPlayerNameA(destid));
+	mysql_query(str);
+	mysql_store_result();
+	rows = mysql_num_rows();
+	format(caption, sizeof(caption), "%s 데미지 기록 "C_BLUE"(총 %d대)", GetPlayerNameA(destid), rows);
+	if(rows < 1)
+		strcpy(info, "데미지 기록이 없습니다.");
+	else
+	{
+		strcpy(info, chNullString);
+		strcat(info, C_LIGHTGREEN);
+		strtab(info, "일시", 32);
+		strtab(info, "상태", 4);
+		strtab(info, "가해자", 32);
+		strtab(info, "무기", 3);
+		strcat(info, "데미지");
+		strcat(info, C_WHITE);
+		for(new i = rows-1; i >= 0; i--)
+		{
+			mysql_fetch_row(str, "|");
+			split(str, receive, '|');
+			idx = 2;
+			strcpy(date, chNullString);
+			strcpy(status, chNullString);
+			strcpy(issuer, chNullString);
+			weaponid = 0;
+			damage = 0.0;
+
+			strcpy(date, receive[idx++]);
+			strcpy(status, receive[idx++]);
+			strcpy(issuer, receive[idx++]);
+			weaponid = strval(receive[idx++]);
+			damage = floatstr(receive[idx++]);
+
+			strcat(info, "\n");
+			strtab(info, date, 32);
+			strtab(info, status, 4);
+			strtab(info, issuer, 32);
+			strtab(info, valstr_(weaponid), 3);
+			format(info, sizeof(info), "%s%.4f", info, damage);
+		}
+	}
+	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
+	mysql_free_result();
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
