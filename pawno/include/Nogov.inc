@@ -102,6 +102,7 @@
 	native udb_hash(buf[]);
 	native GetWeaponSlotID(weaponid);
 	native GetWeaponHand(weaponid);
+	native ShowLastDialog(playerid);
 
 */
 
@@ -114,6 +115,7 @@
 
 //-----< Defines
 #define MAX_WEAPONS			 	47
+#define MAX_DIALOGS			 	25
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
 #define chEmpty				 	" "
@@ -233,13 +235,24 @@ enum eAnimationInfo
 	aTime,
 	aForceSync
 }
+enum eDialogInfo
+{
+	dID,
+	dStyle,
+	dCaption[64],
+	dInfo[2048],
+	dButton1[64],
+	dButton2[64]
+}
 new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObjectInfo],
 	Audio_MainStreamIndex[MAX_PLAYERS],
 	ClientMessages[MAX_PLAYERS],
 	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo],
 	TextDrawInfo[MAX_TEXT_DRAWS][eTextDrawInfo],
 	AnimationInfo[MAX_PLAYERS][eAnimationInfo],
-	DialogInfo[MAX_PLAYERS],
+	DialogInfo[MAX_PLAYERS][MAX_DIALOGS][eDialogInfo],
+	AtLastDialog[MAX_PLAYERS],
+	LastDialog[MAX_PLAYERS],
 	WeaponInfo[MAX_PLAYERS][MAX_WEAPONS],
 	InteriorInfo[MAX_PLAYERS],
 	Float:HealthInfo[MAX_PLAYERS],
@@ -309,7 +322,10 @@ public OnPlayerConnect(playerid)
 	AnimationInfo[playerid][aTime] = 0;
 	AnimationInfo[playerid][aForceSync] = 0;
 	
-	DialogInfo[playerid] = 0;
+	DialogInfo[playerid][0][dID] = 0;
+	DialogInfo[playerid][1][dID] = 0;
+	AtLastDialog[playerid] = false;
+	LastDialog[playerid] = 0;
 	
 	for(new i = 0; i < MAX_WEAPONS; i++)
 		WeaponInfo[playerid][i] = 0;
@@ -390,10 +406,35 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	format(caption_, sizeof(caption_), "%s%s", C_PASTEL_BLUE, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	
-	if(OnDialogRequest(playerid, dialogid, DialogInfo[playerid]))
+	if(OnDialogRequest(playerid, dialogid, DialogInfo[playerid][0][dID]))
 	{
-		DialogInfo[playerid] = dialogid;
+		new _id, _style, _caption[64], _info[2048], _button1[64], _button2[64];
+		_id = DialogInfo[playerid][0][dID];
+		_style = DialogInfo[playerid][0][dStyle];
+		strcpy(_caption, DialogInfo[playerid][0][dCaption]);
+		strcpy(_info, DialogInfo[playerid][0][dInfo]);
+		strcpy(_button1, DialogInfo[playerid][0][dButton1]);
+		strcpy(_button2, DialogInfo[playerid][0][dButton2]);
+
+		for(new i = 1; i < MAX_DIALOGS; i++)
+		{
+			DialogInfo[playerid][i][dID] = _id;
+			DialogInfo[playerid][i][dStyle] = _style;
+			strcpy(DialogInfo[playerid][i][dCaption], _caption);
+			strcpy(DialogInfo[playerid][i][dInfo], _info);
+			strcpy(DialogInfo[playerid][i][dButton1], _button1);
+			strcpy(DialogInfo[playerid][i][dButton2], _button2);
+		}
+
+		DialogInfo[playerid][0][dID] = dialogid;
+		DialogInfo[playerid][0][dStyle] = style;
+		strcpy(DialogInfo[playerid][0][dCaption], caption);
+		strcpy(DialogInfo[playerid][0][dInfo], info);
+		strcpy(DialogInfo[playerid][0][dButton1], button1);
+		strcpy(DialogInfo[playerid][0][dButton2], button2);
 		
+		AtLastDialog[playerid] = false;
+		LastDialog[playerid] = dialogid;
 		return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 	}
 	return 0;
@@ -1638,5 +1679,15 @@ stock GetWeaponHand(weaponid)
 		case 39..45:	return 'r';
 	}
 	return 'n';
+}
+//-----< ShowLastDialog >-------------------------------------------------------
+stock ShowLastDialog(playerid)
+{
+	new id = ((AtLastDialog[playerid]) ? LastDialog[playerid] : 0) + 1;
+	if(!DialogInfo[playerid][1][dID]) return 1;
+	
+	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
+	AtLastDialog[playerid] = true;
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------
