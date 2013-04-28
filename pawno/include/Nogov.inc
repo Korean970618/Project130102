@@ -260,7 +260,7 @@ forward OnPlayerKeyStateChange_(playerid, newkeys, oldkeys);
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
+	for(new i = 0; i < MAX_TEXT_DRAWS; i++)
 	{
 		TextDrawInfo[i][tdID] = Text:INVALID_TEXT_DRAW;
 	}
@@ -275,7 +275,7 @@ public OnGameModeInit()
 //-----< OnPlayerConnect >------------------------------------------------------
 public OnPlayerConnect(playerid)
 {
-	for (new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
 	{
 		AttachedObjectInfo[playerid][i][aoModel] 		= 0;
 		AttachedObjectInfo[playerid][i][aoBone] 		= 0;
@@ -292,7 +292,7 @@ public OnPlayerConnect(playerid)
 	}
 	
 	ClientMessages[playerid] = 0;
-	for (new i = 0; i < 100; i++)
+	for(new i = 0; i < 100; i++)
 	{
 		ClientMessageInfo[playerid][i][cmColor] = 0;
 		strcpy(ClientMessageInfo[playerid][i][cmMessage], chNullString);
@@ -310,7 +310,7 @@ public OnPlayerConnect(playerid)
 	
 	DialogInfo[playerid] = 0;
 	
-	for (new i = 0; i < MAX_WEAPONS; i++)
+	for(new i = 0; i < MAX_WEAPONS; i++)
 		WeaponInfo[playerid][i] = 0;
 	InteriorInfo[playerid] = 0;
 	HealthInfo[playerid] = 100.0;
@@ -349,7 +349,7 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
 //-----< OnPlayerStreamIn >-----------------------------------------------------
 public OnPlayerStreamIn(playerid, forplayerid)
 {
-	if (strlen(AnimationInfo[forplayerid][aLib]) && AnimationInfo[forplayerid][aForceSync])
+	if(strlen(AnimationInfo[forplayerid][aLib]) && AnimationInfo[forplayerid][aForceSync])
 	{
 		ApplyAnimation(forplayerid, AnimationInfo[forplayerid][aLib], AnimationInfo[forplayerid][aName], AnimationInfo[forplayerid][aDelta],
 			AnimationInfo[forplayerid][aLockX], AnimationInfo[forplayerid][aLockY], AnimationInfo[forplayerid][aFreeze], AnimationInfo[forplayerid][aTime], true);
@@ -365,7 +365,7 @@ public OnPlayerStreamIn(playerid, forplayerid)
 //-----< OnPlayerKeyStateChange >-----------------------------------------------
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if (strlen(AnimationInfo[playerid][aLib]) && AnimationInfo[playerid][aForceSync]
+	if(strlen(AnimationInfo[playerid][aLib]) && AnimationInfo[playerid][aForceSync]
 	&& (newkeys & KEY_JUMP || newkeys & KEY_FIRE || newkeys & KEY_SECONDARY_ATTACK))
 		ClearAnimations_(playerid, true);
 	return OnPlayerKeyStateChange_(playerid, newkeys, oldkeys);
@@ -389,7 +389,7 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	format(caption_, sizeof(caption_), "%s%s", C_PASTEL_BLUE, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	
-	if (OnDialogRequest(playerid, dialogid, DialogInfo[playerid]))
+	if(OnDialogRequest(playerid, dialogid, DialogInfo[playerid]))
 	{
 		DialogInfo[playerid] = dialogid;
 		
@@ -435,13 +435,13 @@ stock _SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 
 //-----< PlayAudioStreamForPlayer >---------------------------------------------
 stock PlayAudioStreamForPlayer_(playerid, url[], Float:posX = 0.0, Float:posY = 0.0, Float:posZ = 0.0, Float:distance = 50.0, usepos = 0)
 {
-	if (Audio_IsClientConnected(playerid))
+	if(Audio_IsClientConnected(playerid))
 	{
 		Audio_MainStreamIndex[playerid] = Audio_PlayStreamed(playerid, url) + 1;
 		return 1;
 	}
 	PlayAudioStreamForPlayer(playerid, url, posX, posY, posZ, distance, usepos);
-	for (new i = 0; i < ClientMessages[playerid]; i++)
+	for(new i = 0; i < ClientMessages[playerid]; i++)
 		SendClientMessage(playerid, ClientMessageInfo[playerid][i][cmColor], ClientMessageInfo[playerid][i][cmMessage]);
 	return 1;
 }
@@ -456,7 +456,7 @@ stock _PlayAudioStreamForPlayer(playerid, url[], Float:posX = 0.0, Float:posY = 
 //-----< StopAudioStreamForPlayer >---------------------------------------------
 stock StopAudioStreamForPlayer_(playerid)
 {
-	if (Audio_MainStreamIndex[playerid])
+	if(Audio_MainStreamIndex[playerid])
 	{
 		Audio_Stop(playerid, Audio_MainStreamIndex[playerid] - 1);
 		Audio_MainStreamIndex[playerid] = 0;
@@ -475,9 +475,9 @@ stock _StopAudioStreamForPlayer(playerid)
 //-----< SendClientMessage >----------------------------------------------------
 stock SendClientMessage_(playerid, color, const message[])
 {
-	if (ClientMessages[playerid] >= 100)
+	if(ClientMessages[playerid] >= 100)
 	{
-		for (new i = 0; i < 100 - 1; i++)
+		for(new i = 0; i < 100 - 1; i++)
 		{
 			ClientMessageInfo[i][cmColor] = ClientMessageInfo[i+1][cmColor];
 			strcpy(ClientMessageInfo[i][cmMessage], ClientMessageInfo[i+1][cmMessage]);
@@ -501,7 +501,7 @@ stock _SendClientMessage(playerid, color, const message[])
 //-----< SendClientMessageToAll >-----------------------------------------------
 stock SendClientMessageToAll_(color, const message[])
 {
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 		SendClientMessage(i, color, message);
 	return 1;
 }
@@ -518,8 +518,8 @@ stock _SendClientMessageToAll(color, const message[])
 stock TextDrawCreate_(Float:x, Float:y, text[])
 {
 	new textid = INVALID_TEXT_DRAW;
-	for (new i = 0; i < MAX_TEXT_DRAWS; i++)
-		if (TextDrawInfo[i][tdID] == Text:INVALID_TEXT_DRAW)
+	for(new i = 0; i < MAX_TEXT_DRAWS; i++)
+		if(TextDrawInfo[i][tdID] == Text:INVALID_TEXT_DRAW)
 		{
 			TextDrawInfo[i][tdID]					= TextDrawCreate(x, y, text);
 			TextDrawInfo[i][tdPos][0]				= x;
@@ -538,7 +538,7 @@ stock TextDrawCreate_(Float:x, Float:y, text[])
 			TextDrawInfo[i][tdBackgroundColor]		= 0x000000FF;
 			TextDrawInfo[i][tdFont]					= 3;
 			TextDrawInfo[i][tdProportional]			= 1;
-			for (new j = 0, t = GetMaxPlayers(); j < t; j++)
+			for(new j = 0, t = GetMaxPlayers(); j < t; j++)
 				TextDrawInfo[i][tdShowPlayer][j]	= false;
 			TextDrawInfo[i][tdPreviewModel]			= 0;
 			TextDrawInfo[i][tdPreviewRot][0]		= 0.0;
@@ -790,7 +790,7 @@ stock _TextDrawHideForPlayer(playerid, Text:text)
 stock TextDrawShowForAll_(text)
 {
 	TextDrawShowForAll(TextDrawInfo[text][tdID]);
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 		TextDrawInfo[text][tdShowPlayer][i] = true;
 	return 1;
 }
@@ -806,7 +806,7 @@ stock _TextDrawShowForAll(Text:text)
 stock TextDrawHideForAll_(text)
 {
 	TextDrawHideForAll(TextDrawInfo[text][tdID]);
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 		TextDrawInfo[text][tdShowPlayer][i] = false;
 	return 1;
 }
@@ -925,7 +925,7 @@ stock _ClearAnimations(playerid, forcesync = 0)
 //-----< SetPVarInt >-----------------------------------------------------------
 stock SetPVarInt_(playerid, varname[], int_value, array=0)
 {
-	if (array == 0)
+	if(array == 0)
 	{
 		SetPlayerData(playerid, varname, PLAYER_VARTYPE_INT, int_value, 0.0, chNullString);
 		SetPVarInt(playerid, varname, int_value);
@@ -934,7 +934,7 @@ stock SetPVarInt_(playerid, varname[], int_value, array=0)
 	{
 		new varname_[64];
 		format(varname_, sizeof(varname_), "%s_%d", varname, array);
-		if (int_value == 0)
+		if(int_value == 0)
 		{
 			DeletePlayerData(playerid, varname_);
 			DeletePVar(playerid, varname_);
@@ -957,7 +957,7 @@ stock _SetPVarInt(playerid, varname[], int_value)
 //-----< SetPVarFloat >---------------------------------------------------------
 stock Float:SetPVarFloat_(playerid, varname[], Float:float_value, array=0)
 {
-	if (array == 0)
+	if(array == 0)
 	{
 		SetPlayerData(playerid, varname, PLAYER_VARTYPE_FLOAT, 0, float_value, chNullString);
 		SetPVarFloat(playerid, varname, float_value);
@@ -966,7 +966,7 @@ stock Float:SetPVarFloat_(playerid, varname[], Float:float_value, array=0)
 	{
 		new varname_[64];
 		format(varname_, sizeof(varname_), "%s_%d", varname, array);
-		if (float_value == 0.0)
+		if(float_value == 0.0)
 		{
 			DeletePlayerData(playerid, varname_);
 			DeletePVar(playerid, varname_);
@@ -989,7 +989,7 @@ stock _SetPVarFloat(playerid, varname[], Float:float_value)
 //-----< SetPVarString >--------------------------------------------------------
 stock SetPVarString_(playerid, varname[], string_value[], array=0)
 {
-	if (array == 0)
+	if(array == 0)
 	{
 		SetPlayerData(playerid, varname, PLAYER_VARTYPE_STRING, 0, 0.0, string_value);
 		SetPVarString(playerid, varname, string_value);
@@ -998,7 +998,7 @@ stock SetPVarString_(playerid, varname[], string_value[], array=0)
 	{
 		new varname_[64];
 		format(varname_, sizeof(varname_), "%s_%d", varname, array);
-		if (strlen(string_value) == 0)
+		if(strlen(string_value) == 0)
 		{
 			DeletePlayerData(playerid, varname_);
 			DeletePVar(playerid, varname_);
@@ -1021,7 +1021,7 @@ stock _SetPVarString(playerid, varname[], string_value[])
 //-----< GetPVarInt >-----------------------------------------------------------
 stock GetPVarInt_(playerid, varname[], array=0)
 {
-	if (array == 0) return GetPVarInt(playerid, varname);
+	if(array == 0) return GetPVarInt(playerid, varname);
 	new varname_[64];
 	format(varname_, sizeof(varname_), "%s_%d", varname, array);
 	return GetPVarInt(playerid, varname_);
@@ -1037,7 +1037,7 @@ stock _GetPVarInt(playerid, varname[])
 //-----< GetPVarFloat >---------------------------------------------------------
 stock Float:GetPVarFloat_(playerid, varname[], array=0)
 {
-	if (array == 0) return GetPVarFloat(playerid, varname);
+	if(array == 0) return GetPVarFloat(playerid, varname);
 	new varname_[64];
 	format(varname_, sizeof(varname_), "%s_%d", varname, array);
 	return GetPVarFloat(playerid, varname_);
@@ -1054,7 +1054,7 @@ stock _GetPVarFloat(playerid, varname[])
 stock GetPVarString_(playerid, varname[], array=0)
 {
 	new string[512];
-	if (array == 0)
+	if(array == 0)
 	{
 		GetPVarString(playerid, varname, string, sizeof(string));
 		return string;
@@ -1075,7 +1075,7 @@ stock _GetPVarString(playerid, varname[])
 //-----< DeletePVar_ >----------------------------------------------------------
 stock DeletePVar_(playerid, varname[], array=0)
 {
-	if (array == 0)
+	if(array == 0)
 	{
 		DeletePVar(playerid, varname);
 		DeletePlayerData(playerid, varname);
@@ -1100,7 +1100,7 @@ stock _DeletePVar(playerid, varname[])
 //-----< GetPVarType >----------------------------------------------------------
 stock GetPVarType_(playerid, varname[], array=0)
 {
-	if (array == 0) return GetPVarType(playerid, varname);
+	if(array == 0) return GetPVarType(playerid, varname);
 	new varname_[64];
 	format(varname_, sizeof(varname_), "%s_%d", varname, array);
 	return GetPVarType(playerid, varname_);
@@ -1117,7 +1117,7 @@ stock _GetPVarType(playerid, varname[])
 //-----< strcmp >---------------------------------------------------------------
 stock strcmp_(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
 {
-	if (strlen(string1) && strlen(string2) && strcmp(string1, string2, ignorecase, length) == 0) return 0;
+	if(strlen(string1) && strlen(string2) && strcmp(string1, string2, ignorecase, length) == 0) return 0;
 	return 1;
 }
 stock _strcmp(const string1[], const string2[], bool:ignorecase=false, length=cellmax)
@@ -1132,7 +1132,7 @@ stock _strcmp(const string1[], const string2[], bool:ignorecase=false, length=ce
 stock strlen_(const string[])
 {
 	new len = strlen(string);
-	if (len == 1 && !strcmp(string, " ", true)) return 0;
+	if(len == 1 && !strcmp(string, " ", true)) return 0;
 	return len;
 }
 stock _strlen(const string[])
@@ -1161,7 +1161,7 @@ stock _GivePlayerWeapon(playerid, weaponid, ammo)
 //-----< ResetPlayerWeapons >---------------------------------------------------
 stock ResetPlayerWeapons_(playerid)
 {
-	for (new i = 0; i < MAX_WEAPONS; i++)
+	for(new i = 0; i < MAX_WEAPONS; i++)
 		WeaponInfo[playerid][i] = 0;
 	return ResetPlayerWeapons(playerid);
 }
@@ -1178,7 +1178,7 @@ stock SetPlayerAmmo_(playerid, weaponslot, ammo)
 {
 	new gweapons, gammo;
 	GetPlayerWeaponData(playerid, weaponslot, gweapons, gammo);
-	if (gweapons)
+	if(gweapons)
 		WeaponInfo[playerid][gweapons] = gammo;
 	return SetPlayerAmmo(playerid, weaponslot, ammo);
 }
@@ -1245,11 +1245,11 @@ stock strcpy(dest[], src[], deststart=0, destend=-1, srcstart=0, srcend=-1)
 	new index[2];
 	index[0] = deststart;
 	index[1] = srcstart;
-	while ((dest[index[0]] = src[index[1]]))
+	while((dest[index[0]] = src[index[1]]))
 	{
 		index[0]++;
 		index[1]++;
-		if (destend != -1 && index[0] == destend + 1 || srcend != -1 && index[1] == srcend + 1) break;
+		if(destend != -1 && index[0] == destend + 1 || srcend != -1 && index[1] == srcend + 1) break;
 	}
 }
 //-----< AntiDeAMX >------------------------------------------------------------
@@ -1263,7 +1263,7 @@ stock FixBlankString(input[])
 {
 	new string[1024];
 	strcpy(string, "/Empty/");
-	if (strlen(input))
+	if(strlen(input))
 		strcpy(string, input);
 	return string;
 }
@@ -1273,13 +1273,13 @@ stock strtok(const string[], &index, seperator=' ')
 	new length = strlen(string);
 	new offset = index;
 	new result[256];
-	while ((index < length) && (string[index] != seperator) && ((index - offset) < (sizeof(result) - 1)))
+	while((index < length) && (string[index] != seperator) && ((index - offset) < (sizeof(result) - 1)))
 	{
 		result[index - offset] = string[index];
 		index++;
 	}
 	result[index - offset] = EOS;
-	if ((index < length) && (string[index] == seperator))
+	if((index < length) && (string[index] == seperator))
 		index++;
 	return result;
 }
@@ -1292,17 +1292,17 @@ stock stringslice(const string[], stringindex, separator=' ')
 		stringlength,
 		result[25]
 	;
-	for (stringnum = 0; stringnum <= stringindex && stringlength <= strlen(string); ++stringnum)
+	for(stringnum = 0; stringnum <= stringindex && stringlength <= strlen(string); ++stringnum)
 	{
-		if (stringnum>0)
+		if(stringnum>0)
 			stringlength++;
 		stringstart = stringlength;
-		while (stringlength <= strlen(string) && string[stringlength] != separator && string[stringlength] != EOS)
+		while(stringlength <= strlen(string) && string[stringlength] != separator && string[stringlength] != EOS)
 			stringlength++;
 	}
 	stringnum = 0;
 	stringlength = stringlength-stringstart;
-	while (stringnum <= stringlength && stringnum <= sizeof(result))
+	while(stringnum <= stringlength && stringnum <= sizeof(result))
 	{
 		result[stringnum] = string[stringnum+stringstart];
 		stringnum++;
@@ -1319,12 +1319,12 @@ stock stringslice_c(const string[], stringindex, separator=' ')
 		stringlength,
 		result[512]
 	;
-	for (stringnum = 0; stringnum <= stringindex && stringlength <= strlen(string); stringnum++)
+	for(stringnum = 0; stringnum <= stringindex && stringlength <= strlen(string); stringnum++)
 	{
-		if (stringnum > 0)
+		if(stringnum > 0)
 			stringlength++;
 		stringstart = stringlength;
-		while (stringlength <= strlen(string) && string[stringlength] != separator && string[stringlength] != EOS)
+		while(stringlength <= strlen(string) && string[stringlength] != separator && string[stringlength] != EOS)
 			stringlength++;
 	}
 	strmid(result, string, stringstart, strlen(string));
@@ -1334,19 +1334,19 @@ stock stringslice_c(const string[], stringindex, separator=' ')
 stock ReturnUser(text[])
 {
 	new pos = 0;
-	while (text[pos] < 0x21)
+	while(text[pos] < 0x21)
 	{
-		if (text[pos] == 0)
+		if(text[pos] == 0)
 			return INVALID_PLAYER_ID;
 		pos++;
 	}
 	new userid = INVALID_PLAYER_ID;
-	if (IsNumeric(text[pos]))
+	if(IsNumeric(text[pos]))
 	{
 		userid = strval(text[pos]);
-		if (userid >= 0 && userid < GetMaxPlayers())
+		if(userid >= 0 && userid < GetMaxPlayers())
 		{
-			if (!IsPlayerConnected(userid))
+			if(!IsPlayerConnected(userid))
 				userid = INVALID_PLAYER_ID;
 			else
 				return userid;
@@ -1355,13 +1355,13 @@ stock ReturnUser(text[])
 	new len = strlen(text[pos]);
 	new count = 0;
 	new name[MAX_PLAYER_NAME];
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		if (IsPlayerConnected(i))
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+		if(IsPlayerConnected(i))
 		{
 			GetPlayerName(i, name, sizeof(name));
-			if (strcmp(name, text[pos] ,true, len) == 0)
+			if(strcmp(name, text[pos] ,true, len) == 0)
 			{
-				if (len == strlen(name))
+				if(len == strlen(name))
 					return i;
 				else {
 					count++;
@@ -1369,15 +1369,15 @@ stock ReturnUser(text[])
 				}
 			}
 		}
-	if (count != 1)
+	if(count != 1)
 		userid = INVALID_PLAYER_ID;
 	return userid;
 }
 //-----< IsNumeric >------------------------------------------------------------
 stock IsNumeric(const string[])
 {
-	for (new i = 0, t = strlen(string); i < t; i++)
-		if (string[i] < '0' || string[i] > '9')
+	for(new i = 0, t = strlen(string); i < t; i++)
+		if(string[i] < '0' || string[i] > '9')
 			return false;
 	return true;
 }
@@ -1385,9 +1385,9 @@ stock IsNumeric(const string[])
 stock split(const strsrc[], strdest[][], delimiter = '|')
 {
 	new i, li, aNum, len, srclen = strlen(strsrc);
-	while (i <= srclen)
+	while(i <= srclen)
 	{
-		if (strsrc[i] == delimiter || i == srclen)
+		if(strsrc[i] == delimiter || i == srclen)
 		{
 			len = strmid(strdest[aNum], strsrc, li, i, 128);
 			strdest[aNum][len] = 0;
@@ -1429,7 +1429,7 @@ stock Float:GetPlayerArmourA(playerid)
 stock Wait(time)
 {
 	new stamp = tickcount();
-	while (tickcount() - stamp < time) {}
+	while(tickcount() - stamp < time) {}
 	return 1;
 }
 //-----< Crash >----------------------------------------------------------------
@@ -1451,14 +1451,14 @@ stock escape(str[])
 {
 	new escaped[256];
 	mysql_real_escape_string(str, escaped);
-	if (!strcmp(escaped, "NULL"))
+	if(!strcmp(escaped, "NULL"))
 		strcpy(escaped, " ");
 	return escaped;
 }
 //-----< ResetPlayerDialogData >------------------------------------------------
 stock ResetPlayerDialogData(playerid)
 {
-	for (new i = 0; i < sizeof(DialogData); i++)
+	for(new i = 0; i < sizeof(DialogData); i++)
 		DialogData[playerid][i] = 0;
 	return 1;
 }
@@ -1467,8 +1467,8 @@ stock strtab(dest[], str[], maxlength)
 {
 	new len = strlen(dest) + maxlength;
 	strcat(dest, str, len);
-	for (new i = 7; i < maxlength; i += 7)
-		if (strlen(str) <= i)
+	for(new i = 7; i < maxlength; i += 7)
+		if(strlen(str) <= i)
 		{
 			len += 7;
 			strcat(dest, "\t", len);
@@ -1549,8 +1549,8 @@ stock TextDrawSetPosition(text, Float:x, Float:y)
 stock TextDrawUpdate(text)
 {
 	_TextDrawHideForAll(TextDrawInfo[text][tdID]);
-	for (new i = 0, t = GetMaxPlayers(); i < t; i++)
-		if (TextDrawInfo[text][tdShowPlayer][i])
+	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+		if(TextDrawInfo[text][tdShowPlayer][i])
 			_TextDrawShowForPlayer(i, TextDrawInfo[text][tdID]);
 	return 1;
 }
@@ -1562,7 +1562,7 @@ stock Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Flo
 //-----< GetWeaponObjectModelID >-----------------------------------------------
 stock GetWeaponObjectModelID(weaponid)
 {
-	switch (weaponid)
+	switch(weaponid)
 	{
 		case 1:			return 331;
 		case 2..8:		return 331 + weaponid;
@@ -1591,7 +1591,7 @@ stock udb_hash(buf[])
 	new s1 = 1;
 	new s2 = 0;
 	new n;
-	for (n = 0; n < length; n++)
+	for(n = 0; n < length; n++)
 	{
 	   s1 = (s1 + buf[n])	% 65521;
 	   s2 = (s2 + s1)		% 65521;
@@ -1601,7 +1601,7 @@ stock udb_hash(buf[])
 //-----< GetWeaponSlotID >------------------------------------------------------
 stock GetWeaponSlotID(weaponid)
 {
-	switch (weaponid)
+	switch(weaponid)
 	{
 		case 0..1:	  return 0;
 		case 2..9:	  return 1;
