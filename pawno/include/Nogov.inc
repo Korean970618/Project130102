@@ -66,6 +66,7 @@
 	
 	GivePlayerWeapon(playerid, weaponid, ammo)
 	ResetPlayerWeapons(playerid)
+	SetPlayerAmmo(playerid, weaponslot, ammo)
 	
 	SetPlayerInterior(playerid, interiorid)
 	
@@ -99,6 +100,7 @@
 	native GetWeaponObjectModelID(weaponid);
 	native GetWeaponNameA(weaponid);
 	native udb_hash(buf[]);
+	native GetWeaponSlotID(weaponid);
 
 */
 
@@ -1170,7 +1172,24 @@ stock _ResetPlayerWeapons(playerid)
 #else
 	#define _ALS_ResetPlayerWeapons
 #endif
-#define ResetPlayerWeapons ResetPlayerWeapons
+#define ResetPlayerWeapons ResetPlayerWeapons_
+//-----< SetPlayerAmmo >--------------------------------------------------------
+stock SetPlayerAmmo_(playerid, weaponslot, ammo)
+{
+	new gweapons, gammo;
+	GetPlayerWeaponData(playerid, weaponslot, gweapons, gammo);
+	if (gweapons)
+		WeaponInfo[playerid][gweapons] = gammo;
+	return SetPlayerAmmo(playerid, weaponslot, ammo);
+}
+stock _SetPlayerAmmo(playerid, weaponslot, ammo)
+	return SetPlayerAmmo(playerid, weaponslot, ammo);
+#if defined _ALS_SetPlayerAmmo
+	#undef SetPlayerAmmo
+#else
+	#define _ALS_SetPlayerAmmo
+#endif
+#define SetPlayerAmmo SetPlayerAmmo_
 //-----<  >---------------------------------------------------------------------
 //-----< SetPlayerInterior >----------------------------------------------------
 stock SetPlayerInterior_(playerid, interiorid)
@@ -1578,5 +1597,28 @@ stock udb_hash(buf[])
 	   s2 = (s2 + s1)		% 65521;
 	}
 	return (s2 << 16) + s1;
+}
+//-----< GetWeaponSlotID >------------------------------------------------------
+stock GetWeaponSlotID(weaponid)
+{
+	switch (weaponid)
+	{
+		case 0..1:	  return 0;
+		case 2..9:	  return 1;
+		case 10..15:	return 10;
+		case 16..18:	return 8;
+		case 22..24:	return 2;
+		case 25..27:	return 3;
+		case 28..29:	return 4;
+		case 30..31:	return 5;
+		case 32:		return 4;
+		case 33..34:	return 6;
+		case 35..38:	return 6;
+		case 39:		return 8;
+		case 40:		return 12;
+		case 41..43:	return 9;
+		case 44..46:	return 11;
+	}
+	return 0;
 }
 //-----<  >---------------------------------------------------------------------
