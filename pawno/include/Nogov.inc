@@ -408,22 +408,14 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	
 	if(OnDialogRequest(playerid, dialogid, DialogInfo[playerid][0][dID]))
 	{
-		new _id, _style, _caption[64], _info[2048], _button1[64], _button2[64];
-		_id = DialogInfo[playerid][0][dID];
-		_style = DialogInfo[playerid][0][dStyle];
-		strcpy(_caption, DialogInfo[playerid][0][dCaption]);
-		strcpy(_info, DialogInfo[playerid][0][dInfo]);
-		strcpy(_button1, DialogInfo[playerid][0][dButton1]);
-		strcpy(_button2, DialogInfo[playerid][0][dButton2]);
-
-		for(new i = 1; i < MAX_DIALOGS; i++)
+		for(new i = MAX_DIALOGS-1; i > 0; i--)
 		{
-			DialogInfo[playerid][i][dID] = _id;
-			DialogInfo[playerid][i][dStyle] = _style;
-			strcpy(DialogInfo[playerid][i][dCaption], _caption);
-			strcpy(DialogInfo[playerid][i][dInfo], _info);
-			strcpy(DialogInfo[playerid][i][dButton1], _button1);
-			strcpy(DialogInfo[playerid][i][dButton2], _button2);
+			DialogInfo[playerid][i][dID] = DialogInfo[playerid][i-1][dID];
+			DialogInfo[playerid][i][dStyle] = DialogInfo[playerid][i-1][dStyle];
+			strcpy(DialogInfo[playerid][i][dCaption], DialogInfo[playerid][i-1][dCaption]);
+			strcpy(DialogInfo[playerid][i][dInfo], DialogInfo[playerid][i-1][dInfo]);
+			strcpy(DialogInfo[playerid][i][dButton1], DialogInfo[playerid][i-1][dButton1]);
+			strcpy(DialogInfo[playerid][i][dButton2], DialogInfo[playerid][i-1][dButton2]);
 		}
 
 		DialogInfo[playerid][0][dID] = dialogid;
@@ -1687,7 +1679,7 @@ stock ShowLastDialog(playerid)
 	if(!DialogInfo[playerid][1][dID]) return 1;
 	
 	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
-	AtLastDialog[playerid] = true;
+	AtLastDialog[playerid] = (id == 1) ? false : true;
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
