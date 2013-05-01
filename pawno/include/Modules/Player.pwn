@@ -488,8 +488,10 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 				new itemid = DialogData[playerid][listitem],
 					plunderid = PlunderId[playerid];
 				if(!IsPlayerConnected(plunderid)) return 1;
-				GivePlayerItemToPlayer(plunderid, playerid, itemid, "가방");
-				SendClientMessage(playerid, COLOR_WHITE, "아이템을 탈취했습니다.");
+				DialogData[playerid][0] = itemid;
+				format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 탈취하시겠습니까?", GetPlayerItemModelName(plunderid, itemid), GetPlayerItemAmount(plunderid, itemid));
+				ShowPlayerDialog(playerid, DialogId_Player(6), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
+				return 1;
 			}
 			PlunderId[playerid] = INVALID_PLAYER_ID;
 		}
@@ -507,6 +509,27 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					PlunderId[i] = INVALID_PLAYER_ID;
 					ShowPlayerDialog(i, 0, DIALOG_STYLE_MSGBOX, "알림", "사자가 리스폰되었습니다.", "확인", chNullString);
 				}
+		}
+		case 6:
+		{
+			if(response)
+			{
+				new itemid = DialogData[playerid][0],
+					plunderid = PlunderId[playerid],
+					amount = strval(inputtext);
+				if(!IsPlayerConnected(plunderid)) return 1;
+				if(amount < 1) ReshowDialog(playerid);
+				else if(amount > GetPlayerItemAmount(plunderid, itemid)) amount = GetPlayerItemAmount(plunderid, itemid);
+				new Float:x, Float:y, Float:z;
+				GetPlayerPos(plunderid, x, y, z);
+				if(!IsPlayerInRangeOfPoint(playerid, 2.0, x, y, z)
+				|| GetPlayerVirtualWorld(playerid) != GetPlayerVirtualWorld(plunderid))
+					return ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "시체가 근처에 있지 않습니다.", "확인", chNullString);
+				GivePlayerItemToPlayer(plunderid, playerid, itemid, "가방", GetPlayerItemAmount(plunderid, itemid));
+				SendClientMessage(playerid, COLOR_WHITE, "아이템을 탈취했습니다.");
+				PlunderId[playerid] = INVALID_PLAYER_ID;
+			}
+			else ShowLastDialog(playerid);
 		}
 	}
 	return 1;

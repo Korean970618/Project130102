@@ -15,9 +15,11 @@
 	gInitHandler_Item()
 	pSpawnHandler_Item(playerid)
 	pConnectHandler_Item(playerid)
+	pUpdateHandler_Item(playerid)
 	pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 	pCommandHandler_Item(playerid, cmdtext[])
 	dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
+	PlunderTimer(playerid)
 
   < Functions >
 	CreateItemModelDataTable()
@@ -33,10 +35,12 @@
 	LoadItemData()
 	UnloadItemDataById(itemid)
 	UnloadItemData()
-	CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0)
+	CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0, amount=1)
 	DestroyItem(itemid)
 	SetItemHealth(itemid, health)
 	GetItemHealth(itemid)
+	GetItemModelName(itemid)
+	GetItemAmount(itemid)
 	
 	CreatePlayerItemDataTable()
 	SavePlayerItemDataById(playerid, itemid)
@@ -44,12 +48,15 @@
 	LoadPlayerItemData(playerid)
 	UnloadPlayerItemDataById(playerid, itemid)
 	UnloadPlayerItemData(playerid)
-	CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0)
+	CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0, amount=1)
 	SetPlayerItemHealth(playerid, itemid, health)
 	GetPlayerItemHealth(playerid, itemid)
+	GetPlayerItemModelName(playerid, itemid)
+	GetPlayerItemAmount(playerid, itemid)
 	
-	GivePlayerItem(playerid, itemid, savetype[]="가방")
-	GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
+	GivePlayerItem(playerid, itemid, savetype[], amount)
+	GivePlayerItemToPlayer(playerid, destid, itemid, savetype[], amount)
+	DropPlayerItem(playerid, itemid, amount)
 	GetPlayerItemsWeight(playerid, savetype[]="All")
 	ShowPlayerItemList(playerid, destid, dialogid, savetyoe[]="All")
 	ShowPlayerItemInfo(playerid, playerid, itemid)
@@ -88,6 +95,7 @@ enum eItemInfo
 	iMemo[128],
 	iVirtualItem,
 	iHealth,
+	iAmount,
 	
 	iObject,
 	Text3D:i3DText
@@ -107,7 +115,8 @@ enum eItemModelInfo
 	Float:imOffset2[3],
 	Float:imRot2[3],
 	Float:imScale2[3],
-	imMaxHealth
+	imMaxHealth,
+	imHand
 }
 new ItemModelInfo[100][eItemModelInfo];
 /*new ItemModelInfo[2][eItemModelInfo] =
@@ -123,6 +132,7 @@ new ItemModelInfo[100][eItemModelInfo];
 		{ 0.3, 0.1, 0.1 }, { 100.0, 0.0, 75.0 }, { 1.0, 1.0, 1.0 }
 	}
 };*/
+new WeaponItem[MAX_PLAYERS];
 
 
 
@@ -130,6 +140,7 @@ new ItemModelInfo[100][eItemModelInfo];
 forward gInitHandler_Item();
 forward pSpawnHandler_Item(playerid);
 forward pConnectHandler_Item(playerid);
+forward pUpdateHandler_Item(playerid);
 forward pDisconnectHandler_Item(playerid, reason);
 forward pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys);
 forward pCommandTextHandler_Item(playerid, cmdtext[]);
@@ -166,6 +177,19 @@ public pConnectHandler_Item(playerid)
 		strcpy(PlayerItemInfo[playerid][i][iSaveType], chNullString);
 		strcpy(PlayerItemInfo[playerid][i][iMemo], chNullString);
 	}
+	WeaponItem[playerid] = 0;
+	return 1;
+}
+//-----< pUpdateHandler >-------------------------------------------------------
+public pUpdateHandler_Item(playerid)
+{
+	new weaponid = GetPlayerWeapon(playerid);
+	if(weaponid != WeaponItem[playerid])
+	{
+		if(WeaponItem[playerid])
+			SetPlayerAmmo(playerid, GetWeaponSlotID(WeaponItem[playerid]), 0);
+		WeaponItem[playerid] = weaponid;
+	}
 	return 1;
 }
 //-----< pKeyStateChangeHandler >-----------------------------------------------
@@ -176,18 +200,9 @@ public pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 	if(newkeys == KEY_SECONDARY_ATTACK)
 	{
 		new itemid = GetPlayerNearestItem(playerid);
-		if(GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt(playerid, "pWeight"))
-		{
-			if(GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight])
-				SendClientMessage(playerid, COLOR_WHITE, "가방이 너무 무겁습니다.");
-			else
-			{
-				format(str, sizeof(str), "%s은(는) 너무 무거워서 가방에 넣을 수 없습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName]);
-				SendClientMessage(playerid, COLOR_WHITE, str);
-			}
-		}
-		else
-			GivePlayerItem(playerid, itemid);
+		DialogData[playerid][0] = itemid;
+		format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 주우시겠습니까?", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], GetItemAmount(itemid));
+		ShowPlayerDialog(playerid, DialogId_Item(7), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
 	}
 	return 1;
 }
@@ -248,7 +263,11 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							SendClientMessage(playerid, COLOR_WHITE, "다른 아이템 근처에선 버릴 수 없습니다.");
 						else if(z != 0.0)
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
-						else DropPlayerItem(playerid, itemid);
+						else
+						{
+							format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetPlayerItemModelName(playerid, itemid), GetPlayerItemAmount(playerid, itemid));
+							ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_INPUT, "질의", str, "확인", "뒤로");
+						}
 					}
 				}
 			}
@@ -260,9 +279,22 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				itemid = DialogData[playerid][0],
 				modelid = PlayerItemInfo[playerid][itemid][iItemmodel],
 				items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
-				weight = ItemModelInfo[modelid][imWeight];
+				weight = ItemModelInfo[modelid][imWeight],
+				weapon = GetPlayerWeapon(playerid);
 			if(response)
 			{
+				if(GetWeaponHand(ItemModelInfo[modelid][imModel]) == 'r' && listitem != 1)
+				{
+					format(str, sizeof(str), "%s은(는) 오른손 무기입니다.", ItemModelInfo[modelid][imName]);
+					SendClientMessage(playerid, COLOR_WHITE, str);
+					return 1;
+				}
+				else if(GetWeaponHand(ItemModelInfo[modelid][imModel]) == 'b' && listitem != 2)
+				{
+					format(str, sizeof(str), "%s은(는) 양손 무기입니다.", ItemModelInfo[modelid][imName]);
+					SendClientMessage(playerid, COLOR_WHITE, str);
+					return 1;
+				}
 				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
 					{
@@ -339,6 +371,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 						SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 					}
 				}
+				if(weapon) ResetPlayerWeapons(playerid);
+				if(GetWeaponHand(ItemModelInfo[modelid][imModel]) != 'n')
+					GivePlayerWeapon(playerid, ItemModelInfo[modelid][imModel], PlayerItemInfo[playerid][itemid][iAmount]);
 				strcpy(PlayerItemInfo[playerid][itemid][iSaveType], htext);
 				SavePlayerItemDataById(playerid, itemid);
 				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
@@ -396,19 +431,8 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else
 						{
-							new htext[32];
-							strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-							if(!strcmp(htext, "왼손", true))
-								RemovePlayerAttachedObject(playerid, 0);
-							else if(!strcmp(htext, "오른손", true))
-								RemovePlayerAttachedObject(playerid, 1);
-							else if(!strcmp(htext, "양손", true))
-							{
-								RemovePlayerAttachedObject(playerid, 0);
-								if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
-									SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
-							}
-							DropPlayerItem(playerid, itemid);
+						    format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetPlayerItemModelName(playerid, itemid), GetPlayerItemAmount(playerid, itemid));
+						    ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
 						}
 					}
 				}
@@ -429,6 +453,52 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
 					"가방에 넣는다.\n확인한다\n버린다.", "선택", "뒤로");
 			}
+		case 7:
+			if(response)
+			{
+				new itemid = DialogData[playerid][0],
+					amount = strval(inputtext);
+				if(amount < 1) ReshowDialog(playerid);
+				else if(amount > GetItemAmount(itemid)) amount = GetItemAmount(itemid);
+				if(!IsPlayerInRangeOfPoint(playerid, 1.0, ItemInfo[itemid][iPos][0], ItemInfo[itemid][iPos][1], ItemInfo[itemid][iPos][2])
+				|| GetPlayerVirtualWorld(playerid) != ItemInfo[itemid][iVirtualWorld])
+					return ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "주울 아이템이 근처에 있지 않습니다.", "확인", chNullString);
+				if(GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt(playerid, "pWeight"))
+				{
+					if(GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight])
+						SendClientMessage(playerid, COLOR_WHITE, "가방이 너무 무겁습니다.");
+					else
+					{
+						format(str, sizeof(str), "%s은(는) 너무 무거워서 가방에 넣을 수 없습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName]);
+						SendClientMessage(playerid, COLOR_WHITE, str);
+					}
+				}
+				else
+					GivePlayerItem(playerid, itemid, "가방", strval(inputtext));
+			}
+			else ShowLastDialog(playerid);
+		case 8:
+		    if(response)
+		    {
+		        new htext[32],
+					itemid = DialogData[playerid][0],
+					amount = strval(inputtext);
+				if(amount < 1) ReshowDialog(playerid);
+				else if(amount < GetPlayerItemAmount(playerid, itemid)) amount = GetPlayerItemAmount(playerid, itemid);
+				strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
+				if(!strcmp(htext, "왼손", true))
+					RemovePlayerAttachedObject(playerid, 0);
+				else if(!strcmp(htext, "오른손", true))
+					RemovePlayerAttachedObject(playerid, 1);
+				else if(!strcmp(htext, "양손", true))
+				{
+					RemovePlayerAttachedObject(playerid, 0);
+					if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+						SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+				}
+				DropPlayerItem(playerid, itemid, amount);
+		    }
+		    else ShowLastDialog(playerid);
 	}
 	return 1;
 }
@@ -451,6 +521,7 @@ stock CreateItemModelDataTable()
 	strcat(str, ",Position1 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
 	strcat(str, ",Position2 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
 	strcat(str, ",MaxHealth int(10) NOT NULL default '0'");
+	strcat(str, ",Hand int(1) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -474,6 +545,7 @@ stock SaveItemModelDataById(modelid)
 		ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imScale2][1]
 		ItemModelInfo[modelid][imOffset2][2], ItemModelInfo[modelid][imRot2][2], ItemModelInfo[modelid][imScale2][2]);
 	format(str, sizeof(str), "%s,MaxHealth=%d", str, ItemModelInfo[modelid][imMaxHealth]);
+	format(str, sizeof(str), "%s,Hand=%d", str, ItemModelInfo[modelid][imHand]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, modelid);
 	mysql_query(str);
 }
@@ -491,7 +563,7 @@ stock LoadItemModelData()
 	new count = GetTickCount();
 	new str[2048],
 		id,
-		receive[10][256],
+		receive[11][256],
 		idx,
 		splited[9][32];
 	mysql_query("SELECT * FROM itemmodeldata");
@@ -526,17 +598,21 @@ stock LoadItemModelData()
 		}
 		
 		ItemModelInfo[id][imMaxHealth] = strval(receive[idx++]);
+		ItemModelInfo[id][imHand] = strval(receive[idx++]);
 	}
 	mysql_free_result();
 	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
 	return 1;
 }
 //-----< AddItemModel >---------------------------------------------------------
-stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3], maxhealth)
+stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3], maxhealth, hand)
 {
 	new str[2048];
-	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2,MaxHealth) VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f',%d)",
-		modelid, name, model, zvar, weight, info, offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2], maxhealth);
+	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2,MaxHealth,Hand)");
+	format(str, sizeof(str), "%s VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f',%d,%d)", str,
+		modelid, name, model, zvar, weight, info,
+		offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2],
+		maxhealth, hand);
 	mysql_query(str);
 	return 1;
 }
@@ -559,6 +635,7 @@ stock CreateItemDataTable()
 	strcat(str, ",Pos varchar(64) NOT NULL default '0.0,0.0,0.0,0.0,0,1'");
 	strcat(str, ",Memo varchar(128) NOT NULL default ' '");
 	strcat(str, ",Health int(10) NOT NULL default '0'");
+	strcat(str, ",Amount int(10) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -574,6 +651,7 @@ stock SaveItemDataById(itemid)
 		ItemInfo[itemid][iInterior], ItemInfo[itemid][iVirtualWorld]);
 	format(str, sizeof(str), "%s,Memo='%s'", str, escape(ItemInfo[itemid][iMemo]));
 	format(str, sizeof(str), "%s,Health=%d", str, ItemInfo[itemid][iHealth]);
+	format(str, sizeof(str), "%s,Amount=%d", str, ItemInfo[itemid][iAmount]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, ItemInfo[itemid][iID]);
 	mysql_query(str);
 	return 1;
@@ -591,7 +669,7 @@ stock LoadItemData()
 {
 	new count = GetTickCount();
 	new str[1024],
-		receive[7][128],
+		receive[8][128],
 		idx,
 		splited[6][16];
 	UnloadItemData();
@@ -614,6 +692,7 @@ stock LoadItemData()
 
 		strcpy(ItemInfo[i][iMemo], receive[idx++]);
 		ItemInfo[i][iHealth] = strval(receive[idx++]);
+		ItemInfo[i][iAmount] = strval(receive[idx++]);
 
 		new Float:z = ItemInfo[i][iPos][2] + ItemModelInfo[ItemInfo[i][iItemmodel]][imZVar];
 		ItemInfo[i][iObject] = CreateDynamicObject(ItemModelInfo[ItemInfo[i][iItemmodel]][imModel],
@@ -645,12 +724,12 @@ stock UnloadItemData()
 	return 1;
 }
 //-----< CreateItem >-----------------------------------------------------------
-stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0)
+stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0, amount=1)
 {
 	new str[1024];
-	format(str, sizeof(str), "INSERT INTO itemdata (Itemmodel,Pos,Memo,Health)");
-	format(str, sizeof(str), "%s VALUES (%d,'%.4f,%.4f,%.4f,%.4f,%d,%d','%s',%d)", str,
-		itemmodel, x, y, z, a, interiorid, worldid, escape(memo), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health);
+	format(str, sizeof(str), "INSERT INTO itemdata (Itemmodel,Pos,Memo,Health,Amount)");
+	format(str, sizeof(str), "%s VALUES (%d,'%.4f,%.4f,%.4f,%.4f,%d,%d','%s',%d,%d)", str,
+		itemmodel, x, y, z, a, interiorid, worldid, escape(memo), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health, amount);
 	mysql_query(str);
 	LoadItemData();
 	return 1;
@@ -677,6 +756,16 @@ stock GetItemHealth(itemid)
 {
 	return ItemInfo[itemid][iHealth];
 }
+//-----< GetItemModelName >-----------------------------------------------------
+stock GetItemModelName(itemid)
+{
+	return ItemModelInfo[ItemInfo[itemid][iItemmodel]][iName];
+}
+//-----< GetItemAmount >--------------------------------------------------------
+stock GetItemAmount(itemid)
+{
+	return ItemInfo[itemid][iAmount];
+}
 //-----<  >---------------------------------------------------------------------
 //-----< CreatePlayerItemDataTable >--------------------------------------------
 stock CreatePlayerItemDataTable()
@@ -690,6 +779,7 @@ stock CreatePlayerItemDataTable()
 	strcat(str, ",Memo varchar(128) NOT NULL default ' '");
 	strcat(str, ",VirtualItem int(1) NOT NULL default '0'");
 	strcat(str, ",Health int(10) NOT NULL default '0'");
+	strcat(str, ",Amount int(10) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -706,6 +796,7 @@ stock SavePlayerItemDataById(playerid, itemid)
 	format(str, sizeof(str), "%s,Memo='%s'", str, escape(PlayerItemInfo[playerid][itemid][iMemo]));
 	format(str, sizeof(str), "%s,VirtualItem=%d", str, PlayerItemInfo[playerid][itemid][iVirtualItem]);
 	format(str, sizeof(str), "%s,Health=%d", str, PlayerItemInfo[playerid][itemid][iHealth]);
+	format(str, sizeof(str), "%s,Amount=%d", str, PlayerItemInfo[playerid][itemid][iAmount]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, PlayerItemInfo[playerid][itemid][iID]);
 	mysql_query(str);
 	return 1;
@@ -722,7 +813,7 @@ stock SavePlayerItemData(playerid)
 stock LoadPlayerItemData(playerid)
 {
 	new str[2048],
-		receive[8][128],
+		receive[9][128],
 		idx;
 	UnloadPlayerItemData(playerid);
 	format(str, sizeof(str), "SELECT * FROM playeritemdata WHERE Ownername='%s' AND VirtualItem=%d", GetPlayerNameA(playerid), GetPVarInt(playerid, "pAgentMode"));
@@ -742,6 +833,7 @@ stock LoadPlayerItemData(playerid)
 		strcpy(PlayerItemInfo[playerid][i][iMemo], receive[idx++]);
 		PlayerItemInfo[playerid][i][iVirtualItem] = strval(receive[idx++]);
 		PlayerItemInfo[playerid][i][iHealth] = strval(receive[idx++]);
+		PlayerItemInfo[playerid][i][iAmount] = strval(receive[idx++]);
 		
 		new modelid = PlayerItemInfo[playerid][i][iItemmodel];
 		if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
@@ -781,12 +873,12 @@ stock UnloadPlayerItemData(playerid)
 	return 1;
 }
 //-----< CreatePlayerItem >-----------------------------------------------------
-stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0)
+stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0, amount=1)
 {
 	new str[1024];
-	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem,Health)");
+	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem,Health,Amount)");
 	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s',%d,%d)", str,
-		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health);
+		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health, amount);
 	mysql_query(str);
 	LoadPlayerItemData(playerid);
 	return 1;
@@ -813,40 +905,98 @@ stock GetPlayerItemHealth(playerid, itemid)
 {
 	return PlayerItemInfo[playerid][itemid][iHealth];
 }
+//-----< GetPlayerItemModelName >-----------------------------------------------
+stock GetPlayerItemModelName(playerid, itemid)
+{
+	return ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName];
+}
+//-----< GetPlayerItemAmount >--------------------------------------------------
+stock GetPlayerItemAmount(playerid, itemid)
+{
+	return PlayerItemInfo[playerid][itemid][iAmount];
+}
 //-----<  >---------------------------------------------------------------------
 //-----< GivePlayerItem >-------------------------------------------------------
-stock GivePlayerItem(playerid, itemid, savetype[]="가방")
+stock GivePlayerItem(playerid, itemid, savetype[]="가방", amount)
 {
-	new str[128];
+	new str[128], exists;
 	if(!IsValidItemID(itemid)) return 0;
 	
-	format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s에 넣었습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], savetype);
+	if(ItemInfo[itemid][iAmount] < amount) amount = ItemInfo[itemid][iAmount];
+	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"를 %s에 넣었습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], amount, savetype);
 	SendClientMessage(playerid, COLOR_WHITE, str);
-	CreatePlayerItem(playerid, ItemInfo[itemid][iItemmodel], savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth]);
-	DestroyItem(itemid);
+	for(new i = 0; i < MAX_PLAYERITEMS; i++)
+		if(PlayerItemInfo[playerid][i][iItemmodel] == ItemInfo[itemid][iItemmodel]
+		&& !strcmp(PlayerItemInfo[playerid][i][iMemo], ItemInfo[itemid][iMemo], true))
+		{
+			PlayerItemInfo[playerid][i][iAmount] += amount;
+			SavePlayerItemDataById(playerid, i);
+			exists = true;
+			break;
+		}
+	if(!exists)
+		CreatePlayerItem(playerid, ItemInfo[itemid][iItemmodel], savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth], amount);
+	if(ItemInfo[itemid][iAmount] <= amount)
+		DestroyItem(itemid);
+	else
+	{
+		ItemInfo[itemid][iAmount] -= amount;
+		SaveItemDataById(itemid);
+	}
 	return 1;
 }
 //-----< GivePlayerItemToPlayer >-----------------------------------------------
-stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방")
+stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방", amount)
 {
-	CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth]);
-	DestroyPlayerItem(playerid, itemid);
+	new str[128], exists;
+	if(!IsValidPlayerItemID(playerid, itemid)) return 0;
+	
+	if(PlayerItemInfo[playerid][itemid][iAmount] < amount) amount = PlayerItemInfo[playerid][itemid][iAmount];
+	format(str, sizeof(str), "%s님에게 "C_GREEN"%s %d개"C_WHITE"를 드렸습니다.", GetPlayerNameA(destid), ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount);
+	SendClientMessage(playerid, COLOR_WHITE, str);
+	format(str, sizeof(str), "%s님으로부터 "C_GREEN"%s %d개"C_WHITE"를 받아 %s에 넣었습니다.", GetPlayerNameA(playerid), ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount, savetype);
+	SendClientMessage(destid, COLOR_WHITE, str);
+	for(new i = 0; i < MAX_PLAYERITEMS; i++)
+		if(PlayerItemInfo[destid][i][iItemmodel] == PlayerItemInfo[playerid][itemid][iItemmodel]
+		&& !strcmp(PlayerItemInfo[destid][i][iMemo], PlayerItemInfo[playerid][itemid][iMemo], true))
+		{
+			PlayerItemInfo[destid][i][iAmount] += amount;
+			SavePlayerItemDataById(destid, i);
+			exists = true;
+			break;
+		}
+	if(!exists)
+		CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
+	if(PlayerItemInfo[playerid][itemid][iAmount] <= amount)
+		DestroyPlayerItem(playerid, itemid);
+	else
+	{
+		PlayerItemInfo[playerid][itemid][iAmount] -= amount;
+		SavePlayerItemDataById(playerid, itemid);
+	}
 	return 1;
 }
 //-----< DropPlayerItem >-------------------------------------------------------
-stock DropPlayerItem(playerid, itemid)
+stock DropPlayerItem(playerid, itemid, amount)
 {
 	new str[128];
 	if(!IsValidPlayerItemID(playerid, itemid)) return 0;
 	
-	format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 버렸습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
+	if(PlayerItemInfo[playerid][itemid][iAmount] < amount) amount = PlayerItemInfo[playerid][itemid][iAmount];
+	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"을(를) 버렸습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount);
 	SendClientMessage(playerid, COLOR_WHITE, str);
 	new Float:x, Float:y, Float:z, Float:a;
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, a);
 	CreateItem(PlayerItemInfo[playerid][itemid][iItemmodel], x, y, z, a,
-		GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth]);
-	DestroyPlayerItem(playerid, itemid);
+		GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
+	if(PlayerItemInfo[playerid][itemid][iAmount] <= amount)
+		DestroyPlayerItem(playerid, itemid);
+	else
+	{
+		PlayerItemInfo[playerid][itemid][iAmount] -= amount;
+		SavePlayerItemDataById(playerid, itemid);
+	}
 	return 1;
 }
 //-----< GetPlayerItemsWeight >-------------------------------------------------
