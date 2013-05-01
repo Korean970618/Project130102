@@ -103,6 +103,7 @@
 	native GetWeaponSlotID(weaponid);
 	native GetWeaponHand(weaponid);
 	native ShowLastDialog(playerid);
+	native ReshowDialog(playerid, id=0);
 
 */
 
@@ -1680,6 +1681,12 @@ stock ShowLastDialog(playerid)
 	
 	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	AtLastDialog[playerid] = (id == 1) ? false : true;
+	return 1;
+}
+//-----< ReshowDialog >---------------------------------------------------------
+stock ReshowDialog(playerid, id=0)
+{
+	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
