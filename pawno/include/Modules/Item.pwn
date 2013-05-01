@@ -27,6 +27,7 @@
 	SaveItemModelData()
 	LoadItemModelData()
 	AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3])
+	GetItemModelName(modelid)
 	DestroyItemModel(modelid)
   
 	CreateItemDataTable()
@@ -39,7 +40,7 @@
 	DestroyItem(itemid)
 	SetItemHealth(itemid, health)
 	GetItemHealth(itemid)
-	GetItemModelName(itemid)
+	GetItemModelID(itemid)
 	GetItemAmount(itemid)
 	
 	CreatePlayerItemDataTable()
@@ -51,7 +52,7 @@
 	CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0, amount=1)
 	SetPlayerItemHealth(playerid, itemid, health)
 	GetPlayerItemHealth(playerid, itemid)
-	GetPlayerItemModelName(playerid, itemid)
+	GetPlayerItemModelID(playerid, itemid)
 	GetPlayerItemAmount(playerid, itemid)
 	
 	GivePlayerItem(playerid, itemid, savetype[], amount)
@@ -431,8 +432,8 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else
 						{
-						    format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetPlayerItemModelName(playerid, itemid), GetPlayerItemAmount(playerid, itemid));
-						    ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
+							format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetPlayerItemModelName(playerid, itemid), GetPlayerItemAmount(playerid, itemid));
+							ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
 						}
 					}
 				}
@@ -478,9 +479,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			}
 			else ShowLastDialog(playerid);
 		case 8:
-		    if(response)
-		    {
-		        new htext[32],
+			if(response)
+			{
+				new htext[32],
 					itemid = DialogData[playerid][0],
 					amount = strval(inputtext);
 				if(amount < 1) ReshowDialog(playerid);
@@ -497,8 +498,8 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 						SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				}
 				DropPlayerItem(playerid, itemid, amount);
-		    }
-		    else ShowLastDialog(playerid);
+			}
+			else ShowLastDialog(playerid);
 	}
 	return 1;
 }
@@ -623,6 +624,11 @@ stock DestroyItemModel(modelid)
 	format(str, sizeof(str), "DELETE FROM itemmodeldata WHERE Model=%d", modelid);
 	mysql_query(str);
 	return 1;
+}
+//-----< GetItemModelName >-----------------------------------------------------
+stock GetItemModelName(modelid)
+{
+	return ItemModelInfo[modelid][imName];
 }
 //-----<  >---------------------------------------------------------------------
 //-----< CreateItemDataTable >--------------------------------------------------
@@ -756,10 +762,10 @@ stock GetItemHealth(itemid)
 {
 	return ItemInfo[itemid][iHealth];
 }
-//-----< GetItemModelName >-----------------------------------------------------
-stock GetItemModelName(itemid)
+//-----< GetItemModelID >-------------------------------------------------------
+stock GetItemModelID(itemid)
 {
-	return ItemModelInfo[ItemInfo[itemid][iItemmodel]][iName];
+	return ItemInfo[itemid][iItemmodel];
 }
 //-----< GetItemAmount >--------------------------------------------------------
 stock GetItemAmount(itemid)
@@ -905,10 +911,10 @@ stock GetPlayerItemHealth(playerid, itemid)
 {
 	return PlayerItemInfo[playerid][itemid][iHealth];
 }
-//-----< GetPlayerItemModelName >-----------------------------------------------
+//-----< GetPlayerItemModelID >-------------------------------------------------
 stock GetPlayerItemModelName(playerid, itemid)
 {
-	return ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName];
+	return PlayerItemInfo[playerid][itemid][iItemmodel];
 }
 //-----< GetPlayerItemAmount >--------------------------------------------------
 stock GetPlayerItemAmount(playerid, itemid)

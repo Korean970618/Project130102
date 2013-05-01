@@ -766,10 +766,9 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		case 2:
 			if(response && listitem)
 			{
-				new Float:x, Float:y, Float:z, Float:a;
-				GetPlayerPos(playerid, x, y, z);
-				GetPlayerFacingAngle(playerid, a);
-				CreateItem(listitem - 1, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), chEmpty);
+				DialogData[playerid][0] = listitem - 1;
+				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 몇 개 생성하시겠습니까?", GetItemModelName(listitem - 1));
+				ShowPlayerDialog(playerid, DialogId_Admin(17), DIALOG_STYLE_INPUT, "질의", str, "확인", "뒤로");
 			}
 		case 3:
 			if(response)
@@ -1080,6 +1079,20 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 				format(str, sizeof(str), "/무기 %d", MpListData[playerid][0]);
 				OnPlayerCommandText(playerid, str);
 			}
+		}
+		case 17:
+		{
+			if(response)
+			{
+				new itemid = DialogData[playerid][0] - 1,
+					amount = strval(inputtext);
+				if(amount <= 0) ReshowDialog(playerid);
+				new Float:x, Float:y, Float:z, Float:a;
+				GetPlayerPos(playerid, x, y, z);
+				GetPlayerFacingAngle(playerid, a);
+				CreateItem(itemid, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), chEmpty, amount);
+			}
+			else ShowLastDialog(playerid);
 		}
 	}
 	return 1;
