@@ -27,6 +27,7 @@
 	SaveItemModelData()
 	LoadItemModelData()
 	GetItemModelName(modelid)
+	UseItemModel(playerid)
   
 	CreateItemDataTable()
 	SaveItemDataById(itemid)
@@ -238,7 +239,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
 				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
+					"사용한다.\n꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
 		case 1:
 		{
@@ -249,14 +250,24 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				{
 					case 0:
 					{
-						ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-							"왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "뒤로");
+						new modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
+						if(!UseItemModel(playerid, modelid))
+							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
+						if(!--PlayerItemInfo[playerid][itemid][iAmount])
+							DestroyPlayerItem(playerid, itemid);
+						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 사용하여 "C_GREEN"%s %d"C_WHITE"의 효과를 받았습니다.", ItemModelInfo[modelid][imName], ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
+						SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 1:
 					{
-						ShowPlayerItemInfo(playerid, DialogId_Item(5), itemid);
+						ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+							"왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "뒤로");
 					}
 					case 2:
+					{
+						ShowPlayerItemInfo(playerid, DialogId_Item(5), itemid);
+					}
+					case 3:
 					{
 						new Float:x, Float:y, Float:z;
 						GetPlayerVelocity(playerid, x, y, z);
@@ -380,8 +391,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
 				SendClientMessage(playerid, COLOR_WHITE, str);
 			}
-			else ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
+			else ShowLastDialog(playerid);
 		}
 		case 3:
 			if(response)
@@ -500,6 +510,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				DropPlayerItem(playerid, itemid, amount);
 			}
 			else ShowLastDialog(playerid);
+		case 9: ShowLastDialog(playerid);
 	}
 	return 1;
 }
@@ -615,6 +626,18 @@ stock LoadItemModelData()
 stock GetItemModelName(modelid)
 {
 	return ItemModelInfo[modelid][imName];
+}
+//-----< UseItemModel >---------------------------------------------------------
+stock UseItemModel(playerid, modelid)
+{
+	new Effect[32],
+		amount = ItemModelInfo[modelid][imEffectAmount];
+	strcpy(Effect, ItemModelInfo[modelid][imEffect]);
+	
+	if(!strcmp(Effect, "치료", true))
+		SetPlayerHealth(playerid, GetPlayerHealthA(playerid) + amount);
+	else return 0;
+	return 1;
 }
 //-----<  >---------------------------------------------------------------------
 //-----< CreateItemDataTable >--------------------------------------------------

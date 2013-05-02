@@ -590,7 +590,7 @@ public pTakeDamageHandler_Player(playerid, issuerid, Float:amount, weaponid)
 
 	if(health - damage < 1)
 		KillerId[playerid] = issuerid;
-	GivePlayerDamage(playerid, damage);
+	GivePlayerHealth(playerid, -damage);
 	DamageLog(playerid, "Å¸°Ý", issuerid, weaponid, damage);
 	return 1;
 }

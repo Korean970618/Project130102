@@ -94,7 +94,7 @@
 	native ResetPlayerDialogData(playerid);
 	native strtab(dest[], str[], maxlength);
 	native valstr_(value);
-	native GivePlayerDamage(playerid, Float:amount);
+	native GivePlayerHealth(playerid, Float:amount);
 	native TextDrawSetPosition(text, Float:x, Float:y);
 	native Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 	native GetWeaponObjectModelID(weaponid);
@@ -1518,41 +1518,33 @@ stock valstr_(value)
 	valstr(str, value);
 	return str;
 }
-//-----< GivePlayerDamage >-----------------------------------------------------
-stock GivePlayerDamage(playerid, Float:amount)
+//-----< GivePlayerHealth >-----------------------------------------------------
+stock GivePlayerHealth(playerid, Float:amount)
 {
 	new Float:armour, Float:health;
 	GetPlayerArmour(playerid, armour);
 	GetPlayerHealth(playerid, health);
 	if(amount > 0)
 	{
-		if(armour > 0)
+		if(health + amount > 100)
 		{
-			if(armour >= amount)
-			{
-		   		SetPlayerArmour(playerid, armour - amount);
-			}
-			else
-			{
-				SetPlayerArmour(playerid, 0);
-				SetPlayerHealth(playerid, health + (armour - amount));
-			}
+			SetPlayerHealth(playerid, 100);
+			SetPlayerArmour(playerid, armour + (100 - (health + amount)));
 		}
-		else
+		else SetPlayerHealth(playerid, health + amount);
+	}
+	else if(armour > 0)
+	{
+		if(armour + amount < 0)
 		{
-			SetPlayerHealth(playerid, health - amount);
+			SetPlayerArmour(playerid, 0);
+			SetPlayerHealth(playerid, health + (armour + amount));
 		}
+		else SetPlayerArmour(playerid, armour + amount);
 	}
 	else
 	{
-		if(armour > 0)
-		{
-		   	SetPlayerArmour(playerid, armour - amount);
-		}
-		else
-		{
-			SetPlayerHealth(playerid, health - amount);
-		}
+		SetPlayerArmour(playerid, health + amount);
 	}
 	return 1;
 }
