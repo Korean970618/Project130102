@@ -178,6 +178,9 @@ public pConnectHandler_Item(playerid)
 		PlayerItemInfo[playerid][i][iVirtualWorld] = 0;
 		strcpy(PlayerItemInfo[playerid][i][iSaveType], chNullString);
 		strcpy(PlayerItemInfo[playerid][i][iMemo], chNullString);
+		PlayerItemInfo[playerid][i][iVirtualItem] = false;
+		PlayerItemInfo[playerid][i][iHealth] = 0;
+		PlayerItemInfo[playerid][i][iAmount] = 0;
 	}
 	WeaponItem[playerid] = 0;
 	return 1;
@@ -239,7 +242,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
 				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"사용한다.\n꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
+					"꺼낸다.\n사용한다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
 		case 1:
 		{
@@ -250,18 +253,19 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				{
 					case 0:
 					{
+						ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+							"왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "뒤로");
+					}
+					case 1:
+					{
 						new modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
 						if(!UseItemModel(playerid, modelid))
 							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
 						if(!--PlayerItemInfo[playerid][itemid][iAmount])
 							DestroyPlayerItem(playerid, itemid);
+						SavePlayerItemDataById(playerid, itemid);
 						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 사용하여 "C_GREEN"%s %d"C_WHITE"의 효과를 받았습니다.", ItemModelInfo[modelid][imName], ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
 						SendClientMessage(playerid, COLOR_WHITE, str);
-					}
-					case 1:
-					{
-						ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-							"왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "뒤로");
 					}
 					case 2:
 					{
@@ -387,7 +391,6 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				if(GetWeaponHand(ItemModelInfo[modelid][imModel]) != 'n')
 					GivePlayerWeapon(playerid, ItemModelInfo[modelid][imModel], PlayerItemInfo[playerid][itemid][iAmount]);
 				GivePlayerItemToPlayer(playerid, playerid, itemid, htext, 1);
-				SavePlayerItemDataById(playerid, itemid);
 				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
 				SendClientMessage(playerid, COLOR_WHITE, str);
 			}
@@ -400,7 +403,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
 				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"가방에 넣는다.\n확인한다\n버린다.", "선택", "뒤로");
+					"가방에 넣는다.\n사용한다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
 		case 4:
 		{
@@ -423,16 +426,26 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
 								SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 						}
-						strcpy(PlayerItemInfo[playerid][itemid][iSaveType], "가방");
-						SavePlayerItemDataById(playerid, itemid);
+						GivePlayerItemToPlayer(playerid, playerid, itemid, "가방", 1);
 						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 가방에 넣었습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
 						SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 1:
 					{
-						ShowPlayerItemInfo(playerid, DialogId_Item(6), itemid);
+						new modelid = ItemInfo[itemid][iItemmodel];
+						if(!UseItemModel(playerid, modelid))
+							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
+						if(!--ItemInfo[itemid][iAmount])
+							DestroyItem(itemid);
+						SaveItemDataById(itemid);
+						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 사용하여 "C_GREEN"%s %d"C_WHITE"의 효과를 받았습니다.", ItemModelInfo[modelid][imName], ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
+						SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 2:
+					{
+						ShowPlayerItemInfo(playerid, DialogId_Item(6), itemid);
+					}
+					case 3:
 					{
 						new Float:x, Float:y, Float:z;
 						GetPlayerVelocity(playerid, x, y, z);
@@ -453,16 +466,12 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		case 5:
 			if(!response)
 			{
-				new itemid = DialogData[playerid][0];
-				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"꺼낸다.\n확인한다.\n버린다.", "선택", "뒤로");
+				ShowLastDialog(playerid);
 			}
 		case 6:
 			if(!response)
 			{
-				new itemid = DialogData[playerid][0];
-				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
-					"가방에 넣는다.\n확인한다\n버린다.", "선택", "뒤로");
+				ShowLastDialog(playerid);
 			}
 		case 7:
 			if(response)
@@ -913,6 +922,7 @@ stock SetPlayerItemHealth(playerid, itemid, health)
 	if(!health)
 		return DestroyPlayerItem(playerid, itemid);
 	PlayerItemInfo[playerid][itemid][iHealth] = health;
+	SavePlayerItemDataById(playerid, itemid);
 	return 1;
 }
 //-----< GetPlayerItemHealth >--------------------------------------------------
@@ -1002,15 +1012,15 @@ stock DropPlayerItem(playerid, itemid, amount)
 	if(PlayerItemInfo[playerid][itemid][iAmount] < amount) amount = PlayerItemInfo[playerid][itemid][iAmount];
 	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"을(를) 버렸습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount);
 	SendClientMessage(playerid, COLOR_WHITE, str);
-	new Float:x, Float:y, Float:z, Float:a;
-	GetPlayerPos(playerid, x, y, z);
-	GetPlayerFacingAngle(playerid, a);
-	CreateItem(PlayerItemInfo[playerid][itemid][iItemmodel], x, y, z, a,
-		GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
 	if(PlayerItemInfo[playerid][itemid][iAmount] <= amount)
 		DestroyPlayerItem(playerid, itemid);
 	else
 	{
+		new Float:x, Float:y, Float:z, Float:a;
+		GetPlayerPos(playerid, x, y, z);
+		GetPlayerFacingAngle(playerid, a);
+		CreateItem(PlayerItemInfo[playerid][itemid][iItemmodel], x, y, z, a,
+			GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
 		PlayerItemInfo[playerid][itemid][iAmount] -= amount;
 		SavePlayerItemDataById(playerid, itemid);
 	}
