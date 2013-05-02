@@ -104,6 +104,8 @@
 	native GetWeaponHand(weaponid);
 	native ShowLastDialog(playerid);
 	native ReshowDialog(playerid, id=0);
+	native TimeConvert(returntype, second);
+	native TimeMeasure(returntype, second);
 
 */
 
@@ -1680,5 +1682,46 @@ stock ReshowDialog(playerid, id=0)
 {
 	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	return 1;
+}
+//-----< TimeConvert >----------------------------------------------------------
+stock TimeConvert(returntype, second)
+{
+	switch(returntype)
+	{
+		case 'd': return floatround(second/(60*60*24), floatround_floor);
+		case 'h': return floatround(second/(60*60), floatround_floor);
+		case 'm': return floatround(second/60, floatround_floor);
+	}
+	return second;
+}
+//-----< TimeMeasure >----------------------------------------------------------
+stock TimeMeasure(returntype, second)
+{
+	new division = 1,
+		measureval,
+		returnvalue;
+	switch(returntype)
+	{
+		case 'd':
+		{
+			division = 60*60*24;
+		}
+		case 'h':
+		{
+			division = 60*60;
+			measureval = 24;
+		}
+		case 'm':
+		{
+			division = 60;
+			measureval = 60;
+		}
+	}
+	returnvalue = floatround(second/division, floatround_floor);
+	while(division > measureval && measureval)
+	{
+		returnvalue -= measureval;
+	}
+	return returnvalue;
 }
 //-----<  >---------------------------------------------------------------------
