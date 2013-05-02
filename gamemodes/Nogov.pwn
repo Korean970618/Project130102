@@ -39,8 +39,9 @@
 
 //-----< Pre-Defines
 #define SCRIPT_NAME				"Nogov"
-#define SCRIPT_VERSION			"0.0.1"
-#define SERVER_HOSTNAME			"[NOGOV] pureunba.tistory.com"
+#define SCRIPT_VERSION			"Alpha"
+#define SERVER_HOSTNAME			"[Nogov] GTA자료실 운영 서바이벌 게임"
+#define SERVER_MAPNAME			"San Fierro"
 
 
 //-----< Includes
@@ -155,8 +156,17 @@ forward OnMpListResponse(playerid, mplistid, selecteditem);
 main()
 {
 	AntiDeAMX();
+	
+	new str[256];
+	format(str, sizeof(str), "hostname %s", SERVER_HOSTNAME);
+	SendRconCommand(str);
+	format(str, sizeof(str), "mapname %s", SERVER_MAPNAME);
+	SendRconCommand(str);
+	format(str, sizeof(str), "%s %s", SCRIPT_NAME, SCRIPT_VERSION);
+	SetGameModeText(str);
+	
 	printf("\n---------------------------------\n");
-	printf(" %s v%s\n", SCRIPT_NAME, SCRIPT_VERSION);
+	printf(" %s %s\n", SCRIPT_NAME, SCRIPT_VERSION);
 	printf(" \tCoded by sBum");
 	printf(" \tpureunba.tistory.com\n");
 	printf("---------------------------------\n");
