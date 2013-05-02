@@ -26,9 +26,7 @@
 	SaveItemModelDataById(modelid)
 	SaveItemModelData()
 	LoadItemModelData()
-	AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3])
 	GetItemModelName(modelid)
-	DestroyItemModel(modelid)
   
 	CreateItemDataTable()
 	SaveItemDataById(itemid)
@@ -117,7 +115,9 @@ enum eItemModelInfo
 	Float:imRot2[3],
 	Float:imScale2[3],
 	imMaxHealth,
-	imHand
+	imHand,
+	imEffect[32],
+	imEffectAmount
 }
 new ItemModelInfo[100][eItemModelInfo];
 /*new ItemModelInfo[2][eItemModelInfo] =
@@ -375,7 +375,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				if(weapon) ResetPlayerWeapons(playerid);
 				if(GetWeaponHand(ItemModelInfo[modelid][imModel]) != 'n')
 					GivePlayerWeapon(playerid, ItemModelInfo[modelid][imModel], PlayerItemInfo[playerid][itemid][iAmount]);
-				strcpy(PlayerItemInfo[playerid][itemid][iSaveType], htext);
+				GivePlayerItemToPlayer(playerid, playerid, itemid, htext, 1);
 				SavePlayerItemDataById(playerid, itemid);
 				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
 				SendClientMessage(playerid, COLOR_WHITE, str);
@@ -523,6 +523,8 @@ stock CreateItemModelDataTable()
 	strcat(str, ",Position2 varchar(256) NOT NULL default '0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0'");
 	strcat(str, ",MaxHealth int(10) NOT NULL default '0'");
 	strcat(str, ",Hand int(1) NOT NULL default '0'");
+	strcat(str, ",Effect varchar(32) NOT NULL default ' '");
+	strcat(str, ",EffectAmount int(10) NOT NULL default '0'");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	return 1;
@@ -547,6 +549,8 @@ stock SaveItemModelDataById(modelid)
 		ItemModelInfo[modelid][imOffset2][2], ItemModelInfo[modelid][imRot2][2], ItemModelInfo[modelid][imScale2][2]);
 	format(str, sizeof(str), "%s,MaxHealth=%d", str, ItemModelInfo[modelid][imMaxHealth]);
 	format(str, sizeof(str), "%s,Hand=%d", str, ItemModelInfo[modelid][imHand]);
+	format(str, sizeof(str), "%s,Effect='%s'", str, escape(ItemModelInfo[modelid][imEffect]));
+	format(str, sizeof(str), "%s,EffectAmount=%d", str, ItemModelInfo[modelid][imEffectAmount]);
 	format(str, sizeof(str), "%s WHERE ID=%d", str, modelid);
 	mysql_query(str);
 }
@@ -564,7 +568,7 @@ stock LoadItemModelData()
 	new count = GetTickCount();
 	new str[2048],
 		id,
-		receive[11][256],
+		receive[12][256],
 		idx,
 		splited[9][32];
 	mysql_query("SELECT * FROM itemmodeldata");
@@ -600,29 +604,11 @@ stock LoadItemModelData()
 		
 		ItemModelInfo[id][imMaxHealth] = strval(receive[idx++]);
 		ItemModelInfo[id][imHand] = strval(receive[idx++]);
+		strcpy(ItemModelInfo[id][imEffect], receive[idx++]);
+		ItemModelInfo[id][imEffectAmount] = strval(receive[idx++]);
 	}
 	mysql_free_result();
 	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
-	return 1;
-}
-//-----< AddItemModel >---------------------------------------------------------
-stock AddItemModel(modelid, name[], model, Float:zvar, weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3], maxhealth, hand)
-{
-	new str[2048];
-	format(str, sizeof(str), "INSERT INTO itemmodeldata (ID,Name,Model,ZVar,Weight,Info,Position1,Position2,MaxHealth,Hand)");
-	format(str, sizeof(str), "%s VALUES (%d,%s,%d,%.4f,%d,%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f','%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f',%d,%d)", str,
-		modelid, name, model, zvar, weight, info,
-		offset1[0], rot1[0], scale1[0], offset1[1], rot1[1], scale1[1], offset1[2], rot1[2], scale1[2], offset2[0], rot2[0], scale2[0], offset2[1], rot2[1], scale2[1], offset2[2], rot2[2], scale2[2],
-		maxhealth, hand);
-	mysql_query(str);
-	return 1;
-}
-//-----< DestroyItemModel >-----------------------------------------------------
-stock DestroyItemModel(modelid)
-{
-	new str[1024];
-	format(str, sizeof(str), "DELETE FROM itemmodeldata WHERE Model=%d", modelid);
-	mysql_query(str);
 	return 1;
 }
 //-----< GetItemModelName >-----------------------------------------------------
@@ -923,7 +909,7 @@ stock GetPlayerItemAmount(playerid, itemid)
 }
 //-----<  >---------------------------------------------------------------------
 //-----< GivePlayerItem >-------------------------------------------------------
-stock GivePlayerItem(playerid, itemid, savetype[]="가방", amount)
+stock GivePlayerItem(playerid, itemid, savetype[], amount)
 {
 	new str[128], exists;
 	if(!IsValidItemID(itemid)) return 0;
@@ -933,7 +919,8 @@ stock GivePlayerItem(playerid, itemid, savetype[]="가방", amount)
 	SendClientMessage(playerid, COLOR_WHITE, str);
 	for(new i = 0; i < MAX_PLAYERITEMS; i++)
 		if(PlayerItemInfo[playerid][i][iItemmodel] == ItemInfo[itemid][iItemmodel]
-		&& !strcmp(PlayerItemInfo[playerid][i][iMemo], ItemInfo[itemid][iMemo], true))
+		&& !strcmp(PlayerItemInfo[playerid][i][iMemo], ItemInfo[itemid][iMemo], true)
+		&& GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype))
 		{
 			PlayerItemInfo[playerid][i][iAmount] += amount;
 			SavePlayerItemDataById(playerid, i);
@@ -952,7 +939,7 @@ stock GivePlayerItem(playerid, itemid, savetype[]="가방", amount)
 	return 1;
 }
 //-----< GivePlayerItemToPlayer >-----------------------------------------------
-stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방", amount)
+stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[], amount)
 {
 	new str[128], exists;
 	if(!IsValidPlayerItemID(playerid, itemid)) return 0;
@@ -964,7 +951,8 @@ stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[]="가방", amount
 	SendClientMessage(destid, COLOR_WHITE, str);
 	for(new i = 0; i < MAX_PLAYERITEMS; i++)
 		if(PlayerItemInfo[destid][i][iItemmodel] == PlayerItemInfo[playerid][itemid][iItemmodel]
-		&& !strcmp(PlayerItemInfo[destid][i][iMemo], PlayerItemInfo[playerid][itemid][iMemo], true))
+		&& !strcmp(PlayerItemInfo[destid][i][iMemo], PlayerItemInfo[playerid][itemid][iMemo], true)
+		&& GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType]) == GetItemSaveTypeCode(savetype))
 		{
 			PlayerItemInfo[destid][i][iAmount] += amount;
 			SavePlayerItemDataById(destid, i);
@@ -1020,18 +1008,20 @@ stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 	new str[2048], tmp[16], idx = 1;
 	strtab(str, "번호", 5);
 	strtab(str, "이름", 16);
-	strcat(str, "무게");
+	strtab(str, "무게", 5);
+	strcat(str, "수량");
 	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 		if(IsValidPlayerItemID(destid, i)
 		&&(GetItemSaveTypeCode(savetype) == GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType])
 		|| !strcmp(savetype, "All", true)))
 		{
+			new modelid = PlayerItemInfo[destid][i][iItemmodel];
 			strcat(str, "\n");
 			format(tmp, sizeof(tmp), "%04d", idx);
 			strtab(str, tmp, 5);
-			strtab(str, ItemModelInfo[PlayerItemInfo[destid][i][iItemmodel]][imName], 16);
-			format(tmp, sizeof(tmp), "%d", ItemModelInfo[PlayerItemInfo[destid][i][iItemmodel]][imWeight]);
-			strcat(str, tmp);
+			strtab(str, ItemModelInfo[modelid][imName], 16);
+			strtab(str, valstr_(ItemModelInfo[modelid][imWeight]), 5);
+			strcat(str, valstr_(PlayerItemInfo[destid][i][iAmount]));
 			DialogData[playerid][idx++] = i;
 		}
 	if(!strcmp(savetype, "All", true))
@@ -1043,15 +1033,19 @@ stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 //-----< ShowPlayerItemInfo >---------------------------------------------------
 stock ShowPlayerItemInfo(playerid, dialogid, itemid)
 {
-	new str[512];
+	new str[512],
+		modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
 	strtab(str, "이름", 5);
-	strcat(str, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
+	strcat(str, ItemModelInfo[modelid][imName]);
 	strcat(str, "\n");
 	strtab(str, "무게", 5);
-	format(str, sizeof(str), "%s%d", str, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imWeight]);
+	format(str, sizeof(str), "%s%d", str, ItemModelInfo[modelid][imWeight]);
+	strcat(str, "\n");
+	strtab(str, "효과", 5);
+	format(str, sizeof(str), "%s%s(%d)", str, ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
 	strcat(str, "\n");
 	strtab(str, "설명", 5);
-	strcat(str, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imInfo]);
+	strcat(str, ItemModelInfo[modelid][imInfo]);
 	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_MSGBOX, "아이템 정보", str, "확인", "뒤로");
 	return 1;
 }
@@ -1062,7 +1056,7 @@ stock ShowItemModelList(playerid, dialogid)
 	strtab(str, "번호", 5);
 	strtab(str, "이름", 16);
 	strtab(str, "무게", 5);
-	strcat(str, "설명");
+	strcat(str, "효과");
 	for(new i = 0; i < sizeof(ItemModelInfo); i++)
 	{
 		strcat(str, "\n");
@@ -1071,7 +1065,8 @@ stock ShowItemModelList(playerid, dialogid)
 		strtab(str, ItemModelInfo[i][imName], 16);
 		format(tmp, sizeof(tmp), "%d", ItemModelInfo[i][imWeight]);
 		strtab(str, tmp, 5);
-		strcat(str, ItemModelInfo[i][imInfo]);
+		format(tmp, sizeof(tmp), "%s(%d)", ItemModelInfo[i][imEffect], ItemModelInfo[i][imEffectAmount]);
+		strcat(str, tmp);
 	}
 	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "아이템 목록", str, "확인", "뒤로");
 	return 1;
