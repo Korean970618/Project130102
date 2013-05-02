@@ -619,8 +619,8 @@ stock CreatePlayerDataTable()
 	strcat(str, ",Reason varchar(128) NOT NULL default ' '");
 	strcat(str, ",Date varchar(16) NOT NULL default ' '");
 	strcat(str, ",Type int(1) NOT NULL default '0'");
-	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ");
-	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
+	strcat(str, ",Time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
+	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
 	strcpy(str, "CREATE TABLE IF NOT EXISTS logintrylog (");
@@ -630,7 +630,7 @@ stock CreatePlayerDataTable()
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",Success int(1) NOT NULL default '0'");
 	strcat(str, ",Checked int(1) NOT NULL default '0'");
-	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
+	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
 	strcpy(str, "CREATE TABLE IF NOT EXISTS damagelog (");
@@ -641,7 +641,7 @@ stock CreatePlayerDataTable()
 	strcat(str, ",Issuer varchar(32) NOT NULL default ' '");
 	strcat(str, ",WeaponID int(3) NOT NULL default '0'");
 	strcat(str, ",Damage float(16,4) NOT NULL default '0.0'");
-	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
+	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
 	return 1;
