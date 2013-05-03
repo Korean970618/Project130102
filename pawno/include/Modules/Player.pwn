@@ -997,7 +997,7 @@ stock ShowPlayerLoginTryLog(playerid, destid)
 		rows, receive[6][32], idx,
 		date[32], ip[15], success, checked;
 	format(caption, sizeof(caption), "%s 로그인 기록 "C_BLUE"(현재 IP: %s)", GetPlayerNameA(destid), GetPlayerIpA(destid));
-	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s'", GetPlayerNameA(destid));
+	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s' ORDER BY Date DESC", GetPlayerNameA(destid));
 	mysql_query(str);
 	mysql_store_result();
 	rows = mysql_num_rows();
@@ -1032,13 +1032,18 @@ stock ShowPlayerLoginTryLog(playerid, destid)
 				strcat(info, C_GREY);
 			strtab(info, date, 32);
 			if(success)
-				strtab(info, "성공", 4);
+				strtab(info, ""C_BLUE"성공", 4);
 			else
-				strtab(info, "실패", 4);
+				strtab(info, ""C_RED"실패", 4);
 		}
 	}
-	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
 	mysql_free_result();
+	if(playerid == destid)
+	{
+		format(str, sizeof(str), "UPDATE logintrylog SET Checked=1 WHERE Name='%s' AND Checked=0", GetPlayerNameA(destid));
+		mysql_query(str);
+	}
+	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
 	return 1;
 }
 //-----< ShowPlayerDamageLog >--------------------------------------------------
@@ -1048,7 +1053,7 @@ stock ShowPlayerDamageLog(playerid, destid)
 		caption[128], info[2048],
 		rows, receive[7][32], idx,
 		date[32], status[4], issuer[MAX_PLAYER_NAME], weaponid, Float:damage;
-	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s'", GetPlayerNameA(destid));
+	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s' ORDER BY Date DESC", GetPlayerNameA(destid));
 	mysql_query(str);
 	mysql_store_result();
 	rows = mysql_num_rows();
@@ -1090,8 +1095,8 @@ stock ShowPlayerDamageLog(playerid, destid)
 			format(info, sizeof(info), "%s%.4f", info, damage);
 		}
 	}
-	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
 	mysql_free_result();
+	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
