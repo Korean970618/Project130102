@@ -75,7 +75,7 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	KillerId[MAX_PLAYERS],
 	PlayerData[MAX_PLAYERS][MAX_PLAYER_DATAS][ePlayerData],
 	NumSaveDatas[MAX_PLAYERS],
-	LoginTextDraw[5];
+	Text:LoginTextDraw[5];
 
 
 
