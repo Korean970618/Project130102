@@ -75,7 +75,8 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	KillerId[MAX_PLAYERS],
 	PlayerData[MAX_PLAYERS][MAX_PLAYER_DATAS][ePlayerData],
 	NumSaveDatas[MAX_PLAYERS],
-	Text:LoginTextDraw[5];
+	Text:LoginTextDraw[5],
+	ImmunityTime[MAX_PLAYERS];
 
 
 
@@ -184,6 +185,7 @@ public pConnectHandler_Player(playerid)
 		PlayerData[playerid][i][pdSave] = false;
 	}
 	NumSaveDatas[playerid] = 0;
+	ImmunityTime[playerid] = 0;
 
 	new str[512], receive[4][128];
 	for(new i; i < 20; i++)
@@ -430,6 +432,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					InsertPlayerData(playerid, "pPower", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
 					InsertPlayerData(playerid, "pHealth", PLAYER_VARTYPE_FLOAT, 0, 100.0, chNullString);
 					InsertPlayerData(playerid, "pNickname", PLAYER_VARTYPE_STRING, 0, 0.0, "¹Ì»ó");
+					InsertPlayerData(playerid, "pImmunity", PLAYER_VARTYPE_INT, GetGVarInt("DefaultImmunity"));
 					
 					SetPVarInt(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
