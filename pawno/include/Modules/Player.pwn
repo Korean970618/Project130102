@@ -427,10 +427,10 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					InsertPlayerData(playerid, "pRegDate", PLAYER_VARTYPE_STRING, 0, 0.0, str);
 					InsertPlayerData(playerid, "pPassword", PLAYER_VARTYPE_STRING, 0, 0.0, inputtext, "SHA1");
 					InsertPlayerData(playerid, "pIP", PLAYER_VARTYPE_STRING, 0, 0.0, GetPlayerIpA(playerid));
-					InsertPlayerData(playerid, "pSkin", PLAYER_VARTYPE_INT, 29, 0.0, chNullString);
-					InsertPlayerData(playerid, "pWeight", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
-					InsertPlayerData(playerid, "pPower", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
-					InsertPlayerData(playerid, "pHealth", PLAYER_VARTYPE_FLOAT, 0, 100.0, chNullString);
+					InsertPlayerData(playerid, "pSkin", PLAYER_VARTYPE_INT, GetGVarInt("DefaultSkin"), 0.0, chNullString);
+					InsertPlayerData(playerid, "pWeight", PLAYER_VARTYPE_INT, GetGVarInt("DefaultWeight"), 0.0, chNullString);
+					InsertPlayerData(playerid, "pPower", PLAYER_VARTYPE_INT, GetGVarInt("DefaultPower"), 0.0, chNullString);
+					InsertPlayerData(playerid, "pHealth", PLAYER_VARTYPE_FLOAT, 0, GetGVarFloat("DefaultHealth"), chNullString);
 					InsertPlayerData(playerid, "pNickname", PLAYER_VARTYPE_STRING, 0, 0.0, "¹Ì»ó");
 					InsertPlayerData(playerid, "pImmunity", PLAYER_VARTYPE_INT, GetGVarInt("DefaultImmunity"));
 					
