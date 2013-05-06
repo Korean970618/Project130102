@@ -365,6 +365,10 @@ public pSpawnHandler_Player(playerid)
 		SetPlayerVirtualWorld(playerid, DeadVirtualWorld[playerid]);
 		DeadAnim[playerid] = random(4);
 	}
+	
+	if(!strlen(GetPVarString(playerid, "pNickname")) || !strcmp(GetPVarString(playerid, "pNickname"), "미상", true))
+		ShowPlayerDialog(playerid, DialogId_Player(7), DIALOG_STYLE_INPUT, "질의", "게임에서 사용할 닉네임을 입력하세요. "C_RED"(16Byte 이내)", "확인", chNullString);
+	
 	return 1;
 }
 //-----< pCommandTextHandler >--------------------------------------------------
@@ -425,6 +429,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					InsertPlayerData(playerid, "pWeight", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
 					InsertPlayerData(playerid, "pPower", PLAYER_VARTYPE_INT, 50, 0.0, chNullString);
 					InsertPlayerData(playerid, "pHealth", PLAYER_VARTYPE_FLOAT, 0, 100.0, chNullString);
+					InsertPlayerData(playerid, "pNickname", PLAYER_VARTYPE_STRING, 0, 0.0, "미상");
 					
 					SetPVarInt(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
@@ -531,6 +536,18 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 			}
 			else ShowLastDialog(playerid);
 		}
+		case 7:
+		{
+			if(strlen(inputtext) > 16)
+				return ShowPlayerDialog(playerid, DialogId_Player(8), DIALOG_STYLE_MSGBOX, "경고", "닉네임은 "C_RED"16Byte 이내"C_WHITE"로 입력하세요.", "확인", chNullString);
+			if(strfind(inputtext, "{", true) != -1)
+				return ShowPlayerDialog(playerid, DialogId_Player(8), DIALOG_STYLE_MSGBOX, "경고", "사용할 수 없는 문자가 포함되어 있습니다.", "확인", chNullString);
+			SetPVarString(playerid, "pNickname", inputtext);
+			format(str, sizeof(str), "이제 당신의 닉네임은 "C_ORANGE"%s"C_WHITE"입니다.", inputtext);
+			ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", str, "확인", chNullString);
+		}
+		case 8:
+			ShowPlayerDialog(playerid, DialogId_Player(7), DIALOG_STYLE_INPUT, "질의", "게임에서 사용할 닉네임을 입력하세요. "C_RED"(16Byte 이내)", "확인", chNullString);
 	}
 	return 1;
 }
