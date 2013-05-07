@@ -222,6 +222,7 @@ stock Float:SetGVarFloat(varname[], Float:value)
 	return value;
 }
 //-----< GetGVarFloat >---------------------------------------------------------
+forward Float:GetGVarFloat(varname[]);
 stock Float:GetGVarFloat(varname[])
 {
 	new Float:value;

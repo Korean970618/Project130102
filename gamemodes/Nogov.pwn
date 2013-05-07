@@ -66,6 +66,7 @@
 #include "Modules/Grant.pwn"
 #include "Modules/Cheat.pwn"
 #include "Modules/Remote.pwn"
+#include "Modules/BadWord.pwn"
 
 
 
@@ -189,6 +190,7 @@ public OnGameModeInit()
 	AddHandler("Admin",				pCommandTextHandler, dResponseHandler, mplResponseHandler);
 	AddHandler("Animation",			pCommandTextHandler);
 	AddHandler("Remote",			pConnectHandler, pSpawnHandler, pDisconnectHandler, pUpdateHandler, pTextHandler, pCommandTextHandler, pKeyStateChangeHandler);
+	AddHandler("BadWord",			gInitHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);
 	Timer_OneSecTimer = GetTickCount();
