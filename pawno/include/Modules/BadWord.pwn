@@ -50,6 +50,7 @@ forward gInitHandler_BadWord();
 public gInitHandler_BadWord()
 {
 	CreateBadWordDataTable();
+	LoadBadWordData();
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -64,7 +65,7 @@ stock CreateBadWordDataTable()
 	
 	strcpy(str, "CREATE TABLE IF NOT EXISTS badworddata (");
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
-	strcat(str, ",Word varchar(64) NOT NULL default ' '");
+	strcat(str, ",Word varchar(64) NOT NULL default ' ' UNIQUE");
 	strcat(str, ") ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
 	
