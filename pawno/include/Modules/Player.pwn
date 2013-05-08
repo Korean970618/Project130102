@@ -187,6 +187,8 @@ public pConnectHandler_Player(playerid)
 	}
 	NumSaveDatas[playerid] = 0;
 	ImmunityTime[playerid] = 0;
+	
+	SetPlayerColor(playerid, 0xFFFFFF00);
 
 	new str[512], receive[4][128];
 	for(new i; i < 20; i++)
