@@ -98,7 +98,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new help[2048];
 		strcat(help, ""C_PASTEL_YELLOW"- 유저 -"C_WHITE"\n\
 		/체력, /아머, /정보수정, /정보검사, /인테리어, /버추얼월드, /스킨, /스킨설정, /리스폰, /얼림, /녹임\n\
-		/무기, /명령어권한부여, /명령어권한회수, /고정가속도, /데미지기록\n\
+		/무기, /명령어권한부여, /명령어권한회수, /고정가속도, /데미지기록열람, /로그인기록열람\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 행동 -"C_WHITE"\n\
 		/날기, /클로킹\n\
@@ -393,15 +393,26 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		SendClientMessage(playerid, COLOR_YELLOW, str);
 		return 1;
 	}
-	else if(!strcmp(cmd, "/데미지기록", true))
+	else if(!strcmp(cmd, "/데미지기록열람", true))
 	{
 		cmd = strtok(cmdtext, idx);
 		if(!strlen(cmd))
-			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /데미지기록 [플레이어]");
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /데미지기록열람 [플레이어]");
 		destid = ReturnUser(cmd);
 		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		ShowPlayerDamageLog(playerid, destid);
+		return 1;
+	}
+	else if(!strcmp(cmd, "/로그인기록열람", true))
+	{
+		cmd = strtok(cmdtext, idx);
+		if(!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /로그인기록열람 [플레이어]");
+		destid = ReturnUser(cmd);
+		if(!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		ShowPlayerLoginTryLog(playerid, destid);
 		return 1;
 	}
 	//

@@ -553,6 +553,8 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 		}
 		case 8:
 			ShowPlayerDialog(playerid, DialogId_Player(7), DIALOG_STYLE_INPUT, "질의", "게임에서 사용할 닉네임을 입력하세요. "C_RED"(16Byte 이내)", "확인", chNullString);
+		case 9:
+		    ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "안내", "로그인 기록에 문제가 있습니까?\n포럼에 문의하십시오.\n\n"C_ORANGE"http://cafe.daum.net/Nogov", "확인", chNullString);
 	}
 	return 1;
 }
@@ -1065,7 +1067,7 @@ stock ShowPlayerLoginTryLog(playerid, destid)
 		format(str, sizeof(str), "UPDATE logintrylog SET Checked=1 WHERE Name='%s' AND Checked=0", GetPlayerNameA(destid));
 		mysql_query(str);
 	}
-	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
+	ShowPlayerDialog(playerid, DialogId_Player(9), DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
 	return 1;
 }
 //-----< ShowPlayerDamageLog >--------------------------------------------------
