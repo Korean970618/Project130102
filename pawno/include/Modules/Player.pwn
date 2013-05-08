@@ -44,6 +44,7 @@
 	DamageLog(playerid, status[], issuerid, weaponid, Float:damage)
 	ShowPlayerLoginTryLog(playerid, destid)
 	ShowPlayerDamageLog(playerid, destid)
+	ShowPlayerStatus(playerid, destid)
 
 */
 
@@ -396,6 +397,11 @@ public pCommandTextHandler_Player(playerid, cmdtext[])
 		ShowPlayerLoginTryLog(playerid, playerid);
 		return 1;
 	}
+	else if(!strcmp(cmd, "/스탯", true))
+	{
+		ShowPlayerStatus(playerid, playerid);
+		return 1;
+	}
 	return 0;
 }
 //-----< dRequestHandler >------------------------------------------------------
@@ -554,7 +560,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 		case 8:
 			ShowPlayerDialog(playerid, DialogId_Player(7), DIALOG_STYLE_INPUT, "질의", "게임에서 사용할 닉네임을 입력하세요. "C_RED"(16Byte 이내)", "확인", chNullString);
 		case 9:
-		    ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "안내", "로그인 기록에 문제가 있습니까?\n포럼에 문의하십시오.\n\n"C_ORANGE"http://cafe.daum.net/Nogov", "확인", chNullString);
+			ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "안내", "로그인 기록에 문제가 있습니까?\n포럼에 문의하십시오.\n\n"C_ORANGE"http://cafe.daum.net/Nogov", "확인", chNullString);
 	}
 	return 1;
 }
@@ -1122,5 +1128,25 @@ stock ShowPlayerDamageLog(playerid, destid)
 	mysql_free_result();
 	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_LIST, caption, info, "확인", chNullString);
 	return 1;
+}
+//-----< ShowPlayerStatus >-----------------------------------------------------
+stock ShowPlayerStatus(playerid, destid)
+{
+	new caption[128], info[2048],
+		tabsize = 6;
+	format(caption, sizeof(caption), "%s 스탯", GetPlayerNameA(destid));
+	
+	strtab(info, "체력", tabsize);
+	format(info, sizeof(info), "%s%.2f", info, GetPlayerHealthA(destid));
+	strtab(info, "아머", tabsize);
+	format(info, sizeof(info), "%s%.2f", info, GetPlayerArmourA(destid));
+	strtab(info, "몸무게", tabsize);
+	strcat(info, valstr_(GetPVarInt(destid, "pWeight")));
+	strtab(info, "힘", tabsize);
+	strcat(info, valstr_(GetPVarInt(destid, "pPower")));
+	strtab(info, "면역력", tabsize);
+	strcat(info, valstr_(GetPVarInt(destid, "pImmunity")));
+	
+	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, caption, info, "확인", chNullString);
 }
 //-----<  >---------------------------------------------------------------------
