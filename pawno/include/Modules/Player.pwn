@@ -575,7 +575,10 @@ public pTimerTickHandler_Player(nsec, playerid)
 			interior = GetPlayerInterior(playerid),
 			virtualworld = GetPlayerVirtualWorld(playerid),
 			Float:health, Float:armour,
-			str[64];
+			str[64],
+			lastpos[128];
+
+		strcpy(lastpos, GetPVarString(playerid, "pLastPos"));
 
 		if(GetPVarInt(playerid, "Spawned"))
 		{
@@ -600,6 +603,15 @@ public pTimerTickHandler_Player(nsec, playerid)
 				case 2: ApplyAnimation(playerid, "CRACK", "crckidle3", 4.1, 0, 1, 1, 1, 1, true);
 				default: ApplyAnimation(playerid, "CRACK", "crckidle4", 4.1, 0, 1, 1, 1, 1, true);
 			}
+		}
+		
+		ImmunityTime[playerid]++;
+		if(strcmp(lastpos, GetPVarString(playerid, "pLastPos"), true))
+			ImmunityTime[playerid] = 0;
+		else if(ImmunityTime[playerid] >= GetPVarInt(playerid, "pImmunity"))
+		{
+			ImmunityTime[playerid] = 0;
+			SetPlayerHealth(playerid, GetPlayerHealthA(playerid)+1.0);
 		}
 	}
 	return 1;
