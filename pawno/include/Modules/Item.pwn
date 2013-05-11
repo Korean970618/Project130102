@@ -645,6 +645,8 @@ stock UseItemModel(playerid, modelid)
 	
 	if(!strcmp(Effect, "치료", true))
 		SetPlayerHealth(playerid, GetPlayerHealthA(playerid) + amount);
+	else if(!strcmp(Effect, "허기", true))
+	    SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
 	else return 0;
 	return 1;
 }

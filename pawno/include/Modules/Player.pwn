@@ -77,7 +77,8 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	PlayerData[MAX_PLAYERS][MAX_PLAYER_DATAS][ePlayerData],
 	NumSaveDatas[MAX_PLAYERS],
 	Text:LoginTextDraw[5],
-	ImmunityTime[MAX_PLAYERS];
+	ImmunityTime[MAX_PLAYERS],
+	HungerTime[MAX_PLAYERS][2];
 
 
 
@@ -187,6 +188,8 @@ public pConnectHandler_Player(playerid)
 	}
 	NumSaveDatas[playerid] = 0;
 	ImmunityTime[playerid] = 0;
+	for(new i = 0; i < 2; i++)
+		HungerTime[playerid][i] = 0;
 	
 	SetPlayerColor(playerid, 0xFFFFFF00);
 
@@ -268,7 +271,8 @@ public pUpdateHandler_Player(playerid)
 	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt(playerid, "pWeight"))) * 100,
 		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt(playerid, "pPower"))) * 100;
 
-	if(bag > 75.0 || hand > 75.0)
+	if((bag > 75.0 || hand > 75.0)
+	|| (GetPVarInt(playerid, "pHunger") >= 75))
 	{
 		if(z > 0.0)
 		{
@@ -284,6 +288,13 @@ public pUpdateHandler_Player(playerid)
 			HeavyWalking[playerid] = false;
 			ClearAnimations(playerid, true);
 		}
+	}
+	
+	if(ud != 0 || lr != 0) HungerTime[playerid][1]++;
+	if(HungerTime[playerid][1] & 600 == 0)
+	{
+		SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
+		HungerTime[playerid][1] = 0;
 	}
 
 	return 1;
@@ -441,6 +452,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					InsertPlayerData(playerid, "pHealth", PLAYER_VARTYPE_FLOAT, 0, GetGVarFloat("DefaultHealth"), chNullString);
 					InsertPlayerData(playerid, "pNickname", PLAYER_VARTYPE_STRING, 0, 0.0, GetGVarString("DefaultNickname"));
 					InsertPlayerData(playerid, "pImmunity", PLAYER_VARTYPE_INT, GetGVarInt("DefaultImmunity"), 0, chNullString);
+					InsertPlayerData(playerid, "pHunger", PLAYER_VARTYPE_INT, GetGVarInt("DefaultHunger"), 0, chNullString);
 					
 					SetPVarInt(playerid, "Registered", true);
 					ShowPlayerLoginDialog(playerid, false);
@@ -614,6 +626,30 @@ public pTimerTickHandler_Player(nsec, playerid)
 		{
 			ImmunityTime[playerid] = 0;
 			SetPlayerHealth(playerid, GetPlayerHealthA(playerid)+1.0);
+		}
+
+		HungerTime[playerid][0]++;
+		if(HungerTime[playerid][0] % 600 == 0)
+		{
+			SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
+			HungerTime[playerid][0] = 0;
+		}
+		if(GetPVarInt(playerid, "pHunger") >= 200)
+		{
+			SendClientMessage(playerid, COLOR_BLUE, "배가 고파 온몸에 힘이 풀립니다.");
+			SetPVarInt(playerid, "pHunger", 0);
+		}
+		if(GetPVarInt(playerid, "pHunger") >= 100 && GetPVarInt(playerid, "pHunger") & 2 == 0)
+		{
+			format(str, sizeof(str), "허기가 %d입니다. 몸을 지탱하기가 힘듭니다.", GetPVarInt(playerid, "pHunger"));
+			SendClientMessage(playerid, COLOR_BLUE, str);
+			SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+3);
+		}
+		else if(GetPVarInt(playerid, "pHunger") >= 50 && GetPVarInt(playerid, "pHunger") & 2 == 0)
+		{
+			format(str, sizeof(str), "허기가 %d입니다. 음식을 섭취해야 합니다.", GetPVarInt(playerid, "pHunger"));
+			SendClientMessage(playerid, COLOR_BLUE, str);
+			SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
 		}
 	}
 	return 1;
@@ -1160,6 +1196,8 @@ stock ShowPlayerStatus(playerid, destid)
 	strcat(info, valstr_(GetPVarInt(destid, "pPower")));
 	strtab(info, "면역력", tabsize);
 	strcat(info, valstr_(GetPVarInt(destid, "pImmunity")));
+	strtab(info, "허기", tabsize);
+	strcat(info, valstr_(GetPVarInt(destid, "pHunger")));
 	
 	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, caption, info, "확인", chNullString);
 }

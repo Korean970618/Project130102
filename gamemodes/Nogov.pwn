@@ -177,13 +177,13 @@ main()
 //-----< OnGameModeInit >-------------------------------------------------------
 public OnGameModeInit()
 {
-	AddHandler("MySQL",			 	gInitHandler);
+	AddHandler("MySQL",				gInitHandler);
 	AddHandler("InitExit",			gInitHandler, gExitHandler);
 	AddHandler("Player",			gInitHandler, pConnectHandler, pDisconnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, aConnectHandler, pUpdateHandler, pDeathHandler, pKeyStateChangeHandler, pSpawnHandler, pCommandTextHandler, dRequestHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
-	AddHandler("Vehicle",		   	gInitHandler);
+	AddHandler("Vehicle",			gInitHandler);
 	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pUpdateHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler);
-	AddHandler("Fly",			   	gInitHandler, pConnectHandler, pUpdateHandler);
+	AddHandler("Fly",				gInitHandler, pConnectHandler, pUpdateHandler);
 	AddHandler("Position",			gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
 	AddHandler("GVar",				gInitHandler);
