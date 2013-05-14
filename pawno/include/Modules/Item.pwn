@@ -502,15 +502,16 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			{
 				new htext[32],
 					itemid = DialogData[playerid][0],
-					amount = strval(inputtext);
+					amount = strval(inputtext),
+					modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
 				if(amount < 1) ReshowDialog(playerid);
 				else if(amount < GetPlayerItemAmount(playerid, itemid)) amount = GetPlayerItemAmount(playerid, itemid);
 				strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-				if(!strcmp(htext, "왼손", true))
+				if(!strcmp(htext, "왼손", true) && (ItemModelInfo[modelid][imHand] == 0 || ItemModelInfo[modelid][imHand] == 1))
 					RemovePlayerAttachedObject(playerid, 0);
-				else if(!strcmp(htext, "오른손", true))
+				else if(!strcmp(htext, "오른손", true) && (ItemModelInfo[modelid][imHand] == 0 || ItemModelInfo[modelid][imHand] == 2))
 					RemovePlayerAttachedObject(playerid, 1);
-				else if(!strcmp(htext, "양손", true))
+				else if(!strcmp(htext, "양손", true) && (ItemModelInfo[modelid][imHand] == 0 || ItemModelInfo[modelid][imHand] == 3))
 				{
 					RemovePlayerAttachedObject(playerid, 0);
 					if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
@@ -646,7 +647,7 @@ stock UseItemModel(playerid, modelid)
 	if(!strcmp(Effect, "치료", true))
 		SetPlayerHealth(playerid, GetPlayerHealthA(playerid) + amount);
 	else if(!strcmp(Effect, "허기", true))
-	    SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
+		SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
 	else return 0;
 	return 1;
 }
