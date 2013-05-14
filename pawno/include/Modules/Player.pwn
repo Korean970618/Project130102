@@ -78,7 +78,7 @@ new bool:HeavyWalking[MAX_PLAYERS],
 	NumSaveDatas[MAX_PLAYERS],
 	Text:LoginTextDraw[5],
 	ImmunityTime[MAX_PLAYERS],
-	HungerTime[MAX_PLAYERS][2];
+	HungerTime[MAX_PLAYERS];
 
 
 
@@ -188,8 +188,7 @@ public pConnectHandler_Player(playerid)
 	}
 	NumSaveDatas[playerid] = 0;
 	ImmunityTime[playerid] = 0;
-	for(new i = 0; i < 2; i++)
-		HungerTime[playerid][i] = 0;
+	HungerTime[playerid] = 0;
 	
 	SetPlayerColor(playerid, 0xFFFFFF00);
 
@@ -245,8 +244,10 @@ public pRequestClassHandler_Player(playerid, classid)
 	SpawnPlayer_(playerid);
 	if(!GetPVarInt(playerid, "LoggedIn"))
 	{
+		SetPlayerHealth(playerid, 100.0);
 		ShowPlayerLoginMovie(playerid);
 		ShowPlayerLoginDialog(playerid, false);
+		return 1;
 	}
 	return 1;
 }
@@ -271,8 +272,9 @@ public pUpdateHandler_Player(playerid)
 	new Float:bag = (float(GetPlayerItemsWeight(playerid, "가방")) / float(GetPVarInt(playerid, "pWeight"))) * 100,
 		Float:hand = (float(GetPlayerItemsWeight(playerid, "손")) / float(GetPVarInt(playerid, "pPower"))) * 100;
 
-	if((bag > 75.0 || hand > 75.0)
-	|| (GetPVarInt(playerid, "pHunger") >= 75))
+	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT
+	&& ((bag > 75.0 || hand > 75.0)
+	|| (GetPVarInt(playerid, "pHunger") >= 75)))
 	{
 		if(z > 0.0)
 		{
@@ -288,13 +290,6 @@ public pUpdateHandler_Player(playerid)
 			HeavyWalking[playerid] = false;
 			ClearAnimations(playerid, true);
 		}
-	}
-	
-	if(ud != 0 || lr != 0) HungerTime[playerid][1]++;
-	if(HungerTime[playerid][1] & 600 == 0)
-	{
-		SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
-		HungerTime[playerid][1] = 0;
 	}
 
 	return 1;
@@ -347,7 +342,14 @@ public pKeyStateChangeHandler_Player(playerid, newkeys, oldkeys)
 //-----< pSpawnHandler >--------------------------------------------------------
 public pSpawnHandler_Player(playerid)
 {
-	if(!GetPVarInt(playerid, "LoggedIn")) return 1;
+	SetPlayerHealth(playerid, 100.0);
+
+	if(!GetPVarInt(playerid, "LoggedIn"))
+	{
+		ShowPlayerLoginMovie(playerid);
+		ShowPlayerLoginDialog(playerid, false);
+		return 0;
+	}
 	
 	SetPVarInt(playerid, "Spawned", true);
 	StopAudioStreamForPlayer(playerid);
@@ -590,9 +592,11 @@ public pTimerTickHandler_Player(nsec, playerid)
 			virtualworld = GetPlayerVirtualWorld(playerid),
 			Float:health, Float:armour,
 			str[64],
-			lastpos[128];
+			lastpos[128],
+			keys, ud, lr;
 
 		strcpy(lastpos, GetPVarString(playerid, "pLastPos"));
+		GetPlayerKeys(playerid, keys, ud, lr);
 
 		if(GetPVarInt(playerid, "Spawned"))
 		{
@@ -627,17 +631,24 @@ public pTimerTickHandler_Player(nsec, playerid)
 			ImmunityTime[playerid] = 0;
 			SetPlayerHealth(playerid, GetPlayerHealthA(playerid)+1.0);
 		}
-
-		HungerTime[playerid][0]++;
-		if(HungerTime[playerid][0] % 600 == 0)
+		
+		HungerTime[playerid]++;
+		if(ud != 0 || lr != 0)
+		{
+			HungerTime[playerid]++;
+			if(keys & KEY_SPRINT)
+				HungerTime[playerid]++;
+		}
+		if(HungerTime[playerid] % 600 == 0)
 		{
 			SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
-			HungerTime[playerid][0] = 0;
+			HungerTime[playerid] = 0;
 		}
 		if(GetPVarInt(playerid, "pHunger") >= 200)
 		{
 			SendClientMessage(playerid, COLOR_BLUE, "배가 고파 온몸에 힘이 풀립니다.");
 			SetPVarInt(playerid, "pHunger", 0);
+			SetPlayerHealth(playerid, 0);
 		}
 		if(GetPVarInt(playerid, "pHunger") >= 100 && GetPVarInt(playerid, "pHunger") & 2 == 0)
 		{
@@ -707,6 +718,7 @@ stock CreatePlayerDataTable()
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",Name varchar(32) NOT NULL default ' '");
 	strcat(str, ",Date varchar(32) NOT NULL default ' '");
+	strcat(str, ",DateCode int(16) NOT NULL default '0'");
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",Success int(1) NOT NULL default '0'");
 	strcat(str, ",Checked int(1) NOT NULL default '0'");
@@ -717,6 +729,7 @@ stock CreatePlayerDataTable()
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",Name varchar(32) NOT NULL default ' '");
 	strcat(str, ",Date varchar(32) NOT NULL default ' '");
+	strcat(str, ",DateCode int(16) NOT NULL default '0'");
 	strcat(str, ",Status varchar(4) NOT NULL default '타격'");
 	strcat(str, ",Issuer varchar(32) NOT NULL default ' '");
 	strcat(str, ",WeaponID int(3) NOT NULL default '0'");
@@ -1050,9 +1063,9 @@ stock LoginTryLog(playerid, success)
 		year, month, day, hour, minute, second;
 	getdate(year, month, day);
 	gettime(hour, minute, second);
-	format(str, sizeof(str), "INSERT INTO logintrylog (Name,Date,IP,Success,Checked)");
-	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%s',%d,0)", str,
-	GetPlayerNameA(playerid), year, month, day, hour, minute, second, GetPlayerIpA(playerid), success);
+	format(str, sizeof(str), "INSERT INTO logintrylog (Name,Date,DateCode,IP,Success,Checked)");
+	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%d%d%d%d%d%d','%s',%d,0)", str,
+	GetPlayerNameA(playerid), year, month, day, hour, minute, second, year, month, day, hour, minute, second, GetPlayerIpA(playerid), success);
 	mysql_query(str);
 	return 1;
 }
@@ -1063,9 +1076,9 @@ stock DamageLog(playerid, status[], issuerid, weaponid, Float:damage)
 		year, month, day, hour, minute, second;
 	getdate(year, month, day);
 	gettime(hour, minute, second);
-	format(str, sizeof(str), "INSERT INTO damagelog (Name,Date,Status,Issuer,WeaponID,Damage)");
-	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%s','%s',%d,%.4f)", str,
-	GetPlayerNameA(playerid), year, month, day, hour, minute, second, escape(status), GetPlayerNameA(issuerid), weaponid, damage);
+	format(str, sizeof(str), "INSERT INTO damagelog (Name,Date,DateCode,Status,Issuer,WeaponID,Damage)");
+	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%d%d%d%d%d%d','%s','%s',%d,%.4f)", str,
+	GetPlayerNameA(playerid), year, month, day, hour, minute, second, year, month, day, hour, minute, second, escape(status), GetPlayerNameA(issuerid), weaponid, damage);
 	mysql_query(str);
 	return 1;
 }
@@ -1077,7 +1090,7 @@ stock ShowPlayerLoginTryLog(playerid, destid)
 		rows, receive[6][32], idx,
 		date[32], ip[15], success, checked;
 	format(caption, sizeof(caption), "%s 로그인 기록 "C_BLUE"(현재 IP: %s)", GetPlayerNameA(destid), GetPlayerIpA(destid));
-	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s' ORDER BY Date DESC", GetPlayerNameA(destid));
+	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s' ORDER BY DateCode DESC", GetPlayerNameA(destid));
 	mysql_query(str);
 	mysql_store_result();
 	rows = mysql_num_rows();
@@ -1112,9 +1125,17 @@ stock ShowPlayerLoginTryLog(playerid, destid)
 				strcat(info, C_GREY);
 			strtab(info, date, 32);
 			if(success)
-				strtab(info, ""C_BLUE"성공", 4);
+			{
+				strcat(info, C_BLUE);
+				strtab(info, "성공", 4);
+			}
 			else
-				strtab(info, ""C_RED"실패", 4);
+			{
+				strcat(info, C_RED);
+				strtab(info, "실패", 4);
+			}
+			strcat(info, C_WHITE);
+			strcat(info, ip);
 		}
 	}
 	mysql_free_result();
@@ -1133,7 +1154,7 @@ stock ShowPlayerDamageLog(playerid, destid)
 		caption[128], info[2048],
 		rows, receive[7][32], idx,
 		date[32], status[4], issuer[MAX_PLAYER_NAME], weaponid, Float:damage;
-	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s' ORDER BY Date DESC", GetPlayerNameA(destid));
+	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s' ORDER BY DateCode DESC", GetPlayerNameA(destid));
 	mysql_query(str);
 	mysql_store_result();
 	rows = mysql_num_rows();
@@ -1147,7 +1168,7 @@ stock ShowPlayerDamageLog(playerid, destid)
 		strtab(info, "일시", 32);
 		strtab(info, "상태", 4);
 		strtab(info, "가해자", 32);
-		strtab(info, "무기", 3);
+		strtab(info, "무기", 4);
 		strcat(info, "데미지");
 		strcat(info, C_WHITE);
 		for(new i = rows-1; i >= 0; i--)
@@ -1186,18 +1207,41 @@ stock ShowPlayerStatus(playerid, destid)
 		tabsize = 6;
 	format(caption, sizeof(caption), "%s 스탯", GetPlayerNameA(destid));
 	
+	strcat(info, C_LIGHTGREEN);
 	strtab(info, "체력", tabsize);
+	strcat(info, C_WHITE);
 	format(info, sizeof(info), "%s%.2f", info, GetPlayerHealthA(destid));
+	strcat(info, "\n");
+	
+	strcat(info, C_LIGHTGREEN);
 	strtab(info, "아머", tabsize);
+	strcat(info, C_WHITE);
 	format(info, sizeof(info), "%s%.2f", info, GetPlayerArmourA(destid));
+	strcat(info, "\n");
+	
+	strcat(info, C_LIGHTGREEN);
 	strtab(info, "몸무게", tabsize);
+	strcat(info, C_WHITE);
 	strcat(info, valstr_(GetPVarInt(destid, "pWeight")));
+	strcat(info, "\n");
+	
+	strcat(info, C_LIGHTGREEN);
 	strtab(info, "힘", tabsize);
+	strcat(info, C_WHITE);
 	strcat(info, valstr_(GetPVarInt(destid, "pPower")));
+	strcat(info, "\n");
+	
+	strcat(info, C_LIGHTGREEN);
 	strtab(info, "면역력", tabsize);
+	strcat(info, C_WHITE);
 	strcat(info, valstr_(GetPVarInt(destid, "pImmunity")));
+	strcat(info, "\n");
+	
+	strcat(info, C_LIGHTGREEN);
 	strtab(info, "허기", tabsize);
+	strcat(info, C_WHITE);
 	strcat(info, valstr_(GetPVarInt(destid, "pHunger")));
+	strcat(info, "\n");
 	
 	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, caption, info, "확인", chNullString);
 }

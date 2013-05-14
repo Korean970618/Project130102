@@ -262,7 +262,7 @@ public OnPlayerSpawn(playerid)
 		if(CallbacksList[i][CBIndex][pSpawnHandler])
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "pSpawnHandler", CallbacksList[i][CBName]);
-			CallLocalFunction(funcstr, "d", playerid);
+			if(!CallLocalFunction(funcstr, "d", playerid)) return 0;
 		}
 	return 1;
 }

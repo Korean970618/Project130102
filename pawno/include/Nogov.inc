@@ -1071,15 +1071,16 @@ stock ResetPlayerDialogData(playerid)
 //-----< strtab >---------------------------------------------------------------
 stock strtab(dest[], str[], maxlength)
 {
+	maxlength += 8;
 	new len = strlen(dest) + maxlength;
 	strcat(dest, str, len);
-	for(new i = 7; i < maxlength; i += 7)
+	for(new i = 8; i < maxlength; i += 8)
 		if(strlen(str) <= i)
 		{
-			len += 7;
+			len += 8;
 			strcat(dest, "\t", len);
 		}
-	len += 7;
+	len += 8;
 	strcat(dest, "\t", len);
 }
 //-----< valstr_ >--------------------------------------------------------------
