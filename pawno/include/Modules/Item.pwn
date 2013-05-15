@@ -19,7 +19,7 @@
 	pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 	pCommandHandler_Item(playerid, cmdtext[])
 	dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
-	PlunderTimer(playerid)
+	pTimerTickHandler_Item(nsec, playerid)
 
   < Functions >
 	CreateItemModelDataTable()
@@ -27,7 +27,7 @@
 	SaveItemModelData()
 	LoadItemModelData()
 	GetItemModelName(modelid)
-	UseItemModel(playerid)
+	UseItemModel(playerid, modelid, ...)
   
 	CreateItemDataTable()
 	SaveItemDataById(itemid)
@@ -134,7 +134,8 @@ new ItemModelInfo[100][eItemModelInfo];
 		{ 0.3, 0.1, 0.1 }, { 100.0, 0.0, 75.0 }, { 1.0, 1.0, 1.0 }
 	}
 };*/
-new WeaponItem[MAX_PLAYERS];
+new WeaponItem[MAX_PLAYERS],
+	MacroCheckTime[MAX_PLAYERS];
 
 
 
@@ -146,8 +147,9 @@ forward pUpdateHandler_Item(playerid);
 forward pDisconnectHandler_Item(playerid, reason);
 forward pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys);
 forward pCommandTextHandler_Item(playerid, cmdtext[]);
+forward dRequestHandler_Item(playerid, dialogid, olddialogid);
 forward dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]);
-forward PlunderTimer(playerid);
+forward pTimerTickHandler_Item(nsec, playerid);
 //-----< gInitHandler >---------------------------------------------------------
 public gInitHandler_Item()
 {
@@ -183,6 +185,7 @@ public pConnectHandler_Item(playerid)
 		PlayerItemInfo[playerid][i][iAmount] = 0;
 	}
 	WeaponItem[playerid] = 0;
+	MacroCheckTime[playerid] = 0;
 	return 1;
 }
 //-----< pUpdateHandler >-------------------------------------------------------
@@ -228,6 +231,12 @@ public pCommandTextHandler_Item(playerid, cmdtext[])
 		return 1;
 	}
 	return 0;
+}
+//-----< dRequestHandler >------------------------------------------------------
+public dRequestHandler_Item(playerid, dialogid, olddialogid)
+{
+	if(olddialogid == DialogId_Item(10) && dialogid == 0) return 0;
+	return 1;
 }
 //-----< dResponseHandler >-----------------------------------------------------
 public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[])
@@ -364,6 +373,12 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					case 0:
 					{
 						strcpy(htext, "왼손");
+						if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 2)
+						{
+							format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
+							SendClientMessage(playerid, COLOR_WHITE, str);
+							return 1;
+						}
 						SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
 							ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
 							ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
@@ -372,6 +387,12 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					case 1:
 					{
 						strcpy(htext, "오른손");
+						if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 3)
+						{
+							format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
+							SendClientMessage(playerid, COLOR_WHITE, str);
+							return 1;
+						}
 						SetPlayerAttachedObject(playerid, 1, ItemModelInfo[modelid][imModel], 6,
 							ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
 							ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
@@ -380,6 +401,12 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					case 2:
 					{
 						strcpy(htext, "양손");
+						if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 4)
+						{
+							format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
+							SendClientMessage(playerid, COLOR_WHITE, str);
+							return 1;
+						}
 						SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
 							ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
 							ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
@@ -502,16 +529,15 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			{
 				new htext[32],
 					itemid = DialogData[playerid][0],
-					amount = strval(inputtext),
-					modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
+					amount = strval(inputtext);
 				if(amount < 1) ReshowDialog(playerid);
 				else if(amount < GetPlayerItemAmount(playerid, itemid)) amount = GetPlayerItemAmount(playerid, itemid);
 				strcpy(htext, PlayerItemInfo[playerid][itemid][iSaveType]);
-				if(!strcmp(htext, "왼손", true) && (ItemModelInfo[modelid][imHand] == 0 || ItemModelInfo[modelid][imHand] == 1))
+				if(!strcmp(htext, "왼손", true))
 					RemovePlayerAttachedObject(playerid, 0);
-				else if(!strcmp(htext, "오른손", true) && (ItemModelInfo[modelid][imHand] == 0 || ItemModelInfo[modelid][imHand] == 2))
+				else if(!strcmp(htext, "오른손", true))
 					RemovePlayerAttachedObject(playerid, 1);
-				else if(!strcmp(htext, "양손", true) && (ItemModelInfo[modelid][imHand] == 0 || ItemModelInfo[modelid][imHand] == 3))
+				else if(!strcmp(htext, "양손", true))
 				{
 					RemovePlayerAttachedObject(playerid, 0);
 					if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
@@ -522,6 +548,25 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			else ShowLastDialog(playerid);
 		case 9: ShowLastDialog(playerid);
 	}
+	return 1;
+}
+//-----< pTimerTickHandler >----------------------------------------------------
+public pTimerTickHandler_Item(nsec, playerid)
+{
+	new str[256];
+	if(nsec != 1000) return 0;
+	
+	if(MacroCheckTime[playerid])
+	{
+		MacroCheckTime[playerid]++;
+		if(MacroCheckTime[playerid] == 0)
+		{
+			GivePlayerMoney(GetPVarInt(playerid, "MacroCheckOwner"), GetGVarInt("매크로검사보상"));
+			format(str, sizeof(str), "매크로 사용자를 잡아 보상으로 $%d를 받았습니다.", GetGVarInt("매크로검사보상"));
+			SendClientMessage(GetPVarInt(playerid, "MacroCheckOwner"), COLOR_YELLOW, str);
+		}
+	}
+	
 	return 1;
 }
 //-----<  >---------------------------------------------------------------------
@@ -638,16 +683,28 @@ stock GetItemModelName(modelid)
 	return ItemModelInfo[modelid][imName];
 }
 //-----< UseItemModel >---------------------------------------------------------
-stock UseItemModel(playerid, modelid)
+stock UseItemModel(playerid, modelid, ...)
 {
 	new Effect[32],
-		amount = ItemModelInfo[modelid][imEffectAmount];
+		amount = ItemModelInfo[modelid][imEffectAmount],
+		str[256];
 	strcpy(Effect, ItemModelInfo[modelid][imEffect]);
 	
 	if(!strcmp(Effect, "치료", true))
 		SetPlayerHealth(playerid, GetPlayerHealthA(playerid) + amount);
 	else if(!strcmp(Effect, "허기", true))
 		SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
+	else if(!strcmp(Effect, "매크로검사기", true))
+	{
+		new destid = getarg(0);
+		strcpy(str, chNullString);
+		for(new i = 97; i < 122; i++)
+			strcat(str, valstr_(i));
+		SetPVarString(destid, "MacroCheckText", str);
+		SetPVarInt(destid, "MacroCheckOwner", playerid);
+		format(str, sizeof(str), "다음 문자를 그대로 입력하세요. "C_RED"%s", str);
+		ShowPlayerDialog(destid, DialogId_Item(10), DIALOG_STYLE_INPUT, "매크로 검사기", str, "확인", chNullString);
+	}
 	else return 0;
 	return 1;
 }
