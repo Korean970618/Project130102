@@ -59,7 +59,8 @@ enum ePropertyInfo
 	pVirtualWorldEx,
 	pShowPickupEn,
 	pShowPickupEx,
-	pLocked,
+	pLockedEn,
+	pLockedEx,
 	pMemo[256],
 	
 	pPickupEn,
@@ -113,8 +114,8 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 
 				if(isen)
 				{
-					if(PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
-						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
+					if(PropertyInfo[i][pLockedEn] && !GetPVarInt(playerid, "AdminDuty"))
+						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 안에서	 잠겨 있습니다.");
 					SetPlayerPos(playerid, PropertyInfo[i][pPosEx][0], PropertyInfo[i][pPosEx][1], PropertyInfo[i][pPosEx][2]);
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEx][3]);
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEx]);
@@ -131,8 +132,8 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 				}
 				else if(isex)
 				{
-					if(PropertyInfo[i][pLocked] && !GetPVarInt(playerid, "AdminDuty"))
-						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 잠겨 있습니다.");
+					if(PropertyInfo[i][pLockedEx] && !GetPVarInt(playerid, "AdminDuty"))
+						return SendClientMessage(playerid, COLOR_WHITE, "이 문은 밖에서 잠겨 있습니다.");
 					SetPlayerPos(playerid, PropertyInfo[i][pPosEn][0], PropertyInfo[i][pPosEn][1], PropertyInfo[i][pPosEn][2]);
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEn][3]);
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEn]);
@@ -230,29 +231,34 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 						}
 						case 6:
 						{
-							PropertyModify[playerid][pLocked] = (PropertyModify[playerid][pLocked])?false:true;
+							PropertyModify[playerid][pLockedEn] = (PropertyModify[playerid][pLockedEn])?false:true;
 							ShowPropertyModifier(playerid, propid);
 						}
 						case 7:
 						{
+							PropertyModify[playerid][pLockedEx] = (PropertyModify[playerid][pLockedEx])?false:true;
+							ShowPropertyModifier(playerid, propid);
+						}
+						case 8:
+						{
 							format(str, sizeof(str), "메모할 내용을 입력하세요. (현재: %s)", PropertyModify[playerid][pMemo]);
 							ShowPlayerDialog(playerid, DialogId_Property(3), DIALOG_STYLE_INPUT, "건물 설정", str, "확인", "취소");
 						}
-						case 8:
+						case 9:
 						{
 							SetPlayerPos(playerid, PropertyModify[playerid][pPosEn][0], PropertyModify[playerid][pPosEn][1], PropertyModify[playerid][pPosEn][2]);
 							SetPlayerFacingAngle(playerid, PropertyModify[playerid][pPosEn][3]);
 							SetPlayerInterior(playerid, PropertyModify[playerid][pInteriorEn]);
 							SetPlayerVirtualWorld(playerid, PropertyModify[playerid][pVirtualWorldEn]);
 						}
-						case 9:
+						case 10:
 						{
 							SetPlayerPos(playerid, PropertyModify[playerid][pPosEx][0], PropertyModify[playerid][pPosEx][1], PropertyModify[playerid][pPosEx][2]);
 							SetPlayerFacingAngle(playerid, PropertyModify[playerid][pPosEx][3]);
 							SetPlayerInterior(playerid, PropertyModify[playerid][pInteriorEx]);
 							SetPlayerVirtualWorld(playerid, PropertyModify[playerid][pVirtualWorldEx]);
 						}
-						case 10:
+						case 11:
 						{
 							RemoveProperty(propid);
 							PropertyModifyDest[playerid] = -1;
@@ -260,7 +266,7 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 							format(str, sizeof(str), "%s님에 의해 %d번 건물이 제거되었습니다.", GetPlayerNameA(playerid), propid);
 							SendAdminMessage(COLOR_YELLOW, str);
 						}
-						case 11:
+						case 12:
 						{
 							strcpy(PropertyInfo[propid][pPropname], PropertyModify[playerid][pPropname]);
 							strcpy(PropertyInfo[propid][pOwnername], PropertyModify[playerid][pOwnername]);
@@ -275,14 +281,15 @@ public dResponseHandler_Property(playerid, dialogid, response, listitem, inputte
 							PropertyInfo[propid][pVirtualWorldEx] = PropertyModify[playerid][pVirtualWorldEx];
 							PropertyInfo[propid][pShowPickupEn] = PropertyModify[playerid][pShowPickupEn];
 							PropertyInfo[propid][pShowPickupEx] = PropertyModify[playerid][pShowPickupEx];
-							PropertyInfo[propid][pLocked] = PropertyModify[playerid][pLocked];
+							PropertyInfo[propid][pLockedEn] = PropertyModify[playerid][pLockedEn];
+							PropertyInfo[propid][pLockedEx] = PropertyModify[playerid][pLockedEx];
 							strcpy(PropertyInfo[propid][pMemo], PropertyModify[playerid][pMemo]);
 							SavePropertyDataById(propid);
 							LoadPropertyData();
 							PropertyModifyDest[playerid] = -1;
 							ResetPlayerDialogData(playerid);
 						}
-						case 12:
+						case 13:
 						{
 							PropertyModifyDest[playerid] = -1;
 							ResetPlayerDialogData(playerid);
@@ -332,7 +339,8 @@ stock CreatePropertyDataTable()
 	strcat(str, "PosEx varchar(64) NOT NULL default '',");
 	strcat(str, "ShowPickupEn int(1) NOT NULL default '1',");
 	strcat(str, "ShowPickupEx int(1) NOT NULL default '1',");
-	strcat(str, "Locked int(1) NOT NULL default '0',");
+	strcat(str, "LockedEn int(1) NOT NULL default '0',");
+	strcat(str, "LockedEx int(1) NOT NULL default '0',");
 	strcat(str, "Memo varchar(256) NOT NULL default '') ");
 	strcat(str, "ENGINE = InnoDB CHARACTER SET euckr COLLATE euckr_korean_ci");
 	mysql_query(str);
@@ -353,7 +361,8 @@ stock SavePropertyDataById(propid)
 		PropertyInfo[propid][pInteriorEx], PropertyInfo[propid][pVirtualWorldEx]);
 	format(str, sizeof(str), "%s,ShowPickupEn=%d", str, PropertyInfo[propid][pShowPickupEn]);
 	format(str, sizeof(str), "%s,ShowPickupEx=%d", str, PropertyInfo[propid][pShowPickupEx]);
-	format(str, sizeof(str), "%s,Locked=%d", str, PropertyInfo[propid][pLocked]);
+	format(str, sizeof(str), "%s,LockedEn=%d", str, PropertyInfo[propid][pLockedEn]);
+	format(str, sizeof(str), "%s,LockedEx=%d", str, PropertyInfo[propid][pLockedEx]);
 	format(str, sizeof(str), "%s,Memo='%s'", str, escape(PropertyInfo[propid][pMemo]));
 	format(str, sizeof(str), "%s WHERE ID=%d", str, PropertyInfo[propid][pID]);
 	mysql_query(str);
@@ -372,7 +381,7 @@ stock LoadPropertyData()
 {
 	new count = GetTickCount();
 	new str[512],
-		receive[9][256],
+		receive[10][256],
 		idx,
 		splited[6][16];
 	UnloadPropertyData();
@@ -402,7 +411,8 @@ stock LoadPropertyData()
 		
 		PropertyInfo[i][pShowPickupEn] = strval(receive[idx++]);
 		PropertyInfo[i][pShowPickupEx] = strval(receive[idx++]);
-		PropertyInfo[i][pLocked] = strval(receive[idx++]);
+		PropertyInfo[i][pLockedEn] = strval(receive[idx++]);
+		PropertyInfo[i][pLockedEx] = strval(receive[idx++]);
 		strcpy(PropertyInfo[i][pMemo], receive[idx++]);
 		
 		if(PropertyInfo[i][pShowPickupEn])
@@ -488,7 +498,8 @@ stock ShowPropertyModifier(playerid, propid)
 		PropertyModify[playerid][pVirtualWorldEx] = PropertyInfo[propid][pVirtualWorldEx];
 		PropertyModify[playerid][pShowPickupEn] = PropertyInfo[propid][pShowPickupEn];
 		PropertyModify[playerid][pShowPickupEx] = PropertyInfo[propid][pShowPickupEx];
-		PropertyModify[playerid][pLocked] = PropertyInfo[propid][pLocked];
+		PropertyModify[playerid][pLockedEn] = PropertyInfo[propid][pLockedEn];
+		PropertyModify[playerid][pLockedEx] = PropertyInfo[propid][pLockedEx];
 		strcpy(PropertyModify[playerid][pMemo], PropertyInfo[propid][pMemo]);
 	}
 	
@@ -508,8 +519,11 @@ stock ShowPropertyModifier(playerid, propid)
 	if(PropertyModify[playerid][pShowPickupEx]) strcat(str, "보임");
 	else strcat(str, "숨김");
 	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
-	format(str, sizeof(str), "%s\n잠금:\t\t\t", str);
-	if(PropertyModify[playerid][pLocked]) strcat(str, "잠금");
+	format(str, sizeof(str), "%s\n바깥쪽 잠금:\t\t\t", str);
+	if(PropertyModify[playerid][pLockedEn]) strcat(str, "잠금");
+	else strcat(str, "열림");
+	format(str, sizeof(str), "%s\n안쪽 잠금:\t\t\t", str);
+	if(PropertyModify[playerid][pLockedEx]) strcat(str, "잠금");
 	else strcat(str, "열림");
 	format(str, sizeof(str), "%s\n메모:\t\t\t%s", str, PropertyModify[playerid][pMemo]);
 	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_GREY);
