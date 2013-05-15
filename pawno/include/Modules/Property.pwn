@@ -460,14 +460,28 @@ stock RemoveProperty(propid)
 //-----< ShowPropertyList >-----------------------------------------------------
 stock ShowPropertyList(playerid, dialogid)
 {
-	new str[5120],
-		tmp[128], idx;
+	new str[2048],
+		idx;
 	ResetPlayerDialogData(playerid);
+	strcpy(str, chNullString);
+	strcat(str, C_LIGHTGREEN);
+	strtab(str, "번호", 4);
+	strtab(str, "입구 잠금", 9);
+	strcat(str, "출구 잠금");
 	for(new i = 0, t = GetMaxProperties(); i < t; i++)
 		if(IsValidPropertyID(i))
 		{
-			format(tmp, sizeof(tmp), "[%04d] %s\n", PropertyInfo[i][pID], PropertyInfo[i][pPropname]);
-			strcat(str, tmp);
+			strcat(str, "\n");
+			strtab(str, valstr_(PropertyInfo[i][pID]), 4);
+			if(PropertyInfo[i][pLockedEn])
+				strtab(str, "잠금", 9);
+			else
+				strtab(str, "열림", 9);
+			if(PropertyInfo[i][pLockedEx])
+				strcat(str, "잠금");
+			else
+				strcat(str, "열림");
+
 			DialogData[playerid][idx] = i;
 			idx++;
 		}
@@ -519,10 +533,10 @@ stock ShowPropertyModifier(playerid, propid)
 	if(PropertyModify[playerid][pShowPickupEx]) strcat(str, "보임");
 	else strcat(str, "숨김");
 	if(!GetPVarInt(playerid, "pAdmin")) strcat(str, C_WHITE);
-	format(str, sizeof(str), "%s\n바깥쪽 잠금:\t\t\t", str);
+	format(str, sizeof(str), "%s\n입구 잠금:\t\t\t", str);
 	if(PropertyModify[playerid][pLockedEn]) strcat(str, "잠금");
 	else strcat(str, "열림");
-	format(str, sizeof(str), "%s\n안쪽 잠금:\t\t\t", str);
+	format(str, sizeof(str), "%s\n출구 잠금:\t\t\t", str);
 	if(PropertyModify[playerid][pLockedEx]) strcat(str, "잠금");
 	else strcat(str, "열림");
 	format(str, sizeof(str), "%s\n메모:\t\t\t%s", str, PropertyModify[playerid][pMemo]);
