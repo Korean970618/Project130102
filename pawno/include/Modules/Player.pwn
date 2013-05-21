@@ -519,7 +519,7 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					plunderid = PlunderId[playerid];
 				if(!IsPlayerConnected(plunderid)) return 1;
 				DialogData[playerid][0] = itemid;
-				format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 탈취하시겠습니까?", GetPlayerItemModelName(plunderid, itemid), GetPlayerItemAmount(plunderid, itemid));
+				format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 탈취하시겠습니까?", GetItemModelName(GetPlayerItemModelID(plunderid, itemid)), GetPlayerItemAmount(plunderid, itemid));
 				ShowPlayerDialog(playerid, DialogId_Player(6), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
 				return 1;
 			}

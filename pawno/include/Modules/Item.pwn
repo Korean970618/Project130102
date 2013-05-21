@@ -104,6 +104,7 @@ new ItemInfo[MAX_ITEMS][eItemInfo],
 	PlayerItemInfo[MAX_PLAYERS][MAX_PLAYERITEMS][eItemInfo];
 enum eItemModelInfo
 {
+	imID,
 	imName[32],
 	imModel,
 	Float:imZVar,
@@ -209,7 +210,7 @@ public pKeyStateChangeHandler_Item(playerid, newkeys, oldkeys)
 	{
 		new itemid = GetPlayerNearestItem(playerid);
 		DialogData[playerid][0] = itemid;
-		format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 주우시겠습니까?", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], GetItemAmount(itemid));
+		format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 주우시겠습니까?", ItemModelInfo[GetItemModelID(itemid)][imName], GetItemAmount(itemid));
 		ShowPlayerDialog(playerid, DialogId_Item(7), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
 	}
 	return 1;
@@ -250,7 +251,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				if(!listitem) return ShowPlayerItemList(playerid, playerid, DialogId_Item(0), "가방");
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
-				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+				ShowPlayerDialog(playerid, DialogId_Item(1), DIALOG_STYLE_LIST, ItemModelInfo[GetPlayerItemModelID(playerid, itemid)][imName],
 					"꺼낸다.\n사용한다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
 		case 1:
@@ -262,12 +263,12 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				{
 					case 0:
 					{
-						ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+						ShowPlayerDialog(playerid, DialogId_Item(2), DIALOG_STYLE_LIST, ItemModelInfo[GetPlayerItemModelID(playerid, itemid)][imName],
 							"왼손으로 꺼낸다.\n오른손으로 꺼낸다.\n양손으로 꺼낸다.", "선택", "뒤로");
 					}
 					case 1:
 					{
-						new modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
+						new modelid = GetPlayerItemModelID(playerid, itemid);
 						if(!UseItemModel(playerid, modelid))
 							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
 						if(!--PlayerItemInfo[playerid][itemid][iAmount])
@@ -290,7 +291,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else
 						{
-							format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetPlayerItemModelName(playerid, itemid), GetPlayerItemAmount(playerid, itemid));
+							format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetItemModelName(GetPlayerItemModelID(playerid, itemid)), GetPlayerItemAmount(playerid, itemid));
 							ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_INPUT, "질의", str, "확인", "뒤로");
 						}
 					}
@@ -300,125 +301,13 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		}
 		case 2:
 		{
-			new both[32], left[32], right[32], htext[32],
-				itemid = DialogData[playerid][0],
-				modelid = PlayerItemInfo[playerid][itemid][iItemmodel],
-				items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
-				weight = ItemModelInfo[modelid][imWeight],
-				weapon = GetPlayerWeapon(playerid);
+			new htext[32],
+				itemid = DialogData[playerid][0];
 			if(response)
 			{
-				if(GetWeaponHand(ItemModelInfo[modelid][imModel]) == 'r' && listitem != 1)
-				{
-					format(str, sizeof(str), "%s은(는) 오른손 무기입니다.", ItemModelInfo[modelid][imName]);
-					SendClientMessage(playerid, COLOR_WHITE, str);
-					return 1;
-				}
-				else if(GetWeaponHand(ItemModelInfo[modelid][imModel]) == 'b' && listitem != 2)
-				{
-					format(str, sizeof(str), "%s은(는) 양손 무기입니다.", ItemModelInfo[modelid][imName]);
-					SendClientMessage(playerid, COLOR_WHITE, str);
-					return 1;
-				}
-				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
-					{
-						strcpy(both, ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imName]);
-						break;
-					}
-				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
-					{
-						strcpy(left, ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imName]);
-						break;
-					}
-				for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
-					if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
-					{
-						strcpy(right, ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imName]);
-						break;
-					}
-				if(strlen(both))
-				{
-					format(str, sizeof(str), "양손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", both);
-					SendClientMessage(playerid, COLOR_WHITE, str);
-					return 1;
-				}
-				else if(strlen(left) && (listitem == 0 || listitem == 2))
-				{
-					format(str, sizeof(str), "왼손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", left);
-					SendClientMessage(playerid, COLOR_WHITE, str);
-					return 1;
-				}
-				else if(strlen(right) && (listitem == 1 || listitem == 2))
-				{
-					format(str, sizeof(str), "오른손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", right);
-					SendClientMessage(playerid, COLOR_WHITE, str);
-					return 1;
-				}
-				weight = (listitem == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
-				if(items + weight > GetPVarInt(playerid, "pHealth"))
-				{
-					if(items > weight)
-						SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
-					else
-					{
-						format(str, sizeof(str), "%s은(는) 너무 무거워서 들 수 없습니다.", ItemModelInfo[modelid][imName]);
-						SendClientMessage(playerid, COLOR_WHITE, str);
-					}
-					return 1;
-				}
-				switch(listitem)
-				{
-					case 0:
-					{
-						strcpy(htext, "왼손");
-						if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 2)
-						{
-							format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
-							SendClientMessage(playerid, COLOR_WHITE, str);
-							return 1;
-						}
-						SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
-							ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
-							ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
-							ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
-					}
-					case 1:
-					{
-						strcpy(htext, "오른손");
-						if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 3)
-						{
-							format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
-							SendClientMessage(playerid, COLOR_WHITE, str);
-							return 1;
-						}
-						SetPlayerAttachedObject(playerid, 1, ItemModelInfo[modelid][imModel], 6,
-							ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
-							ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
-							ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
-					}
-					case 2:
-					{
-						strcpy(htext, "양손");
-						if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 4)
-						{
-							format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
-							SendClientMessage(playerid, COLOR_WHITE, str);
-							return 1;
-						}
-						SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
-							ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
-							ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
-							ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
-						SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
-					}
-				}
-				if(weapon) ResetPlayerWeapons(playerid);
-				if(GetWeaponHand(ItemModelInfo[modelid][imModel]) != 'n')
-					GivePlayerWeapon(playerid, ItemModelInfo[modelid][imModel], PlayerItemInfo[playerid][itemid][iAmount]);
-				GivePlayerItemToPlayer(playerid, playerid, itemid, htext, 1);
-				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s으로 꺼냈습니다.", ItemModelInfo[modelid][imName], htext);
+				strcpy(htext, HoldPlayerItem(playerid, itemid, listitem));
+				if(!strlen(htext)) return 1;
+				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) %s에 들었습니다.", ItemModelInfo[GetPlayerItemModelID(playerid, itemid)][imName], htext);
 				SendClientMessage(playerid, COLOR_WHITE, str);
 			}
 			else ShowLastDialog(playerid);
@@ -429,7 +318,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				if(!listitem) return ShowPlayerItemList(playerid, playerid, DialogId_Item(3), "손");
 				new itemid = DialogData[playerid][listitem];
 				DialogData[playerid][0] = DialogData[playerid][listitem];
-				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName],
+				ShowPlayerDialog(playerid, DialogId_Item(4), DIALOG_STYLE_LIST, ItemModelInfo[GetPlayerItemModelID(playerid, itemid)][imName],
 					"가방에 넣는다.\n사용한다.\n확인한다.\n버린다.", "선택", "뒤로");
 			}
 		case 4:
@@ -453,13 +342,15 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
 								SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 						}
+						if(!strcmp(ItemModelInfo[GetPlayerItemModelID(playerid, itemid)][imEffect], "무기", true))
+							ResetPlayerWeapons(playerid);
 						GivePlayerItemToPlayer(playerid, playerid, itemid, "가방", 1);
-						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 가방에 넣었습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName]);
+						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 가방에 넣었습니다.", ItemModelInfo[GetPlayerItemModelID(playerid, itemid)][imName]);
 						SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 1:
 					{
-						new modelid = ItemInfo[itemid][iItemmodel];
+						new modelid = GetPlayerItemModelID(playerid, itemid);
 						if(!UseItemModel(playerid, modelid))
 							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
 						if(!--ItemInfo[itemid][iAmount])
@@ -482,7 +373,7 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 							SendClientMessage(playerid, COLOR_WHITE, "캐릭터를 멈춘 후 다시 시도하세요.");
 						else
 						{
-							format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetPlayerItemModelName(playerid, itemid), GetPlayerItemAmount(playerid, itemid));
+							format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 버리시겠습니까?", GetItemModelName(GetPlayerItemModelID(playerid, itemid)), GetPlayerItemAmount(playerid, itemid));
 							ShowPlayerDialog(playerid, DialogId_Item(8), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
 						}
 					}
@@ -510,20 +401,19 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 				if(!IsPlayerInRangeOfPoint(playerid, 1.0, ItemInfo[itemid][iPos][0], ItemInfo[itemid][iPos][1], ItemInfo[itemid][iPos][2])
 				|| GetPlayerVirtualWorld(playerid) != ItemInfo[itemid][iVirtualWorld])
 					return ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "주울 아이템이 근처에 있지 않습니다.", "확인", chNullString);
-				if(GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight] > GetPVarInt(playerid, "pWeight"))
+				if(GetPlayerItemsWeight(playerid, "가방") + ItemModelInfo[GetItemModelID(itemid)][imWeight] > GetPVarInt(playerid, "pWeight"))
 				{
-					if(GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[ItemInfo[itemid][iItemmodel]][imWeight])
+					if(GetPlayerItemsWeight(playerid, "가방") > ItemModelInfo[GetItemModelID(itemid)][imWeight])
 						SendClientMessage(playerid, COLOR_WHITE, "가방이 너무 무겁습니다.");
 					else
 					{
-						format(str, sizeof(str), "%s은(는) 너무 무거워서 가방에 넣을 수 없습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName]);
+						format(str, sizeof(str), "%s은(는) 너무 무거워서 가방에 넣을 수 없습니다.", ItemModelInfo[GetItemModelID(itemid)][imName]);
 						SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 				}
 				else
 					GivePlayerItem(playerid, itemid, "가방", strval(inputtext));
 			}
-			else ShowLastDialog(playerid);
 		case 8:
 			if(response)
 			{
@@ -617,7 +507,7 @@ stock SaveItemModelDataById(modelid)
 	format(str, sizeof(str), "%s,Hand=%d", str, ItemModelInfo[modelid][imHand]);
 	format(str, sizeof(str), "%s,Effect='%s'", str, escape(ItemModelInfo[modelid][imEffect]));
 	format(str, sizeof(str), "%s,EffectAmount=%d", str, ItemModelInfo[modelid][imEffectAmount]);
-	format(str, sizeof(str), "%s WHERE ID=%d", str, modelid);
+	format(str, sizeof(str), "%s WHERE ID=%d", str, ItemmodelInfo[modelid][imID]);
 	mysql_query(str);
 }
 //-----< SaveItemModelData >----------------------------------------------------
@@ -633,7 +523,6 @@ stock LoadItemModelData()
 {
 	new count = GetTickCount();
 	new str[2048],
-		id,
 		receive[12][256],
 		idx,
 		splited[9][32];
@@ -645,33 +534,33 @@ stock LoadItemModelData()
 		split(str, receive, '|');
 		idx = 0;
 
-		id = strval(receive[idx++]);
-		strcpy(ItemModelInfo[id][imName], receive[idx++]);
-		ItemModelInfo[id][imModel] = strval(receive[idx++]);
-		ItemModelInfo[id][imZVar] = floatstr(receive[idx++]);
-		ItemModelInfo[id][imWeight] = strval(receive[idx++]);
-		strcpy(ItemModelInfo[id][imInfo], receive[idx++]);
+		ItemModelInfo[i][imID] = strval(receive[idx++]);
+		strcpy(ItemModelInfo[i][imName], receive[idx++]);
+		ItemModelInfo[i][imModel] = strval(receive[idx++]);
+		ItemModelInfo[i][imZVar] = floatstr(receive[idx++]);
+		ItemModelInfo[i][imWeight] = strval(receive[idx++]);
+		strcpy(ItemModelInfo[i][imInfo], receive[idx++]);
 
 		split(receive[idx++], splited, ',');
 		for(new j = 0; j < 3; j++)
 		{
-			ItemModelInfo[id][imOffset1][j] = floatstr(splited[(j*3)]);
-			ItemModelInfo[id][imRot1][j] = floatstr(splited[(j*3)+1]);
-			ItemModelInfo[id][imScale1][j] = floatstr(splited[(j*3)+2]);
+			ItemModelInfo[i][imOffset1][j] = floatstr(splited[(j*3)]);
+			ItemModelInfo[i][imRot1][j] = floatstr(splited[(j*3)+1]);
+			ItemModelInfo[i][imScale1][j] = floatstr(splited[(j*3)+2]);
 		}
 
 		split(receive[idx++], splited, ',');
 		for(new j = 0; j < 3; j++)
 		{
-			ItemModelInfo[id][imOffset2][j] = floatstr(splited[(j*3)]);
-			ItemModelInfo[id][imRot2][j] = floatstr(splited[(j*3)+1]);
-			ItemModelInfo[id][imScale2][j] = floatstr(splited[(j*3)+2]);
+			ItemModelInfo[i][imOffset2][j] = floatstr(splited[(j*3)]);
+			ItemModelInfo[i][imRot2][j] = floatstr(splited[(j*3)+1]);
+			ItemModelInfo[i][imScale2][j] = floatstr(splited[(j*3)+2]);
 		}
 		
-		ItemModelInfo[id][imMaxHealth] = strval(receive[idx++]);
-		ItemModelInfo[id][imHand] = strval(receive[idx++]);
-		strcpy(ItemModelInfo[id][imEffect], receive[idx++]);
-		ItemModelInfo[id][imEffectAmount] = strval(receive[idx++]);
+		ItemModelInfo[i][imMaxHealth] = strval(receive[idx++]);
+		ItemModelInfo[i][imHand] = strval(receive[idx++]);
+		strcpy(ItemModelInfo[i][imEffect], receive[idx++]);
+		ItemModelInfo[i][imEffectAmount] = strval(receive[idx++]);
 	}
 	mysql_free_result();
 	printf("itemmodeldata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
@@ -704,6 +593,17 @@ stock UseItemModel(playerid, modelid, ...)
 		SetPVarInt(destid, "MacroCheckOwner", playerid);
 		format(str, sizeof(str), "다음 문자를 그대로 입력하세요. "C_RED"%s", str);
 		ShowPlayerDialog(destid, DialogId_Item(10), DIALOG_STYLE_INPUT, "매크로 검사기", str, "확인", chNullString);
+	}
+	else if(!strcmp(Effect, "무기", true))
+	{
+		switch(ItemModelInfo[modelid][imHand])
+		{
+			case 0: return 0;
+			case 1: SendClientMessage(playerid, COLOR_WHITE, "손으로 들고, 오른쪽 마우스로 조준·왼쪽 마우스로 발사할 수 있습니다.");
+			case 2: SendClientMessage(playerid, COLOR_WHITE, "왼손으로 들고, 오른쪽 마우스로 조준·왼쪽 마우스로 발사할 수 있습니다.");
+			case 3: SendClientMessage(playerid, COLOR_WHITE, "오른손으로 들고, 오른쪽 마우스로 조준·왼쪽 마우스로 발사할 수 있습니다.");
+			case 4: SendClientMessage(playerid, COLOR_WHITE, "양손으로 들고, 오른쪽 마우스로 조준·왼쪽 마우스로 발사할 수 있습니다.");
+		}
 	}
 	else return 0;
 	return 1;
@@ -778,11 +678,12 @@ stock LoadItemData()
 		ItemInfo[i][iHealth] = strval(receive[idx++]);
 		ItemInfo[i][iAmount] = strval(receive[idx++]);
 
-		new Float:z = ItemInfo[i][iPos][2] + ItemModelInfo[ItemInfo[i][iItemmodel]][imZVar];
-		ItemInfo[i][iObject] = CreateDynamicObject(ItemModelInfo[ItemInfo[i][iItemmodel]][imModel],
+		new modelid = GetItemModelID(i);
+		new Float:z = ItemInfo[i][iPos][2] + ItemModelInfo[modelid][imZVar];
+		ItemInfo[i][iObject] = CreateDynamicObject(ItemModelInfo[modelid][imModel],
 			ItemInfo[i][iPos][0], ItemInfo[i][iPos][1], z, 0.0, 0.0, ItemInfo[i][iPos][3],
 			ItemInfo[i][iVirtualWorld], ItemInfo[i][iInterior]);
-		ItemInfo[i][i3DText] = CreateDynamic3DTextLabel(ItemModelInfo[ItemInfo[i][iItemmodel]][imName], COLOR_WHITE,
+		ItemInfo[i][i3DText] = CreateDynamic3DTextLabel(ItemModelInfo[modelid][imName], COLOR_WHITE,
 			ItemInfo[i][iPos][0], ItemInfo[i][iPos][1], z, 3.0,
 			INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0,
 			ItemInfo[i][iVirtualWorld], ItemInfo[i][iInterior]);
@@ -813,7 +714,7 @@ stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worl
 	new str[1024];
 	format(str, sizeof(str), "INSERT INTO itemdata (Itemmodel,Pos,Memo,Health,Amount)");
 	format(str, sizeof(str), "%s VALUES (%d,'%.4f,%.4f,%.4f,%.4f,%d,%d','%s',%d,%d)", str,
-		itemmodel, x, y, z, a, interiorid, worldid, escape(memo), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health, amount);
+		ItemModelInfo[itemmodel][imID], x, y, z, a, interiorid, worldid, escape(memo), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health, amount);
 	mysql_query(str);
 	LoadItemData();
 	return 1;
@@ -843,7 +744,10 @@ stock GetItemHealth(itemid)
 //-----< GetItemModelID >-------------------------------------------------------
 stock GetItemModelID(itemid)
 {
-	return ItemInfo[itemid][iItemmodel];
+	for(new i = 0, t = GetMaxItemModels(); i < t; i++)
+		if(ItemInfo[itemid][iItemmodel] == ItemModelInfo[i][imID])
+			return i;
+	return -1;
 }
 //-----< GetItemAmount >--------------------------------------------------------
 stock GetItemAmount(itemid)
@@ -919,7 +823,7 @@ stock LoadPlayerItemData(playerid)
 		PlayerItemInfo[playerid][i][iHealth] = strval(receive[idx++]);
 		PlayerItemInfo[playerid][i][iAmount] = strval(receive[idx++]);
 		
-		new modelid = PlayerItemInfo[playerid][i][iItemmodel];
+		new modelid = GetPlayerItemModelID(playerid, i);
 		if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
 			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
 				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
@@ -960,12 +864,24 @@ stock UnloadPlayerItemData(playerid)
 stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0, amount=1)
 {
 	new str[1024];
+	health = (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health;
 	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem,Health,Amount)");
 	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s',%d,%d)", str,
-		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health, amount);
+		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"), health, amount);
 	mysql_query(str);
-	LoadPlayerItemData(playerid);
-	return 1;
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(!IsValidPlayerItemID(playerid, i))
+		{
+			PlayerItemInfo[playerid][i][iID] = mysql_insert_id();
+			PlayerItemInfo[playerid][i][iItemmodel] = itemmodel;
+			strcpy(PlayerItemInfo[playerid][i][iOwnername], GetPlayerNameA(playerid));
+			strcpy(PlayerItemInfo[playerid][i][iMemo], memo);
+			PlayerItemInfo[playerid][i][iVirtualItem] = 0;
+			PlayerItemInfo[playerid][i][iHealth] = health;
+			PlayerItemInfo[playerid][i][iAmount] = amount;
+			return 1;
+		}
+	return 0;
 }
 //-----< DestroyPlayerItem >----------------------------------------------------
 stock DestroyPlayerItem(playerid, itemid)
@@ -991,9 +907,12 @@ stock GetPlayerItemHealth(playerid, itemid)
 	return PlayerItemInfo[playerid][itemid][iHealth];
 }
 //-----< GetPlayerItemModelID >-------------------------------------------------
-stock GetPlayerItemModelName(playerid, itemid)
+stock GetPlayerItemModelID(playerid, itemid)
 {
-	return PlayerItemInfo[playerid][itemid][iItemmodel];
+	for(new i = 0, t = GetMaxItemModels(); i < t; i++)
+		if(PlayerItemInfo[playerid][itemid][iItemmodel] == ItemModelInfo[i][imID])
+			return i;
+	return -1;
 }
 //-----< GetPlayerItemAmount >--------------------------------------------------
 stock GetPlayerItemAmount(playerid, itemid)
@@ -1008,7 +927,7 @@ stock GivePlayerItem(playerid, itemid, savetype[], amount)
 	if(!IsValidItemID(itemid)) return 0;
 	
 	if(ItemInfo[itemid][iAmount] < amount) amount = ItemInfo[itemid][iAmount];
-	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"를 %s에 넣었습니다.", ItemModelInfo[ItemInfo[itemid][iItemmodel]][imName], amount, savetype);
+	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"를 %s에 넣었습니다.", ItemModelInfo[GetItemModelID(itemid)][imName], amount, savetype);
 	SendClientMessage(playerid, COLOR_WHITE, str);
 	for(new i = 0; i < MAX_PLAYERITEMS; i++)
 		if(PlayerItemInfo[playerid][i][iItemmodel] == ItemInfo[itemid][iItemmodel]
@@ -1021,7 +940,7 @@ stock GivePlayerItem(playerid, itemid, savetype[], amount)
 			break;
 		}
 	if(!exists)
-		CreatePlayerItem(playerid, ItemInfo[itemid][iItemmodel], savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth], amount);
+		CreatePlayerItem(playerid, GetItemModelID(itemid), savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth], amount);
 	if(ItemInfo[itemid][iAmount] <= amount)
 		DestroyItem(itemid);
 	else
@@ -1037,10 +956,11 @@ stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[], amount)
 	new str[128], exists;
 	if(!IsValidPlayerItemID(playerid, itemid)) return 0;
 	
+	new modelid = GetPlayerItemModelID(playerid, itemid);
 	if(PlayerItemInfo[playerid][itemid][iAmount] < amount) amount = PlayerItemInfo[playerid][itemid][iAmount];
-	format(str, sizeof(str), "%s님에게 "C_GREEN"%s %d개"C_WHITE"를 드렸습니다.", GetPlayerNameA(destid), ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount);
+	format(str, sizeof(str), "%s님에게 "C_GREEN"%s %d개"C_WHITE"를 드렸습니다.", GetPlayerNameA(destid), ItemModelInfo[modelid][imName], amount);
 	SendClientMessage(playerid, COLOR_WHITE, str);
-	format(str, sizeof(str), "%s님으로부터 "C_GREEN"%s %d개"C_WHITE"를 받아 %s에 넣었습니다.", GetPlayerNameA(playerid), ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount, savetype);
+	format(str, sizeof(str), "%s님으로부터 "C_GREEN"%s %d개"C_WHITE"를 받아 %s에 넣었습니다.", GetPlayerNameA(playerid), ItemModelInfo[modelid][imName], amount, savetype);
 	SendClientMessage(destid, COLOR_WHITE, str);
 	for(new i = 0; i < MAX_PLAYERITEMS; i++)
 		if(PlayerItemInfo[destid][i][iItemmodel] == PlayerItemInfo[playerid][itemid][iItemmodel]
@@ -1053,7 +973,7 @@ stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[], amount)
 			break;
 		}
 	if(!exists)
-		CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
+		CreatePlayerItem(destid, GetPlayerItemModelID(playerid, itemid), savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
 	if(PlayerItemInfo[playerid][itemid][iAmount] <= amount)
 		DestroyPlayerItem(playerid, itemid);
 	else
@@ -1069,8 +989,9 @@ stock DropPlayerItem(playerid, itemid, amount)
 	new str[128];
 	if(!IsValidPlayerItemID(playerid, itemid)) return 0;
 	
+	new modelid = GetPlayerItemModelID(playerid, itemid);
 	if(PlayerItemInfo[playerid][itemid][iAmount] < amount) amount = PlayerItemInfo[playerid][itemid][iAmount];
-	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"을(를) 버렸습니다.", ItemModelInfo[PlayerItemInfo[playerid][itemid][iItemmodel]][imName], amount);
+	format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"을(를) 버렸습니다.", ItemModelInfo[modelid][imName], amount);
 	SendClientMessage(playerid, COLOR_WHITE, str);
 	if(PlayerItemInfo[playerid][itemid][iAmount] <= amount)
 		DestroyPlayerItem(playerid, itemid);
@@ -1079,12 +1000,122 @@ stock DropPlayerItem(playerid, itemid, amount)
 		new Float:x, Float:y, Float:z, Float:a;
 		GetPlayerPos(playerid, x, y, z);
 		GetPlayerFacingAngle(playerid, a);
-		CreateItem(PlayerItemInfo[playerid][itemid][iItemmodel], x, y, z, a,
+		CreateItem(modelid, x, y, z, a,
 			GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
 		PlayerItemInfo[playerid][itemid][iAmount] -= amount;
 		SavePlayerItemDataById(playerid, itemid);
 	}
 	return 1;
+}
+//-----< HoldPlayerItem >-------------------------------------------------------
+stock HoldPlayerItem(playerid, itemid, handid)
+{
+	new str[256],
+		both[32], left[32], right[32], htext[32], blank[32],
+		modelid = GetPlayerItemModelID(playerid, itemid),
+		items = GetPlayerItemsWeight(playerid, "왼손") + GetPlayerItemsWeight(playerid, "오른손") + (GetPlayerItemsWeight(playerid, "양손") / 2),
+		weight = ItemModelInfo[modelid][imWeight],
+		weapon = GetPlayerWeapon(playerid),
+		hand;
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
+		{
+			strcpy(both, ItemModelInfo[modelid][imName]);
+			break;
+		}
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
+		{
+			strcpy(left, ItemModelInfo[modelid][imName]);
+			break;
+		}
+	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
+		if(IsValidPlayerItemID(playerid, i) && !strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
+		{
+			strcpy(right, ItemModelInfo[modelid][imName]);
+			break;
+		}
+	if(strlen(both))
+	{
+		format(str, sizeof(str), "양손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", both);
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		return blank;
+	}
+	else if(strlen(left) && (handid == 0 || handid == 2))
+	{
+		format(str, sizeof(str), "왼손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", left);
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		return blank;
+	}
+	else if(strlen(right) && (handid == 1 || handid == 2))
+	{
+		format(str, sizeof(str), "오른손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", right);
+		SendClientMessage(playerid, COLOR_WHITE, str);
+		return blank;
+	}
+	weight = (handid == 2) ? (ItemModelInfo[modelid][imWeight] / 2) : ItemModelInfo[modelid][imWeight];
+	if(items + weight > GetPVarInt(playerid, "pHealth"))
+	{
+		if(items > weight)
+			SendClientMessage(playerid, COLOR_WHITE, "손이 너무 무겁습니다.");
+		else
+		{
+			format(str, sizeof(str), "%s은(는) 너무 무거워서 들 수 없습니다.", ItemModelInfo[modelid][imName]);
+			SendClientMessage(playerid, COLOR_WHITE, str);
+		}
+		return blank;
+	}
+	switch(handid)
+	{
+		case 0:
+		{
+			strcpy(htext, "왼손");
+			if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 2)
+			{
+				format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
+				SendClientMessage(playerid, COLOR_WHITE, str);
+				return blank;
+			}
+			hand = 5;
+		}
+		case 1:
+		{
+			strcpy(htext, "오른손");
+			if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 3)
+			{
+				format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
+				SendClientMessage(playerid, COLOR_WHITE, str);
+				return blank;
+			}
+			hand = 6;
+		}
+		case 2:
+		{
+			strcpy(htext, "양손");
+			if(ItemModelInfo[modelid][imHand] != 1 && ItemModelInfo[modelid][imHand] != 4)
+			{
+				format(str, sizeof(str), "%s는 %s으로 들 수 없습니다.", ItemModelInfo[modelid][imName], htext);
+				SendClientMessage(playerid, COLOR_WHITE, str);
+				return blank;
+			}
+			hand = 5;
+		}
+	}
+	if(weapon) ResetPlayerWeapons(playerid);
+	if(!strcmp(ItemModelInfo[modelid][imEffect], "무기", true))
+		GivePlayerWeapon(playerid, ItemModelInfo[modelid][imEffectAmount], PlayerItemInfo[playerid][itemid][iAmount]);
+	else
+	{
+		if(handid == 2)
+			SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+		SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], hand,
+		ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
+		ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
+		ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
+	}
+	strcpy(PlayerItemInfo[playerid][itemid][iSaveType], htext);
+	SavePlayerItemDataById(playerid, itemid);
+	return htext;
 }
 //-----< GetPlayerItemsWeight >-------------------------------------------------
 stock GetPlayerItemsWeight(playerid, savetype[]="All")
@@ -1092,7 +1123,7 @@ stock GetPlayerItemsWeight(playerid, savetype[]="All")
 	new returns;
 	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 		if(IsValidPlayerItemID(playerid, i) && (GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype) || !strcmp(savetype, "All", true)))
-			returns += ItemModelInfo[PlayerItemInfo[playerid][i][iItemmodel]][imWeight];
+			returns += ItemModelInfo[GetPlayerItemModelID(playerid, i)][imWeight];
 	return returns;
 }
 //-----< ShowPlayerItemList >---------------------------------------------------
@@ -1108,7 +1139,7 @@ stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 		&&(GetItemSaveTypeCode(savetype) == GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType])
 		|| !strcmp(savetype, "All", true)))
 		{
-			new modelid = PlayerItemInfo[destid][i][iItemmodel];
+			new modelid = GetPlayerItemModelID(destid, i);
 			strcat(str, "\n");
 			format(tmp, sizeof(tmp), "%04d", idx);
 			strtab(str, tmp, 5);
@@ -1127,7 +1158,7 @@ stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 stock ShowPlayerItemInfo(playerid, dialogid, itemid)
 {
 	new str[512],
-		modelid = PlayerItemInfo[playerid][itemid][iItemmodel];
+		modelid = GetPlayerItemModelID(playerid, itemid);
 	strtab(str, "이름", 5);
 	strcat(str, ItemModelInfo[modelid][imName]);
 	strcat(str, "\n");

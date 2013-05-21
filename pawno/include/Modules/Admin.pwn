@@ -970,7 +970,7 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		{
 			if(response)
 			{
-				new itemid = DialogData[playerid][0] - 1,
+				new itemid = DialogData[playerid][0],
 					amount = strval(inputtext);
 				if(amount <= 0) ReshowDialog(playerid);
 				new Float:x, Float:y, Float:z, Float:a;
