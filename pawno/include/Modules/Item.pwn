@@ -27,6 +27,7 @@
 	SaveItemModelData()
 	LoadItemModelData()
 	GetItemModelName(modelid)
+	GetItemModelDBID(modelid)
 	UseItemModel(playerid, modelid, ...)
   
 	CreateItemDataTable()
@@ -37,6 +38,7 @@
 	UnloadItemData()
 	CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0, amount=1)
 	DestroyItem(itemid)
+	CreateItemObject(itemid)
 	SetItemHealth(itemid, health)
 	GetItemHealth(itemid)
 	GetItemModelID(itemid)
@@ -49,6 +51,8 @@
 	UnloadPlayerItemDataById(playerid, itemid)
 	UnloadPlayerItemData(playerid)
 	CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0, amount=1)
+	DestroyPlayerItem(playerid, itemid)
+	CreatePlayerItemObject(playerid, itemid)
 	SetPlayerItemHealth(playerid, itemid, health)
 	GetPlayerItemHealth(playerid, itemid)
 	GetPlayerItemModelID(playerid, itemid)
@@ -136,7 +140,9 @@ new ItemModelInfo[100][eItemModelInfo];
 	}
 };*/
 new WeaponItem[MAX_PLAYERS],
-	MacroCheckTime[MAX_PLAYERS];
+	MacroCheckTime[MAX_PLAYERS],
+	MacroCheckText[MAX_PLAYERS][8],
+	MacroCheckOwner[MAX_PLAYERS];
 
 
 
@@ -187,6 +193,8 @@ public pConnectHandler_Item(playerid)
 	}
 	WeaponItem[playerid] = 0;
 	MacroCheckTime[playerid] = 0;
+	strcpy(MacroCheckText[playerid], chNullString);
+	MacroCheckOwner[playerid] = INVALID_PLAYER_ID;
 	return 1;
 }
 //-----< pUpdateHandler >-------------------------------------------------------
@@ -268,14 +276,16 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					}
 					case 1:
 					{
-						new modelid = GetPlayerItemModelID(playerid, itemid);
-						if(!UseItemModel(playerid, modelid))
+						new modelid = GetPlayerItemModelID(playerid, itemid),
+							result = UseItemModel(playerid, modelid);
+						if(!result)
 							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
 						if(!--PlayerItemInfo[playerid][itemid][iAmount])
 							DestroyPlayerItem(playerid, itemid);
 						SavePlayerItemDataById(playerid, itemid);
 						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 사용하여 "C_GREEN"%s %d"C_WHITE"의 효과를 받았습니다.", ItemModelInfo[modelid][imName], ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
-						SendClientMessage(playerid, COLOR_WHITE, str);
+						if(result == 1)
+							SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 2:
 					{
@@ -350,14 +360,16 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					}
 					case 1:
 					{
-						new modelid = GetPlayerItemModelID(playerid, itemid);
-						if(!UseItemModel(playerid, modelid))
+						new modelid = GetPlayerItemModelID(playerid, itemid),
+							result = UseItemModel(playerid, modelid);
+						if(!result)
 							return ShowPlayerDialog(playerid, DialogId_Item(9), DIALOG_STYLE_MSGBOX, "알림", "사용할 수 없는 아이템입니다.", "확인", chNullString);
 						if(!--ItemInfo[itemid][iAmount])
 							DestroyItem(itemid);
 						SaveItemDataById(itemid);
 						format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 사용하여 "C_GREEN"%s %d"C_WHITE"의 효과를 받았습니다.", ItemModelInfo[modelid][imName], ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
-						SendClientMessage(playerid, COLOR_WHITE, str);
+						if(result == 1)
+							SendClientMessage(playerid, COLOR_WHITE, str);
 					}
 					case 2:
 					{
@@ -437,6 +449,39 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			}
 			else ShowLastDialog(playerid);
 		case 9: ShowLastDialog(playerid);
+		case 10:
+			if(response)
+			{
+				new destid = strval(inputtext);
+				strcpy(str, chNullString);
+				for(new i = 0; i < 8; i++)
+				{
+					new num[2];
+					format(num, sizeof(num), "%s", random(346-321)+321);
+					format(str, sizeof(str), "%s%s", str, num);
+				}
+				strcpy(MacroCheckText[destid], str);
+				MacroCheckOwner[destid] = playerid;
+				MacroCheckTime[destid] = 1;
+				format(str, sizeof(str), "다음 문자를 그대로 입력하세요. "C_RED"%s", str);
+				ShowPlayerDialog(destid, DialogId_Item(11), DIALOG_STYLE_INPUT, "매크로 검사기", str, "확인", chNullString);
+				format(str, sizeof(str), "%s님에게 매크로 검사기를 사용했습니다.", GetPlayerNameA(destid));
+				SendClientMessage(playerid, COLOR_WHITE, str);
+			}
+		case 11:
+		{
+			if(strcmp(inputtext, MacroCheckText[playerid], true))
+			{
+				ReshowDialog(playerid);
+				return 1;
+			}
+			format(str, sizeof(str), "%s님께서 매크로 검사에 통과했습니다.", GetPlayerNameA(playerid));
+			SendClientMessage(MacroCheckOwner[playerid], COLOR_YELLOW, str);
+			ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "매크로 검사기", "매크로 검사에 통과했습니다.", "확인", chNullString);
+			strcpy(MacroCheckText[playerid], chNullString);
+			MacroCheckOwner[playerid] = INVALID_PLAYER_ID;
+			MacroCheckTime[playerid] = 0;
+		}
 	}
 	return 1;
 }
@@ -451,9 +496,14 @@ public pTimerTickHandler_Item(nsec, playerid)
 		MacroCheckTime[playerid]++;
 		if(MacroCheckTime[playerid] == 0)
 		{
-			GivePlayerMoney(GetPVarInt(playerid, "MacroCheckOwner"), GetGVarInt("매크로검사보상"));
+			GivePlayerMoney(playerid, -GetGVarInt("매크로검사보상"));
+			format(str, sizeof(str), "매크로 검사기에 의해 매크로로 탐지되어 $%d를 잃었습니다.", GetGVarInt("매크로검사보상"));
+			SendClientMessage(playerid, COLOR_YELLOW, str);
+			GivePlayerMoney(MacroCheckOwner[playerid], GetGVarInt("매크로검사보상"));
 			format(str, sizeof(str), "매크로 사용자를 잡아 보상으로 $%d를 받았습니다.", GetGVarInt("매크로검사보상"));
-			SendClientMessage(GetPVarInt(playerid, "MacroCheckOwner"), COLOR_YELLOW, str);
+			SendClientMessage(MacroCheckOwner[playerid], COLOR_YELLOW, str);
+			MacroCheckOwner[playerid] = INVALID_PLAYER_ID;
+			Kick(playerid);
 		}
 	}
 	
@@ -569,14 +619,21 @@ stock LoadItemModelData()
 //-----< GetItemModelName >-----------------------------------------------------
 stock GetItemModelName(modelid)
 {
-	return ItemModelInfo[modelid][imName];
+	new str[32];
+	strcpy(str, ItemModelInfo[modelid][imName]);
+	return str;
+}
+//-----< GetItemModelDBID >-----------------------------------------------------
+stock GetItemModelDBID(modelid)
+{
+	return ItemModelInfo[modelid][imID];
 }
 //-----< UseItemModel >---------------------------------------------------------
 stock UseItemModel(playerid, modelid, ...)
 {
 	new Effect[32],
 		amount = ItemModelInfo[modelid][imEffectAmount],
-		str[256];
+		str[1024];
 	strcpy(Effect, ItemModelInfo[modelid][imEffect]);
 	
 	if(!strcmp(Effect, "치료", true))
@@ -585,14 +642,30 @@ stock UseItemModel(playerid, modelid, ...)
 		SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
 	else if(!strcmp(Effect, "매크로검사기", true))
 	{
-		new destid = getarg(0);
-		strcpy(str, chNullString);
-		for(new i = 97; i < 122; i++)
-			strcat(str, valstr_(i));
-		SetPVarString(destid, "MacroCheckText", str);
-		SetPVarInt(destid, "MacroCheckOwner", playerid);
-		format(str, sizeof(str), "다음 문자를 그대로 입력하세요. "C_RED"%s", str);
-		ShowPlayerDialog(destid, DialogId_Item(10), DIALOG_STYLE_INPUT, "매크로 검사기", str, "확인", chNullString);
+		new Float:x, Float:y, Float:z, vw = GetPlayerVirtualWorld(playerid), players;
+		GetPlayerPos(playerid, x, y, z);
+
+		strcpy(str, C_LIGHTGREEN);
+		strtab(str, "ID", 3);
+		strtab(str, "Name", MAX_PLAYER_NAME);
+		strtab(str, "Score", 5);
+		strcat(str, "Ping");
+		strcat(str, C_WHITE);
+		for(new i = 0, t = GetMaxPlayers(); i < t; i++)
+			if(IsPlayerConnected(i)
+			&& IsPlayerInRangeOfPoint(i, 30.0, x, y, z)
+			&& GetPlayerVirtualWorld(i) == vw)
+			{
+				strcat(str, "\n");
+				strtab(str, valstr_(i), 3);
+				strtab(str, GetPlayerNameA(i), MAX_PLAYER_NAME);
+				strtab(str, valstr_(GetPlayerScore(playerid)), 5);
+				strcat(str, valstr_(GetPlayerPing(playerid)));
+				players++;
+			}
+		if(!players) ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "알림", "근처에 다른 플레이어가 없습니다.", "확인", chNullString);
+		else ShowPlayerDialog(playerid, DialogId_Item(10), DIALOG_STYLE_LIST, "매크로 검사기", str, "사용", "취소");
+		return 2;
 	}
 	else if(!strcmp(Effect, "무기", true))
 	{
@@ -678,15 +751,7 @@ stock LoadItemData()
 		ItemInfo[i][iHealth] = strval(receive[idx++]);
 		ItemInfo[i][iAmount] = strval(receive[idx++]);
 
-		new modelid = GetItemModelID(i);
-		new Float:z = ItemInfo[i][iPos][2] + ItemModelInfo[modelid][imZVar];
-		ItemInfo[i][iObject] = CreateDynamicObject(ItemModelInfo[modelid][imModel],
-			ItemInfo[i][iPos][0], ItemInfo[i][iPos][1], z, 0.0, 0.0, ItemInfo[i][iPos][3],
-			ItemInfo[i][iVirtualWorld], ItemInfo[i][iInterior]);
-		ItemInfo[i][i3DText] = CreateDynamic3DTextLabel(ItemModelInfo[modelid][imName], COLOR_WHITE,
-			ItemInfo[i][iPos][0], ItemInfo[i][iPos][1], z, 3.0,
-			INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0,
-			ItemInfo[i][iVirtualWorld], ItemInfo[i][iInterior]);
+		CreateItemObject(i);
 	}
 	mysql_free_result();
 	printf("itemdata 테이블을 불러왔습니다. - %dms", GetTickCount() - count);
@@ -709,15 +774,29 @@ stock UnloadItemData()
 	return 1;
 }
 //-----< CreateItem >-----------------------------------------------------------
-stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=0, amount=1)
+stock CreateItem(itemmodel, Float:x, Float:y, Float:z, Float:a, interiorid, worldid, memo[], health=1, amount=1)
 {
-	new str[1024];
-	format(str, sizeof(str), "INSERT INTO itemdata (Itemmodel,Pos,Memo,Health,Amount)");
-	format(str, sizeof(str), "%s VALUES (%d,'%.4f,%.4f,%.4f,%.4f,%d,%d','%s',%d,%d)", str,
-		ItemModelInfo[itemmodel][imID], x, y, z, a, interiorid, worldid, escape(memo), (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health, amount);
-	mysql_query(str);
-	LoadItemData();
-	return 1;
+	health = (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health;
+	mysql_query("INSERT INTO itemdata () VALUES ()");
+	for(new i = 0, t = GetMaxItems(); i < t; i++)
+		if(!IsValidItemID(i))
+		{
+			ItemInfo[i][iID] = mysql_insert_id();
+			ItemInfo[i][iItemmodel] = itemmodel;
+			ItemInfo[i][iPos][0] = x;
+			ItemInfo[i][iPos][1] = y;
+			ItemInfo[i][iPos][2] = z;
+			ItemInfo[i][iPos][3] = a;
+			ItemInfo[i][iInterior] = interiorid;
+			ItemInfo[i][iVirtualWorld] = worldid;
+			strcpy(ItemInfo[i][iMemo], memo);
+			ItemInfo[i][iHealth] = health;
+			ItemInfo[i][iAmount] = amount;
+			SaveItemDataById(i);
+			CreateItemObject(i);
+			return 1;
+		}
+	return 0;
 }
 //-----< DestroyItem >----------------------------------------------------------
 stock DestroyItem(itemid)
@@ -726,6 +805,20 @@ stock DestroyItem(itemid)
 	format(str, sizeof(str), "DELETE FROM itemdata WHERE ID=%d", ItemInfo[itemid][iID]);
 	mysql_query(str);
 	UnloadItemDataById(itemid);
+	return 1;
+}
+//-----< CreateItemObject >-----------------------------------------------------
+stock CreateItemObject(itemid)
+{
+	new modelid = GetItemModelID(itemid);
+	new Float:z = ItemInfo[itemid][iPos][2] + ItemModelInfo[modelid][imZVar];
+	ItemInfo[itemid][iObject] = CreateDynamicObject(ItemModelInfo[modelid][imModel],
+		ItemInfo[itemid][iPos][0], ItemInfo[itemid][iPos][1], z, 0.0, 0.0, ItemInfo[itemid][iPos][3],
+		ItemInfo[itemid][iVirtualWorld], ItemInfo[itemid][iInterior]);
+	ItemInfo[itemid][i3DText] = CreateDynamic3DTextLabel(ItemModelInfo[modelid][imName], COLOR_WHITE,
+		ItemInfo[itemid][iPos][0], ItemInfo[itemid][iPos][1], z, 3.0,
+		INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0,
+		ItemInfo[itemid][iVirtualWorld], ItemInfo[itemid][iInterior]);
 	return 1;
 }
 //-----< SetItemHealth >--------------------------------------------------------
@@ -823,25 +916,7 @@ stock LoadPlayerItemData(playerid)
 		PlayerItemInfo[playerid][i][iHealth] = strval(receive[idx++]);
 		PlayerItemInfo[playerid][i][iAmount] = strval(receive[idx++]);
 		
-		new modelid = GetPlayerItemModelID(playerid, i);
-		if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "왼손", true))
-			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
-				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
-				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
-				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
-		else if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "오른손", true))
-			SetPlayerAttachedObject(playerid, 1, ItemModelInfo[modelid][imModel], 6,
-				ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
-				ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
-				ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
-		else if(!strcmp(PlayerItemInfo[playerid][i][iSaveType], "양손", true))
-		{
-			SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
-				ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
-				ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
-				ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
-			SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
-		}
+		CreatePlayerItemObject(playerid, i);
 	}
 	mysql_free_result();
 	return 1;
@@ -861,24 +936,23 @@ stock UnloadPlayerItemData(playerid)
 	return 1;
 }
 //-----< CreatePlayerItem >-----------------------------------------------------
-stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=0, amount=1)
+stock CreatePlayerItem(playerid, itemmodel, savetype[], memo[], health=1, amount=1)
 {
-	new str[1024];
 	health = (health == 0) ? ItemModelInfo[itemmodel][imMaxHealth] : health;
-	format(str, sizeof(str), "INSERT INTO playeritemdata (Itemmodel,Ownername,SaveType,Memo,VirtualItem,Health,Amount)");
-	format(str, sizeof(str), "%s VALUES (%d,'%s','%s','%s',%d,%d)", str,
-		itemmodel, escape(GetPlayerNameA(playerid)), escape(savetype), escape(memo), GetPVarInt(playerid, "pAgentMode"), health, amount);
-	mysql_query(str);
+	mysql_query("INSERT INTO playeritemdata () VALUES ()");
 	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 		if(!IsValidPlayerItemID(playerid, i))
 		{
 			PlayerItemInfo[playerid][i][iID] = mysql_insert_id();
 			PlayerItemInfo[playerid][i][iItemmodel] = itemmodel;
 			strcpy(PlayerItemInfo[playerid][i][iOwnername], GetPlayerNameA(playerid));
+			strcpy(PlayerItemInfo[playerid][i][iSaveType], savetype);
 			strcpy(PlayerItemInfo[playerid][i][iMemo], memo);
-			PlayerItemInfo[playerid][i][iVirtualItem] = 0;
+			PlayerItemInfo[playerid][i][iVirtualItem] = GetPVarInt(playerid, "pAgentMode");
 			PlayerItemInfo[playerid][i][iHealth] = health;
 			PlayerItemInfo[playerid][i][iAmount] = amount;
+			SavePlayerItemDataById(playerid, i);
+			CreatePlayerItemObject(playerid, i);
 			return 1;
 		}
 	return 0;
@@ -890,6 +964,30 @@ stock DestroyPlayerItem(playerid, itemid)
 	format(str, sizeof(str), "DELETE FROM playeritemdata WHERE ID=%d", PlayerItemInfo[playerid][itemid][iID]);
 	mysql_query(str);
 	UnloadPlayerItemDataById(playerid, itemid);
+	return 1;
+}
+//-----< CreatePlayerItemObject >-----------------------------------------------
+stock CreatePlayerItemObject(playerid, itemid)
+{
+	new modelid = GetPlayerItemModelID(playerid, itemid);
+	if(!strcmp(PlayerItemInfo[playerid][itemid][iSaveType], "왼손", true))
+		SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
+			ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
+			ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
+			ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
+	else if(!strcmp(PlayerItemInfo[playerid][itemid][iSaveType], "오른손", true))
+		SetPlayerAttachedObject(playerid, 1, ItemModelInfo[modelid][imModel], 6,
+			ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imOffset1][2],
+			ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imRot1][2],
+			ItemModelInfo[modelid][imScale1][0], ItemModelInfo[modelid][imScale1][1], ItemModelInfo[modelid][imScale1][2]);
+	else if(!strcmp(PlayerItemInfo[playerid][itemid][iSaveType], "양손", true))
+	{
+		SetPlayerAttachedObject(playerid, 0, ItemModelInfo[modelid][imModel], 5,
+			ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imOffset2][2],
+			ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imRot2][2],
+			ItemModelInfo[modelid][imScale2][0], ItemModelInfo[modelid][imScale2][1], ItemModelInfo[modelid][imScale2][2]);
+		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+	}
 	return 1;
 }
 //-----< SetPlayerItemHealth >--------------------------------------------------
@@ -932,7 +1030,8 @@ stock GivePlayerItem(playerid, itemid, savetype[], amount)
 	for(new i = 0; i < MAX_PLAYERITEMS; i++)
 		if(PlayerItemInfo[playerid][i][iItemmodel] == ItemInfo[itemid][iItemmodel]
 		&& !strcmp(PlayerItemInfo[playerid][i][iMemo], ItemInfo[itemid][iMemo], true)
-		&& GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype))
+		&& GetItemSaveTypeCode(PlayerItemInfo[playerid][i][iSaveType]) == GetItemSaveTypeCode(savetype)
+		&& PlayerItemInfo[playerid][i][iHealth] == ItemInfo[itemid][iHealth])
 		{
 			PlayerItemInfo[playerid][i][iAmount] += amount;
 			SavePlayerItemDataById(playerid, i);
@@ -940,7 +1039,7 @@ stock GivePlayerItem(playerid, itemid, savetype[], amount)
 			break;
 		}
 	if(!exists)
-		CreatePlayerItem(playerid, GetItemModelID(itemid), savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth], amount);
+		CreatePlayerItem(playerid, ItemInfo[itemid][iItemmodel], savetype, ItemInfo[itemid][iMemo], ItemInfo[itemid][iHealth], amount);
 	if(ItemInfo[itemid][iAmount] <= amount)
 		DestroyItem(itemid);
 	else
@@ -965,7 +1064,8 @@ stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[], amount)
 	for(new i = 0; i < MAX_PLAYERITEMS; i++)
 		if(PlayerItemInfo[destid][i][iItemmodel] == PlayerItemInfo[playerid][itemid][iItemmodel]
 		&& !strcmp(PlayerItemInfo[destid][i][iMemo], PlayerItemInfo[playerid][itemid][iMemo], true)
-		&& GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType]) == GetItemSaveTypeCode(savetype))
+		&& GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType]) == GetItemSaveTypeCode(savetype)
+		&& PlayerItemInfo[destid][i][iHealth] == PlayerItemInfo[playerid][itemid][iHealth])
 		{
 			PlayerItemInfo[destid][i][iAmount] += amount;
 			SavePlayerItemDataById(destid, i);
@@ -973,7 +1073,7 @@ stock GivePlayerItemToPlayer(playerid, destid, itemid, savetype[], amount)
 			break;
 		}
 	if(!exists)
-		CreatePlayerItem(destid, GetPlayerItemModelID(playerid, itemid), savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
+		CreatePlayerItem(destid, PlayerItemInfo[playerid][itemid][iItemmodel], savetype, PlayerItemInfo[playerid][itemid][iMemo], PlayerItemInfo[playerid][itemid][iHealth], amount);
 	if(PlayerItemInfo[playerid][itemid][iAmount] <= amount)
 		DestroyPlayerItem(playerid, itemid);
 	else
@@ -1130,10 +1230,12 @@ stock GetPlayerItemsWeight(playerid, savetype[]="All")
 stock ShowPlayerItemList(playerid, destid, dialogid, savetype[]="All")
 {
 	new str[2048], tmp[16], idx = 1;
+	strcpy(str, C_LIGHTGREEN);
 	strtab(str, "번호", 5);
 	strtab(str, "이름", 16);
 	strtab(str, "무게", 5);
 	strcat(str, "수량");
+	strcat(str, C_WHITE);
 	for(new i = 0, t = GetMaxPlayerItems(); i < t; i++)
 		if(IsValidPlayerItemID(destid, i)
 		&&(GetItemSaveTypeCode(savetype) == GetItemSaveTypeCode(PlayerItemInfo[destid][i][iSaveType])
@@ -1159,16 +1261,24 @@ stock ShowPlayerItemInfo(playerid, dialogid, itemid)
 {
 	new str[512],
 		modelid = GetPlayerItemModelID(playerid, itemid);
+	strcpy(str, C_LIGHTGREEN);
 	strtab(str, "이름", 5);
+	strcat(str, C_WHITE);
 	strcat(str, ItemModelInfo[modelid][imName]);
 	strcat(str, "\n");
+	strcat(str, C_LIGHTGREEN);
 	strtab(str, "무게", 5);
+	strcat(str, C_WHITE);
 	format(str, sizeof(str), "%s%d", str, ItemModelInfo[modelid][imWeight]);
 	strcat(str, "\n");
+	strcat(str, C_LIGHTGREEN);
 	strtab(str, "효과", 5);
+	strcat(str, C_WHITE);
 	format(str, sizeof(str), "%s%s(%d)", str, ItemModelInfo[modelid][imEffect], ItemModelInfo[modelid][imEffectAmount]);
 	strcat(str, "\n");
+	strcat(str, C_LIGHTGREEN);
 	strtab(str, "설명", 5);
+	strcat(str, C_WHITE);
 	strcat(str, ItemModelInfo[modelid][imInfo]);
 	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_MSGBOX, "아이템 정보", str, "확인", "뒤로");
 	return 1;
@@ -1177,10 +1287,12 @@ stock ShowPlayerItemInfo(playerid, dialogid, itemid)
 stock ShowItemModelList(playerid, dialogid)
 {
 	new str[4096], tmp[16];
+	strcpy(str, C_LIGHTGREEN);
 	strtab(str, "번호", 5);
 	strtab(str, "이름", 16);
 	strtab(str, "무게", 5);
 	strcat(str, "효과");
+	strcat(str, C_WHITE);
 	for(new i = 0; i < sizeof(ItemModelInfo); i++)
 	{
 		strcat(str, "\n");

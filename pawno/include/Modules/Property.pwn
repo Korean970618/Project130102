@@ -120,6 +120,8 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEx][3]);
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEx]);
 					SetPlayerVirtualWorld(playerid, PropertyInfo[i][pVirtualWorldEx]);
+					if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+					    SetCameraBehindPlayer(playerid);
 					if(!strlen(PropertyInfo[i][pOwnername]) && !WarnedPropertyTimer[playerid][i])
 					{
 						TogglePropertyEnable(i, true);
@@ -138,6 +140,8 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 					SetPlayerFacingAngle(playerid, PropertyInfo[i][pPosEn][3]);
 					SetPlayerInterior(playerid, PropertyInfo[i][pInteriorEn]);
 					SetPlayerVirtualWorld(playerid, PropertyInfo[i][pVirtualWorldEn]);
+					if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+					    SetCameraBehindPlayer(playerid);
 				}
 			}
 	return 1;

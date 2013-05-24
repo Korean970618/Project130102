@@ -163,6 +163,11 @@ public gInitHandler_Player()
 	TextDrawSetOutline(LoginTextDraw[4], 1);
 	TextDrawSetProportional(LoginTextDraw[4], 1);
 	TextDrawSetShadow(LoginTextDraw[4], 1);
+	
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+		PlunderId[i] = INVALID_PLAYER_ID;
+	}
 	return 1;
 }
 //-----< pConnectHandler >------------------------------------------------------
@@ -718,7 +723,6 @@ stock CreatePlayerDataTable()
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",Name varchar(32) NOT NULL default ' '");
 	strcat(str, ",Date varchar(32) NOT NULL default ' '");
-	strcat(str, ",DateCode int(16) NOT NULL default '0'");
 	strcat(str, ",IP varchar(15) NOT NULL default '0.0.0.0'");
 	strcat(str, ",Success int(1) NOT NULL default '0'");
 	strcat(str, ",Checked int(1) NOT NULL default '0'");
@@ -729,7 +733,6 @@ stock CreatePlayerDataTable()
 	strcat(str, "ID int(5) NOT NULL auto_increment PRIMARY KEY");
 	strcat(str, ",Name varchar(32) NOT NULL default ' '");
 	strcat(str, ",Date varchar(32) NOT NULL default ' '");
-	strcat(str, ",DateCode int(16) NOT NULL default '0'");
 	strcat(str, ",Status varchar(4) NOT NULL default '타격'");
 	strcat(str, ",Issuer varchar(32) NOT NULL default ' '");
 	strcat(str, ",WeaponID int(3) NOT NULL default '0'");
@@ -764,7 +767,6 @@ stock SavePlayerData(playerid)
 			format(str, sizeof(str), "%s WHERE Name='%s' And Varname='%s'", str, GetPlayerNameA(playerid), varname);
 			mysql_query(str);
 			PlayerData[playerid][i][pdSave] = false;
-			printf("%s Saved", varname);
 		}
 	NumSaveDatas[playerid] = 0;
 	printf("SavePlayerData(%s): %dms", GetPlayerNameA(playerid), GetTickCount() - count);
@@ -1063,9 +1065,9 @@ stock LoginTryLog(playerid, success)
 		year, month, day, hour, minute, second;
 	getdate(year, month, day);
 	gettime(hour, minute, second);
-	format(str, sizeof(str), "INSERT INTO logintrylog (Name,Date,DateCode,IP,Success,Checked)");
-	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%d%d%d%d%d%d','%s',%d,0)", str,
-	GetPlayerNameA(playerid), year, month, day, hour, minute, second, year, month, day, hour, minute, second, GetPlayerIpA(playerid), success);
+	format(str, sizeof(str), "INSERT INTO logintrylog (Name,Date,IP,Success,Checked)");
+	format(str, sizeof(str), "%s VALUES ('%s','%04d년 %02d월 %02d일 %02d시 %02d분 %02d초','%s',%d,0)", str,
+	GetPlayerNameA(playerid), year, month, day, hour, minute, second, GetPlayerIpA(playerid), success);
 	mysql_query(str);
 	return 1;
 }
@@ -1076,9 +1078,9 @@ stock DamageLog(playerid, status[], issuerid, weaponid, Float:damage)
 		year, month, day, hour, minute, second;
 	getdate(year, month, day);
 	gettime(hour, minute, second);
-	format(str, sizeof(str), "INSERT INTO damagelog (Name,Date,DateCode,Status,Issuer,WeaponID,Damage)");
-	format(str, sizeof(str), "%s VALUES ('%s','%d년 %d월 %d일 %d시 %d분 %d초','%d%d%d%d%d%d','%s','%s',%d,%.4f)", str,
-	GetPlayerNameA(playerid), year, month, day, hour, minute, second, year, month, day, hour, minute, second, escape(status), GetPlayerNameA(issuerid), weaponid, damage);
+	format(str, sizeof(str), "INSERT INTO damagelog (Name,Date,Status,Issuer,WeaponID,Damage)");
+	format(str, sizeof(str), "%s VALUES ('%s','%04d년 %02d월 %02d일 %02d시 %02d분 %02d초','%s','%s',%d,%.4f)", str,
+	GetPlayerNameA(playerid), year, month, day, hour, minute, second, escape(status), GetPlayerNameA(issuerid), weaponid, damage);
 	mysql_query(str);
 	return 1;
 }
@@ -1090,7 +1092,7 @@ stock ShowPlayerLoginTryLog(playerid, destid)
 		rows, receive[6][32], idx,
 		date[32], ip[15], success, checked;
 	format(caption, sizeof(caption), "%s 로그인 기록 "C_BLUE"(현재 IP: %s)", GetPlayerNameA(destid), GetPlayerIpA(destid));
-	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s' ORDER BY DateCode DESC", GetPlayerNameA(destid));
+	format(str, sizeof(str), "SELECT * FROM logintrylog WHERE Name='%s' ORDER BY ID DESC", GetPlayerNameA(destid));
 	mysql_query(str);
 	mysql_store_result();
 	rows = mysql_num_rows();
@@ -1154,7 +1156,7 @@ stock ShowPlayerDamageLog(playerid, destid)
 		caption[128], info[2048],
 		rows, receive[7][32], idx,
 		date[32], status[4], issuer[MAX_PLAYER_NAME], weaponid, Float:damage;
-	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s' ORDER BY DateCode DESC", GetPlayerNameA(destid));
+	format(str, sizeof(str), "SELECT * FROM damagelog WHERE Name='%s' ORDER BY ID DESC", GetPlayerNameA(destid));
 	mysql_query(str);
 	mysql_store_result();
 	rows = mysql_num_rows();

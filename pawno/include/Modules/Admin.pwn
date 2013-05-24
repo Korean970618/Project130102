@@ -445,8 +445,26 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 	//
 	else if(!strcmp(cmd, "/날기", true))
 	{
-		if(GetPVarType(playerid, "FlyMode")) CancelFlyMode(playerid);
-		else FlyMode(playerid);
+		cmd = strtok(cmdtext, idx);
+		if(!strlen(cmd))
+			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /날기 [플레이어]");
+		destid = ReturnUser(cmd);
+		if(!IsPlayerConnected(destid))
+			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
+		if(GetPVarType(destid, "FlyMode"))
+		{
+			CancelFlyMode(destid);
+			format(str, sizeof(str), "%s님의 날기모드를 종료시켰습니다.", GetPlayerNameA(destid));
+			SendClientMessage(playerid, COLOR_WHITE, str);
+			SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 날기모드가 종료되었습니다.");
+		}
+		else
+		{
+			FlyMode(destid);
+			format(str, sizeof(str), "%s님을 날게 하였습니다.", GetPlayerNameA(destid));
+			SendClientMessage(playerid, COLOR_WHITE, str);
+			SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 날게 되었습니다.");
+		}
 		return 1;
 	}
 	else if(!strcmp(cmd, "/클로킹", true) || !strcmp(cmd, "/cloaking", true))
@@ -976,7 +994,7 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 				new Float:x, Float:y, Float:z, Float:a;
 				GetPlayerPos(playerid, x, y, z);
 				GetPlayerFacingAngle(playerid, a);
-				CreateItem(itemid, x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), chEmpty, amount);
+				CreateItem(GetItemModelDBID(itemid), x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), chEmpty, 1, amount);
 			}
 			else ShowLastDialog(playerid);
 		}
@@ -1079,12 +1097,12 @@ stock AdminLog(playerid, result[])
 		year, month, day,
 		hour, minute, second;
 	getdate(year, month, day);
-	format(str, sizeof(str), "Logs/AdminLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	format(str, sizeof(str), "Logs/AdminLog/%s_%04d년%02d월%02d일.txt", GetPlayerNameA(playerid), year, month, day);
 	fHandle = fopen(str, io_append);
 	if(fHandle)
 	{
 		gettime(hour, minute, second);
-		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
+		format(str, sizeof(str), "\r\n[%02d:%02d:%02d] ", hour, minute, second);
 		fwrite(fHandle, str);
 		for(new i = 0, t = strlen(result); i < t; i++)
 			fputchar(fHandle, result[i], false);
@@ -1099,12 +1117,12 @@ stock AgentLog(playerid, result[])
 		year, month, day,
 		hour, minute, second;
 	getdate(year, month, day);
-	format(str, sizeof(str), "Logs/AgentLog/%s_%d년%d월%d일.txt", GetPlayerNameA(playerid), year, month, day);
+	format(str, sizeof(str), "Logs/AgentLog/%s_%04d년%02d월%02d일.txt", GetPlayerNameA(playerid), year, month, day);
 	fHandle = fopen(str, io_append);
 	if(fHandle)
 	{
 		gettime(hour, minute, second);
-		format(str, sizeof(str), "\r\n[%d:%d:%d] ", hour, minute, second);
+		format(str, sizeof(str), "\r\n[%02d:%02d:%02d] ", hour, minute, second);
 		fwrite(fHandle, str);
 		for(new i = 0, t = strlen(result); i < t; i++)
 			fputchar(fHandle, result[i], false);
