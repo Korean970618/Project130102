@@ -82,6 +82,8 @@
 	native ReshowDialog(playerid, id=0);
 	native TimeConvert(returntype, second);
 	native TimeMeasure(returntype, second);
+	native GetDateCode();
+	native GetTimeCode();
 
 */
 
@@ -1268,5 +1270,23 @@ stock TimeMeasure(returntype, second)
 		returnvalue -= measureval;
 	}
 	return returnvalue;
+}
+//-----< GetDateCode >----------------------------------------------------------
+stock GetDateCode()
+{
+	new year, month, day,
+		code[8];
+	getdate(year, month, day);
+	format(code, sizeof(code), "%04d%02d%02d", year, month, day);
+	return strval(code);
+}
+//-----< GetTimeCode >----------------------------------------------------------
+stock GetTimeCode()
+{
+	new hour, minute, second,
+		code[6];
+	gettime(hour, minute, second);
+	format(code, sizeof(code), "%02d%02d%02d", hour, minute, second);
+	return strval(code);
 }
 //-----<  >---------------------------------------------------------------------
