@@ -22,10 +22,10 @@
 
 
 //-----< Defines
-#define SQL_IP		  "db1.cruhost.kr"
-#define SQL_ID		  "nogov"
-#define SQL_PW		  "nogov20130501"
-#define SQL_DB		  "nogov"
+#define SQL_IP		  "pureunba.cafe24.com"
+#define SQL_ID		  "pureunba"
+#define SQL_PW		  "nogov2013"
+#define SQL_DB		  "pureunba"
 
 
 
