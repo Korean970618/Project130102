@@ -68,6 +68,7 @@
 #include "Modules/Remote.pwn"
 #include "Modules/BadWord.pwn"
 #include "Modules/Chat.pwn"
+#include "Modules/Faction.pwn"
 
 
 
@@ -193,6 +194,7 @@ public OnGameModeInit()
 	AddHandler("Remote",			pConnectHandler, pSpawnHandler, pDisconnectHandler, pUpdateHandler, pTextHandler, pCommandTextHandler, pKeyStateChangeHandler);
 	AddHandler("BadWord",			gInitHandler);
 	AddHandler("Chat",				pTextHandler, pCommandTextHandler);
+	AddHandler("Faction",			gInitHandler);
 	
 	SetTimer("OnTimerTick", TimeFix(100), true);
 	Timer_OneSecTimer = GetTickCount();
