@@ -1294,16 +1294,20 @@ stock ShowItemModelList(playerid, dialogid, params[]="")
 	strcat(str, "효과");
 	strcat(str, C_WHITE);
 	for(new i = 0; i < sizeof(ItemModelInfo); i++)
-	{
-		strcat(str, "\n");
-		format(tmp, sizeof(tmp), "%04d", i);
-		strtab(str, tmp, 5);
-		strtab(str, ItemModelInfo[i][imName], 16);
-		format(tmp, sizeof(tmp), "%d", ItemModelInfo[i][imWeight]);
-		strtab(str, tmp, 5);
-		format(tmp, sizeof(tmp), "%s(%d)", ItemModelInfo[i][imEffect], ItemModelInfo[i][imEffectAmount]);
-		strcat(str, tmp);
-	}
+		if(strlen(ItemModelInfo[i][imName]))
+		{
+			strcat(str, "\n");
+			format(tmp, sizeof(tmp), "%04d", i);
+			strtab(str, tmp, 5);
+			strtab(str, ItemModelInfo[i][imName], 16);
+			format(tmp, sizeof(tmp), "%d", ItemModelInfo[i][imWeight]);
+			strtab(str, tmp, 5);
+			if(strlen(ItemModelInfo[i][imEffect]))
+				format(tmp, sizeof(tmp), "%s(%d)", ItemModelInfo[i][imEffect], ItemModelInfo[i][imEffectAmount]);
+			else
+				strcpy(tmp, "없음");
+			strcat(str, tmp);
+		}
 	if(strlen(params))
 	{
 		strcat(str, "\n");

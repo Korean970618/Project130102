@@ -815,8 +815,8 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 		case 2:
 			if(response && listitem)
 			{
-				DialogData[playerid][0] = listitem - 1;
-				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 몇 개 생성하시겠습니까?", GetItemModelName(listitem - 1));
+				DialogData[playerid][0] = strval(inputtext);
+				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 몇 개 생성하시겠습니까?", GetItemModelName(DialogData[playerid][0]));
 				ShowPlayerDialog(playerid, DialogId_Admin(17), DIALOG_STYLE_INPUT, "질의", str, "확인", "뒤로");
 			}
 		case 3:
