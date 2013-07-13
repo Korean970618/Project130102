@@ -64,7 +64,7 @@
 	GetPlayerItemsWeight(playerid, savetype[]="All")
 	ShowPlayerItemList(playerid, destid, dialogid, savetyoe[]="All")
 	ShowPlayerItemInfo(playerid, playerid, itemid)
-	ShowItemModelList(playerid, dialogid)
+	ShowItemModelList(playerid, dialogid, params[]="")
 	GetPlayerNearestItem(playerid, Float:distance=1.0)
 	GetItemSaveTypeCode(savetype[])
 	
@@ -1284,7 +1284,7 @@ stock ShowPlayerItemInfo(playerid, dialogid, itemid)
 	return 1;
 }
 //-----< ShowItemModelList >----------------------------------------------------
-stock ShowItemModelList(playerid, dialogid)
+stock ShowItemModelList(playerid, dialogid, params[]="")
 {
 	new str[4096], tmp[16];
 	strcpy(str, C_LIGHTGREEN);
@@ -1303,6 +1303,11 @@ stock ShowItemModelList(playerid, dialogid)
 		strtab(str, tmp, 5);
 		format(tmp, sizeof(tmp), "%s(%d)", ItemModelInfo[i][imEffect], ItemModelInfo[i][imEffectAmount]);
 		strcat(str, tmp);
+	}
+	if(strlen(params))
+	{
+		strcat(str, "\n");
+		strcat(str, params);
 	}
 	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "아이템 목록", str, "확인", "뒤로");
 	return 1;
