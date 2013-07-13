@@ -96,7 +96,7 @@
 
 //-----< Defines
 #define MAX_WEAPONS			 	47
-#define MAX_DIALOGS			 	25
+#define MAX_DIALOGS			 	1000
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
 #define chEmpty				 	" "
