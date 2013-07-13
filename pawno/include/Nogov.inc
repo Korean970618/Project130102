@@ -197,7 +197,6 @@ enum eAnimationInfo
 }
 enum eDialogInfo
 {
-	dID,
 	dStyle,
 	dCaption[64],
 	dInfo[2048],
@@ -267,7 +266,6 @@ public OnPlayerConnect(playerid)
 	
 	for(new i = 0; i < MAX_DIALOGS; i++)
 	{
-		DialogInfo[playerid][i][dID] = 0;
 		DialogInfo[playerid][i][dStyle] = 0;
 		strcpy(DialogInfo[playerid][i][dCaption], chNullString);
 		strcpy(DialogInfo[playerid][i][dInfo], chNullString);
@@ -356,33 +354,22 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	format(caption_, sizeof(caption_), "%s%s", C_PASTEL_BLUE, caption);
 	format(info_, sizeof(info_), "%s%s", C_WHITE, info);
 	
-	if(OnDialogRequest(playerid, dialogid, DialogInfo[playerid][0][dID]))
+	if(OnDialogRequest(playerid, dialogid, LastDialog[playerid]))
 	{
-		for(new i = MAX_DIALOGS-1; i > 0; i--)
-		{
-			DialogInfo[playerid][i][dID] = DialogInfo[playerid][i-1][dID];
-			DialogInfo[playerid][i][dStyle] = DialogInfo[playerid][i-1][dStyle];
-			strcpy(DialogInfo[playerid][i][dCaption], DialogInfo[playerid][i-1][dCaption]);
-			strcpy(DialogInfo[playerid][i][dInfo], DialogInfo[playerid][i-1][dInfo]);
-			strcpy(DialogInfo[playerid][i][dButton1], DialogInfo[playerid][i-1][dButton1]);
-			strcpy(DialogInfo[playerid][i][dButton2], DialogInfo[playerid][i-1][dButton2]);
-			DialogInfo[playerid][i][dBeforeDialog] = DialogInfo[playerid][i-1][dBeforeDialog]+1;
-		}
-		DialogInfo[playerid][0][dID] = dialogid;
-		DialogInfo[playerid][0][dStyle] = style;
-		strcpy(DialogInfo[playerid][0][dCaption], caption);
-		strcpy(DialogInfo[playerid][0][dInfo], info);
-		strcpy(DialogInfo[playerid][0][dButton1], button1);
-		strcpy(DialogInfo[playerid][0][dButton2], button2);
-		DialogInfo[playerid][0][dBeforeDialog] = LastDialog[playerid]+1;
+		DialogInfo[playerid][dialogid][dStyle] = style;
+		strcpy(DialogInfo[playerid][dialogid][dCaption], caption);
+		strcpy(DialogInfo[playerid][dialogid][dInfo], info);
+		strcpy(DialogInfo[playerid][dialogid][dButton1], button1);
+		strcpy(DialogInfo[playerid][dialogid][dButton2], button2);
+		DialogInfo[playerid][dialogid][dBeforeDialog] = LastDialog[playerid];
 		
-		LastDialog[playerid] = 0;
+		LastDialog[playerid] = dialogid;
 		return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 	}
 	return 0;
 }
 stock _ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
-	return ShowPlayerDialog(playerid, dialogid, style, caption, info, button, button2);
+	return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
 #if defined _ALS_ShowPlayerDialog
 	#undef ShowPlayerDialog
 #else
@@ -1217,9 +1204,9 @@ stock GetWeaponHand(weaponid)
 stock ShowLastDialog(playerid)
 {
 	new id = DialogInfo[playerid][LastDialog[playerid]][dBeforeDialog];
-	if(!DialogInfo[playerid][id][dID]) return 1;
+	if(!strlen(DialogInfo[LastDialog[playerid]][dCaption])) return 0;
 	
-	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
+	_ShowPlayerDialog(playerid, id, DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	LastDialog[playerid] = id;
 	return 1;
 }
@@ -1227,7 +1214,8 @@ stock ShowLastDialog(playerid)
 stock ReshowDialog(playerid, id=-1)
 {
 	if(id == -1) id = LastDialog[playerid];
-	ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
+	if(!strlen(DialogInfo[id][dCaption])) return 0;
+	_ShowPlayerDialog(playerid, id, DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	return 1;
 }
 //-----< TimeConvert >----------------------------------------------------------
