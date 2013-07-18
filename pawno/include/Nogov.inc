@@ -97,6 +97,7 @@
 //-----< Defines
 #define MAX_WEAPONS			 	47
 #define MAX_DIALOGS			 	1000
+#define MAX_DIALOG_LISTITEMS	500
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
 #define chEmpty				 	" "
@@ -210,6 +211,7 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 	ClientMessageInfo[MAX_PLAYERS][100][eClientMessageInfo],
 	AnimationInfo[MAX_PLAYERS][eAnimationInfo],
 	DialogInfo[MAX_PLAYERS][MAX_DIALOGS][eDialogInfo],
+	DialogListItem[MAX_PLAYERS][MAX_DIALOG_LISTITEMS][256],
 	LastDialog[MAX_PLAYERS],
 	WeaponInfo[MAX_PLAYERS][MAX_WEAPONS],
 	InteriorInfo[MAX_PLAYERS],
@@ -273,6 +275,8 @@ public OnPlayerConnect(playerid)
 		strcpy(DialogInfo[playerid][i][dButton2], chNullString);
 		DialogInfo[playerid][i][dBeforeDialog] = 0;
 	}
+	for(new i = 0; i < MAX_DIALOG_LISTITEMS; i++)
+		strcpy(DialogListItems[playerid][i], chNullString);
 	LastDialog[playerid] = 0;
 	
 	for(new i = 0; i < MAX_WEAPONS; i++)
@@ -364,12 +368,17 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 		DialogInfo[playerid][dialogid][dBeforeDialog] = LastDialog[playerid];
 		
 		LastDialog[playerid] = dialogid;
-		return ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
+		return _ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 	}
 	return 0;
 }
 stock _ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[])
+{
+	for(new i = 0; i < MAX_DIALOG_LISTITEMS; i++)
+		strcpy(DialogListItems[playerid][i], chNullString);
+	split(info, DialogListItems[playerid], '\n');
 	return ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
+}
 #if defined _ALS_ShowPlayerDialog
 	#undef ShowPlayerDialog
 #else
