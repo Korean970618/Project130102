@@ -49,6 +49,8 @@
 	
 	SetPlayerHealth(playerid, Float:health)
 	SetPlayerArmour(playerid, Float:armour)
+	
+	TogglePlayerControllable(playerid, toggle)
 
   < Functions >
 	native strcpy(dest[], src[], deststart=0, destend=-1, srcstart=0, srcend=-1);
@@ -216,7 +218,8 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 	WeaponInfo[MAX_PLAYERS][MAX_WEAPONS],
 	InteriorInfo[MAX_PLAYERS],
 	Float:HealthInfo[MAX_PLAYERS],
-	Float:ArmourInfo[MAX_PLAYERS];
+	Float:ArmourInfo[MAX_PLAYERS],
+	bool:Controllable[MAX_PLAYERS];
 
 
 
@@ -284,6 +287,7 @@ public OnPlayerConnect(playerid)
 	InteriorInfo[playerid] = 0;
 	HealthInfo[playerid] = 100.0;
 	ArmourInfo[playerid] = 0.0;
+	Controllable[playerid] = true;
 	
 	return OnPlayerConnect_(playerid);
 }
@@ -845,6 +849,21 @@ stock _SetPlayerArmour(playerid, Float:armour)
 	#define _ALS_SetPlayerArmour
 #endif
 #define SetPlayerArmour SetPlayerArmour_
+//-----<  >---------------------------------------------------------------------
+//-----< TogglePlayerControllable >---------------------------------------------
+stock TogglePlayerControllable_(playerid, toggle)
+{
+	Controllable[playerid] = toggle;
+	return _TogglePlayerControllable(playerid, toggle);
+}
+stock _TogglePlayerControllable(playerid, toggle)
+	return TogglePlayerControllable(playerid, toggle);
+#if defined _ALS_TogglePlayerControllable
+	#undef TogglePlayerControllable
+#else
+	#define _ALS_TogglePlayerControllable
+#endif
+#define TogglePlayerControllable TogglePlayerControllable_
 //-----<  >---------------------------------------------------------------------
 
 
