@@ -132,8 +132,18 @@
 #define dRequestHandler					56
 #define pSelectObjectHandler			57
 #define mplResponseHandler				58
+#define doMovedHandler					59
+#define pEditDynamicObjectHandler		60
+#define pSelectDynamicObjectHandler		61
+#define pPickUpDynamicPickupHandler		62
+#define pEnterDynamicCPHandler			63
+#define pLeaveDynamicCPHandler			64
+#define pEnterDynamicRaceCPHandler		65
+#define pLeaveDynamicRaceCPHandler		66
+#define pEnterDynamicAreaHandler		67
+#define pLeaveDynamicAreaHandler		68
 
-#define MAX_CALLBACKS					58
+#define MAX_CALLBACKS					68
 #define CALL_HANDLER(%0,%1)				for(new i = 0; i <= CallbacksIndex; i++) if(CallbacksList[i][CBIndex][%0]) { new callstr[64]; format(callstr, 64, "%s_%s", %1, CallbacksList[i][CBName]);
 
 
@@ -902,6 +912,126 @@ public OnMpListResponse(playerid, mplistid, selecteditem)
 		{
 			format(funcstr, sizeof(funcstr), "%s_%s", "mplResponseHandler", CallbacksList[i][CBName]);
 			CallLocalFunction(funcstr, "ddd", playerid, mplistid, selecteditem);
+		}
+	return 1;
+}
+//-----< OnDynamicObjectMoved >-------------------------------------------------
+public OnDynamicObjectMoved(objectid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][doMovedHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "doMovedHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "d", objectid);
+		}
+	return 1;
+}
+//-----< OnPlayerEditDynamicObject >--------------------------------------------
+public OnPlayerEditDynamicObject(playerid, objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEditDynamicObjectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pEditDynamicObjectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dddffffff", playerid, objectid, response, x, y, z, rx, ry, rz);
+		}
+	return 1;
+}
+//-----< OnPlayerSelectDynamicObject >------------------------------------------
+public OnPlayerSelectDynamicObject(playerid, objectid, modelid, Float:x, Float:y, Float:z)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pSelectDynamicObjectHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pSelectDynamicObjectHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dddfff", playerid, objectid, modelid, x, y, z);
+		}
+	return 1;
+}
+//-----< OnPlayerPickUpDynamicPickup >------------------------------------------
+public OnPlayerPickUpDynamicPickup(playerid, pickupid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pPickUpDynamicPickupHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pPickUpDynamicPickupHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, pickupid);
+		}
+	return 1;
+}
+//-----< OnPlayerEnterDynamicCP >-----------------------------------------------
+public OnPlayerEnterDynamicCP(playerid, checkpointid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEnterDynamicCPHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pEnterDynamicCPHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, checkpointid);
+		}
+	return 1;
+}
+//-----<  >---------------------------------------------------------------------
+public OnPlayerLeaveDynamicCP(playerid, checkpointid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pLeaveDynamicCPHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pLeaveDynamicCPHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, checkpointid);
+		}
+	return 1;
+}
+//-----< OnPlayerEnterDynamicRaceCP >-------------------------------------------
+public OnPlayerEnterDynamicRaceCP(playerid, checkpointid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEnterDynamicRaceCPHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pEnterDynamicRaceCPHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, checkpointid);
+		}
+	return 1;
+}
+//-----< OnPlayerLeaveDynamicRaceCP >-------------------------------------------
+public OnPlayerLeaveDynamicRaceCP(playerid, checkpointid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pLeaveDynamicRaceCPHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pLeaveDynamicRaceCPHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, checkpointid);
+		}
+	return 1;
+}
+//-----< OnPlayerEnterDynamicArea >---------------------------------------------
+public OnPlayerEnterDynamicArea(playerid, areaid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pEnterDynamicAreaHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pEnterDynamicAreaHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, areaid);
+		}
+	return 1;
+}
+//-----< OnPlayerLeaveDynamicArea >---------------------------------------------
+public OnPlayerLeaveDynamicArea(playerid, areaid)
+{
+	new funcstr[64];
+	for(new i = 0; i <= CallbacksIndex; i++)
+		if(CallbacksList[i][CBIndex][pLeaveDynamicAreaHandler])
+		{
+			format(funcstr, sizeof(funcstr), "%s_%s", "pLeaveDynamicAreaHandler", CallbacksList[i][CBName]);
+			CallLocalFunction(funcstr, "dd", playerid, areaid);
 		}
 	return 1;
 }
