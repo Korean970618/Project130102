@@ -36,9 +36,8 @@ forward pCommandTextHandler_Chat(playerid, cmdtext[]);
 //-----< pTextHandler >---------------------------------------------------------
 public pTextHandler_Chat(playerid, text[])
 {
-	new str[256],
-		Float:x, Float:y, Float:z;
-	format(str, sizeof(str), "%s: %s", GetPlayerNameA(playerid), str);
+	new Float:x, Float:y, Float:z;
+	format(cstr, sizeof(cstr), "%s: %s", GetPlayerNameA(playerid), text);
 	GetPlayerPos(playerid, x, y, z);
 	
 	for(new i = 0, t = GetMaxPlayers(); i < t; i++)
@@ -46,7 +45,7 @@ public pTextHandler_Chat(playerid, text[])
 			for(new j = MAX_CHAT_DISTANCE; j >= 0; j -= 10)
 				if(IsPlayerInRangeOfPoint(i, MAX_CHAT_DISTANCE-j, x, y, z))
 				{
-					SendClientMessage(i, COLOR_WHITE-(500000000*j/10), str);
+					SendClientMessage(i, COLOR_WHITE-(500000000*j/10), cstr);
 					break;
 				}
 	return 0;
@@ -55,8 +54,7 @@ public pTextHandler_Chat(playerid, text[])
 public pCommandTextHandler_Chat(playerid, cmdtext[])
 {
 	new cmd[256], idx,
-	    str[256],
-		destid;
+	    destid;
 	cmd = strtok(cmdtext, idx);
 	
 	if(!strcmp(cmd, "/귓속말", true) || !strcmp(cmd, "/w", true) || !strcmp(cmd, "/whisper", true))
@@ -70,10 +68,10 @@ public pCommandTextHandler_Chat(playerid, cmdtext[])
 		strcpy(cmd, stringslice_c(cmdtext, idx));
 		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /귓속말 [플레이어] [내용]");
-		format(str, sizeof(str), "%s(%d)님에게 귓속말 전송: %s", GetPlayerNameA(destid), destid, cmd);
-		SendClientMessage(playerid, COLOR_SPRINGGREEN, str);
-		format(str, sizeof(str), "%s(%d)님으로부터 귓속말 수신: %s", GetPlayerNameA(playerid), playerid, cmd);
-		SendClientMessage(destid, COLOR_YELLOWGREEN, str);
+		format(cstr, sizeof(cstr), "%s(%d)님에게 귓속말 전송: %s", GetPlayerNameA(destid), destid, cmd);
+		SendClientMessage(playerid, COLOR_SPRINGGREEN, cstr);
+		format(cstr, sizeof(cstr), "%s(%d)님으로부터 귓속말 수신: %s", GetPlayerNameA(playerid), playerid, cmd);
+		SendClientMessage(destid, COLOR_YELLOWGREEN, cstr);
 		return 1;
 	}
 	

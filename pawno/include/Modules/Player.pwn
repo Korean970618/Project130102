@@ -397,19 +397,18 @@ public pSpawnHandler_Player(playerid)
 //-----< pCommandTextHandler >--------------------------------------------------
 public pCommandTextHandler_Player(playerid, cmdtext[])
 {
-	new cmd[256], idx,
-		str[256];
+	new cmd[256], idx;
 	cmd = strtok(cmdtext, idx);
 
 	if(!GetPVarInt(playerid, "LoggedIn")) return 0;
 	else if(!strcmp(cmd, "/비번변경", true) || !strcmp(cmd, "/암호변경", true))
 	{
-		format(str, sizeof(str), "\
+		format(cstr, sizeof(cstr), "\
 		\n\
 		새 비밀번호를 입력하세요.\n\
 		\n\
 		");
-		ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", str, "확인", "취소");
+		ShowPlayerDialog(playerid, DialogId_Player(1), DIALOG_STYLE_PASSWORD, "비밀번호 변경", cstr, "확인", "취소");
 		return 1;
 	}
 	else if(!strcmp(cmd, "/로그인기록", true))
@@ -524,8 +523,8 @@ public dResponseHandler_Player(playerid, dialogid, response, listitem, inputtext
 					plunderid = PlunderId[playerid];
 				if(!IsPlayerConnected(plunderid)) return 1;
 				DialogData[playerid][0] = itemid;
-				format(str, sizeof(str), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 탈취하시겠습니까?", GetItemModelName(GetPlayerItemModelID(plunderid, itemid)), GetPlayerItemAmount(plunderid, itemid));
-				ShowPlayerDialog(playerid, DialogId_Player(6), DIALOG_STYLE_INPUT, "질의", str, "확인", "취소");
+				format(cstr, sizeof(cstr), ""C_GREEN"%s %d개"C_WHITE"가 있습니다.\n몇 개를 탈취하시겠습니까?", GetItemModelName(GetPlayerItemModelID(plunderid, itemid)), GetPlayerItemAmount(plunderid, itemid));
+				ShowPlayerDialog(playerid, DialogId_Player(6), DIALOG_STYLE_INPUT, "질의", cstr, "확인", "취소");
 				return 1;
 			}
 			PlunderId[playerid] = INVALID_PLAYER_ID;
@@ -657,14 +656,14 @@ public pTimerTickHandler_Player(nsec, playerid)
 		}
 		if(GetPVarInt(playerid, "pHunger") >= 100 && GetPVarInt(playerid, "pHunger") & 2 == 0)
 		{
-			format(str, sizeof(str), "허기가 %d입니다. 몸을 지탱하기가 힘듭니다.", GetPVarInt(playerid, "pHunger"));
-			SendClientMessage(playerid, COLOR_BLUE, str);
+			format(cstr, sizeof(cstr), "허기가 %d입니다. 몸을 지탱하기가 힘듭니다.", GetPVarInt(playerid, "pHunger"));
+			SendClientMessage(playerid, COLOR_BLUE, cstr);
 			SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+3);
 		}
 		else if(GetPVarInt(playerid, "pHunger") >= 50 && GetPVarInt(playerid, "pHunger") & 2 == 0)
 		{
-			format(str, sizeof(str), "허기가 %d입니다. 음식을 섭취해야 합니다.", GetPVarInt(playerid, "pHunger"));
-			SendClientMessage(playerid, COLOR_BLUE, str);
+			format(cstr, sizeof(cstr), "허기가 %d입니다. 음식을 섭취해야 합니다.", GetPVarInt(playerid, "pHunger"));
+			SendClientMessage(playerid, COLOR_BLUE, cstr);
 			SetPVarInt(playerid, "pHunger", GetPVarInt(playerid, "pHunger")+1);
 		}
 	}
@@ -916,20 +915,20 @@ stock IdBan(playerid, reason[], notice=0, orderer[]="시스템")
 	ShowPlayerBanDialog(playerid, pname, reason, str, 1);
 	Kick(playerid);
 	
-	format(str, sizeof(str), "%s님이 %s님에 의해 %s까지 아이디밴되었습니다.", pname, orderer, str);
+	format(cstr, sizeof(cstr), "%s님이 %s님에 의해 %s까지 아이디밴되었습니다.", pname, orderer, str);
 	switch(notice)
 	{
 		case 1:
-			SendAdminMessage(COLOR_RED, str, 1);
+			SendAdminMessage(COLOR_RED, cstr, 1);
 		case 2:
-			SendAdminMessage(COLOR_RED, str, 0);
+			SendAdminMessage(COLOR_RED, cstr, 0);
 		case 3:
 		{
-			SendAdminMessage(COLOR_RED, str, 0);
-			format(str, sizeof(str), "%s님이 아이디밴되었습니다.", pname);
+			SendAdminMessage(COLOR_RED, cstr, 0);
+			format(cstr, sizeof(cstr), "%s님이 아이디밴되었습니다.", pname);
 			for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 				if(GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
-					SendClientMessage(playerid, COLOR_RED, str);
+					SendClientMessage(playerid, COLOR_RED, cstr);
 		}
 	}
 	return 1;
@@ -949,20 +948,20 @@ stock IpBan(playerid, reason[], notice=0, orderer[]="시스템")
 	ShowPlayerBanDialog(playerid, GetPlayerNameA(playerid), reason, str, 2);
 	Kick(playerid);
 	
-	format(str, sizeof(str), "%s님이 %s님에 의해 %s까지 밴되었습니다.", pname, orderer, str);
+	format(cstr, sizeof(cstr), "%s님이 %s님에 의해 %s까지 밴되었습니다.", pname, orderer, str);
 	switch(notice)
 	{
 		case 1:
-			SendAdminMessage(COLOR_RED, str, 1);
+			SendAdminMessage(COLOR_RED, cstr, 1);
 		case 2:
-			SendAdminMessage(COLOR_RED, str, 0);
+			SendAdminMessage(COLOR_RED, cstr, 0);
 		case 3:
 		{
-			SendAdminMessage(COLOR_RED, str, 0);
-			format(str, sizeof(str), "%s님이 밴되었습니다.", pname);
+			SendAdminMessage(COLOR_RED, cstr, 0);
+			format(cstr, sizeof(cstr), "%s님이 밴되었습니다.", pname);
 			for(new i = 0, t = GetMaxPlayers(); i < t; i++)
 				if(GetPVarInt(i, "LoggedIn") && !GetPVarInt(playerid, "pAdmin") && !GetPVarInt(playerid, "pAgent"))
-					SendClientMessage(playerid, COLOR_RED, str);
+					SendClientMessage(playerid, COLOR_RED, cstr);
 		}
 	}
 	return 1;

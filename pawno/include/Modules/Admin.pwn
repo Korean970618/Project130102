@@ -51,11 +51,10 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 {
 	if(CallLocalFunction("OnPlayerAdminCommandText", "ds", playerid, FixBlankString(cmdtext)))
 	{
-		new str[256];
-		format(str, sizeof(str), "명령어 사용: %s", cmdtext);
+		format(cstr, sizeof(cstr), "명령어 사용: %s", cmdtext);
 		if(GetPVarInt(playerid, "pAgent"))
-			AgentLog(playerid, str);
-		AdminLog(playerid, str);
+			AgentLog(playerid, cstr);
+		AdminLog(playerid, cstr);
 		return 1;
 	}
 	return 0;
@@ -63,10 +62,9 @@ public pCommandTextHandler_Admin(playerid, cmdtext[])
 //-----< OnPlayerAdminCommandText >---------------------------------------------
 public OnPlayerAdminCommandText(playerid, cmdtext[])
 {
-	new cmd[256],
-		idx,
-		destid,
-		str[256];
+	new cmd[256], idx,
+		str[128],
+		destid;
 	cmd = strtok(cmdtext, idx);
 
 	if(!GetPVarInt(playerid, "pAgent")) return 0;
@@ -132,8 +130,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new Float:h = floatstr(cmd);
 		new Float:bh = GetPlayerHealthA(destid);
 		SetPlayerHealth(destid, h);
-		format(str, sizeof(str), "%s님의 체력을 설정했습니다. %f > %f", GetPlayerNameA(destid), bh, h);
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 체력을 설정했습니다. %f > %f", GetPlayerNameA(destid), bh, h);
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 체력이 설정되었습니다.");
 		return 1;
 	}
@@ -151,8 +149,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new Float:a = floatstr(cmd);
 		new Float:ba = GetPlayerArmourA(destid);
 		SetPlayerArmour(destid, a);
-		format(str, sizeof(str), "%s님의 아머를 설정했습니다. %f > %f", GetPlayerNameA(destid), ba, a);
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 아머를 설정했습니다. %f > %f", GetPlayerNameA(destid), ba, a);
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 아머가 설정되었습니다.");
 		return 1;
 	}
@@ -177,8 +175,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /정보수정 [플레이어] [정보] [배열] [값]");
 		SetPVarString(playerid, "EditPVar_value", cmd);
-		format(str, sizeof(str), "정보수정: %s(%d)", GetPlayerNameA(destid), destid);
-		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, str, "INTEGER\nFLOAT\nSTRING", "확인", "취소");
+		format(cstr, sizeof(cstr), "정보수정: %s(%d)", GetPlayerNameA(destid), destid);
+		ShowPlayerDialog(playerid, DialogId_Admin(0), DIALOG_STYLE_LIST, cstr, "INTEGER\nFLOAT\nSTRING", "확인", "취소");
 		return 1;
 	}
 	else if(!strcmp(cmd, "/정보검사", true))
@@ -196,14 +194,14 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		strcpy(varname, cmd);
 		cmd = strtok(cmdtext, idx);
 		new array = (strlen(cmd))?strval(cmd):0;
-		format(str, sizeof(str), "- %s님의 %s", GetPlayerNameA(destid), varname);
-		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "  INTEGER: %d", GetPVarInt(playerid, varname, array));
-		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "  FLOAT: %f", GetPVarFloat(playerid, varname, array));
-		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "  STRING: %s", GetPVarString(playerid, varname, array));
-		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(cstr, sizeof(cstr), "- %s님의 %s", GetPlayerNameA(destid), varname);
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
+		format(cstr, sizeof(cstr), "  INTEGER: %d", GetPVarInt(playerid, varname, array));
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
+		format(cstr, sizeof(cstr), "  FLOAT: %f", GetPVarFloat(playerid, varname, array));
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
+		format(cstr, sizeof(cstr), "  STRING: %s", GetPVarString(playerid, varname, array));
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/인테리어", true))
@@ -220,8 +218,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new interior = strval(cmd);
 		new binterior = GetPlayerInterior(destid);
 		SetPlayerInterior(destid, interior);
-		format(str, sizeof(str), "%s님의 인테리어를 변경했습니다. %d > %d", GetPlayerNameA(destid), binterior, interior);
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 인테리어를 변경했습니다. %d > %d", GetPlayerNameA(destid), binterior, interior);
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 인테리어가 변경되었습니다.");
 		return 1;
 	}
@@ -239,8 +237,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new virtualworld = strval(cmd);
 		new bvirtualworld = GetPlayerVirtualWorld(destid);
 		SetPlayerVirtualWorld(destid, virtualworld);
-		format(str, sizeof(str), "%s님의 버추얼월드를 변경했습니다. %d > %d", GetPlayerNameA(destid), bvirtualworld, virtualworld);
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 버추얼월드를 변경했습니다. %d > %d", GetPlayerNameA(destid), bvirtualworld, virtualworld);
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 버추얼월드가 변경되었습니다.");
 		return 1;
 	}
@@ -258,8 +256,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		new skin = strval(cmd);
 		new bskin = GetPlayerSkin(destid);
 		SetPlayerSkin(playerid, skin);
-		format(str, sizeof(str), "%s님의 스킨을 변경했습니다. %d > %d", GetPlayerNameA(destid), bskin, skin);
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 스킨을 변경했습니다. %d > %d", GetPlayerNameA(destid), bskin, skin);
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 스킨이 변경되었습니다.");
 		return 1;
 	}
@@ -287,8 +285,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		SpawnPlayer_(destid);
-		format(str, sizeof(str), "%s님을 리스폰시켰습니다.", GetPlayerNameA(destid));
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님을 리스폰시켰습니다.", GetPlayerNameA(destid));
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 리스폰되었습니다.");
 		return 1;
 	}
@@ -301,8 +299,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		TogglePlayerControllable(playerid, 0);
-		format(str, sizeof(str), "%s님을 얼렸습니다.", GetPlayerNameA(destid));
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님을 얼렸습니다.", GetPlayerNameA(destid));
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 얼었습니다.");
 		return 1;
 	}
@@ -315,8 +313,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
 		TogglePlayerControllable(playerid, 1);
-		format(str, sizeof(str), "%s님을 녹였습니다.", GetPlayerNameA(destid));
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님을 녹였습니다.", GetPlayerNameA(destid));
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		SendClientMessage(playerid, COLOR_WHITE, "관리자에 의해 녹았습니다.");
 		return 1;
 	}
@@ -351,10 +349,10 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한부여 [플레이어] [명령어]");
 		GrantCommand(destid, cmd);
-		format(str, sizeof(str), "%s님에게 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", GetPlayerNameA(destid), cmd);
-		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", cmd);
-		SendClientMessage(destid, COLOR_YELLOW, str);
+		format(cstr, sizeof(cstr), "%s님에게 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", GetPlayerNameA(destid), cmd);
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
+		format(cstr, sizeof(cstr), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 부여했습니다.", cmd);
+		SendClientMessage(destid, COLOR_YELLOW, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/명령어권한회수", true))
@@ -369,10 +367,10 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /명령어권한회수 [플레이어] [명령어]");
 		RevokeCommand(destid, cmd);
-		format(str, sizeof(str), "%s님으로부터 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", GetPlayerNameA(destid), cmd);
-		SendClientMessage(playerid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", cmd);
-		SendClientMessage(destid, COLOR_YELLOW, str);
+		format(cstr, sizeof(cstr), "%s님으로부터 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", GetPlayerNameA(destid), cmd);
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
+		format(cstr, sizeof(cstr), "관리자가 "C_BLUE"%s"C_YELLOW"의 사용 권한을 회수했습니다.", cmd);
+		SendClientMessage(destid, COLOR_YELLOW, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/고정가속도", true))
@@ -387,10 +385,10 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(!strlen(cmd))
 			return SendClientMessage(playerid, COLOR_WHITE, "사용법: /고정가속도 [플레이어] [가속도]");
 		SetPVarFloat(playerid, "pAccel", floatstr(cmd));
-		format(str, sizeof(str), "관리자에 의해 고정가속도 설정 - %.4f", floatstr(cmd));
-		SendClientMessage(destid, COLOR_YELLOW, str);
-		format(str, sizeof(str), "%s님의 고정가속도 설정 - %.4f", GetPlayerNameA(destid), floatstr(cmd));
-		SendClientMessage(playerid, COLOR_YELLOW, str);
+		format(cstr, sizeof(cstr), "관리자에 의해 고정가속도 설정 - %.4f", floatstr(cmd));
+		SendClientMessage(destid, COLOR_YELLOW, cstr);
+		format(cstr, sizeof(cstr), "%s님의 고정가속도 설정 - %.4f", GetPlayerNameA(destid), floatstr(cmd));
+		SendClientMessage(playerid, COLOR_YELLOW, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/데미지기록열람", true))
@@ -454,15 +452,15 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		if(GetPVarType(destid, "FlyMode"))
 		{
 			CancelFlyMode(destid);
-			format(str, sizeof(str), "%s님의 날기모드를 종료시켰습니다.", GetPlayerNameA(destid));
-			SendClientMessage(playerid, COLOR_WHITE, str);
+			format(cstr, sizeof(cstr), "%s님의 날기모드를 종료시켰습니다.", GetPlayerNameA(destid));
+			SendClientMessage(playerid, COLOR_WHITE, cstr);
 			SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 날기모드가 종료되었습니다.");
 		}
 		else
 		{
 			FlyMode(destid);
-			format(str, sizeof(str), "%s님을 날게 하였습니다.", GetPlayerNameA(destid));
-			SendClientMessage(playerid, COLOR_WHITE, str);
+			format(cstr, sizeof(cstr), "%s님을 날게 하였습니다.", GetPlayerNameA(destid));
+			SendClientMessage(playerid, COLOR_WHITE, cstr);
 			SendClientMessage(destid, COLOR_WHITE, "관리자에 의해 날게 되었습니다.");
 		}
 		return 1;
@@ -720,15 +718,15 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		{
 			new Float:x, Float:y, Float:z;
 			GetPlayerVelocity(destid, x, y, z);
-			format(str, sizeof(str), "%s님의 가속도: %.4f, %.4f, %.4f", GetPlayerNameA(destid), x, y, z);
-			SendClientMessage(playerid, COLOR_WHITE, str);
+			format(cstr, sizeof(cstr), "%s님의 가속도: %.4f, %.4f, %.4f", GetPlayerNameA(destid), x, y, z);
+			SendClientMessage(playerid, COLOR_WHITE, cstr);
 			return 1;
 		}
 		new velocity[3][16];
 		split(cmd, velocity, ',');
 		SetPlayerVelocity(destid, floatstr(velocity[0]), floatstr(velocity[1]), floatstr(velocity[2]));
-		format(str, sizeof(str), "%s님의 가속도: %.4f, %.4f, %.4f", GetPlayerNameA(destid), floatstr(velocity[0]), floatstr(velocity[1]), floatstr(velocity[2]));
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 가속도: %.4f, %.4f, %.4f", GetPlayerNameA(destid), floatstr(velocity[0]), floatstr(velocity[1]), floatstr(velocity[2]));
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/애님인덱스", true))
@@ -739,8 +737,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		destid = ReturnUser(cmd);
 		if(!IsPlayerConnected(destid))
 			return SendClientMessage(playerid, COLOR_WHITE, "존재하지 않는 플레이어입니다.");
-		format(str, sizeof(str), "%s님의 애니메이션 인덱스: %d", GetPlayerNameA(destid), GetPlayerAnimationIndex(destid));
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 애니메이션 인덱스: %d", GetPlayerNameA(destid), GetPlayerAnimationIndex(destid));
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/스페셜액션", true))
@@ -754,13 +752,13 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		cmd = strtok(cmdtext, idx);
 		if(!strlen(cmd))
 		{
-			format(str, sizeof(str), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), GetPlayerSpecialAction(destid));
-			SendClientMessage(playerid, COLOR_WHITE, str);
+			format(cstr, sizeof(cstr), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), GetPlayerSpecialAction(destid));
+			SendClientMessage(playerid, COLOR_WHITE, cstr);
 			return 1;
 		}
 		SetPlayerSpecialAction(playerid, strval(cmd));
-		format(str, sizeof(str), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), strval(cmd));
-		SendClientMessage(playerid, COLOR_WHITE, str);
+		format(cstr, sizeof(cstr), "%s님의 스페셜 액션: %d", GetPlayerNameA(destid), strval(cmd));
+		SendClientMessage(playerid, COLOR_WHITE, cstr);
 		return 1;
 	}
 	else if(!strcmp(cmd, "/오브젝트선택", true))
@@ -792,18 +790,18 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 				new varname[64];
 				strcpy(varname, GetPVarString(playerid, "EditPVar_varname"));
 				new array = GetPVarInt(playerid, "EditPVar_array");
-				strcpy(str, GetPVarString(playerid, "EditPVar_value"));
+				strcpy(cstr, GetPVarString(playerid, "EditPVar_value"));
 				switch(listitem)
 				{
 					case 0:
-						SetPVarInt(destid, varname, strval(str), array);
+						SetPVarInt(destid, varname, strval(cstr), array);
 					case 1:
-						SetPVarFloat(destid, varname, floatstr(str), array);
+						SetPVarFloat(destid, varname, floatstr(cstr), array);
 					default:
-						SetPVarString(destid, varname, str, array);
+						SetPVarString(destid, varname, cstr, array);
 				}
-				format(str, sizeof(str), "%s님이 %s님의 %s 수정: %s", GetPlayerNameA(playerid), GetPlayerNameA(destid), varname, str);
-				SendAdminMessage(COLOR_YELLOW, str, 0);
+				format(cstr, sizeof(cstr), "%s님이 %s님의 %s 수정: %s", GetPlayerNameA(playerid), GetPlayerNameA(destid), varname, cstr);
+				SendAdminMessage(COLOR_YELLOW, cstr, 0);
 			}
 			SetPVarInt(playerid, "EditPVar_destid", 0);
 			SetPVarString(playerid, "EditPVar_varname", chNullString);
@@ -816,8 +814,8 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			if(response && listitem)
 			{
 				DialogData[playerid][0] = strval(inputtext);
-				format(str, sizeof(str), ""C_GREEN"%s"C_WHITE"을(를) 몇 개 생성하시겠습니까?", GetItemModelName(DialogData[playerid][0]));
-				ShowPlayerDialog(playerid, DialogId_Admin(17), DIALOG_STYLE_INPUT, "질의", str, "확인", "뒤로");
+				format(cstr, sizeof(cstr), ""C_GREEN"%s"C_WHITE"을(를) 몇 개 생성하시겠습니까?", GetItemModelName(DialogData[playerid][0]));
+				ShowPlayerDialog(playerid, DialogId_Admin(17), DIALOG_STYLE_INPUT, "질의", cstr, "확인", "뒤로");
 			}
 		case 3:
 			if(response)
@@ -973,10 +971,10 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			if(response)
 			{
 				GivePlayerWeapon(MpListData[playerid][0], MpListData[playerid][1], strval(inputtext));
-				format(str, sizeof(str), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
-				SendClientMessage(playerid, COLOR_WHITE, str);
-				format(str, sizeof(str), "관리자가 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
-				SendClientMessage(MpListData[playerid][0], COLOR_WHITE, str);
+				format(cstr, sizeof(cstr), "%s님께 "C_BLUE"%s"C_WHITE"을(를) %d발 드렸습니다.", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+				SendClientMessage(playerid, COLOR_WHITE, cstr);
+				format(cstr, sizeof(cstr), "관리자가 "C_BLUE"%s"C_WHITE"을(를) %d발 주셨습니다.", GetWeaponNameA(MpListData[playerid][1]), strval(inputtext));
+				SendClientMessage(MpListData[playerid][0], COLOR_WHITE, cstr);
 			}
 			else
 			{
@@ -1004,7 +1002,6 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 //-----< mplResponseHandler >---------------------------------------------------
 public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 {
-	new str[256];
 	switch(MpListId_Admin(0) - mplistid)
 	{
 		case 0:
@@ -1013,15 +1010,15 @@ public mplResponseHandler_Admin(playerid, mplistid, selecteditem)
 				if(GetWeaponObjectModelID(i) == selecteditem)
 				{
 					MpListData[playerid][1] = i;
-					format(str, sizeof(str), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
-					ShowPlayerDialog(playerid, DialogId_Admin(16), DIALOG_STYLE_INPUT, ""C_BLUE"무기", str, "확인", "뒤로");
+					format(cstr, sizeof(cstr), ""C_WHITE"%s님에게 "C_BLUE"%s"C_WHITE"을(를) 몇 발 주시겠습니까?", GetPlayerNameA(MpListData[playerid][0]), GetWeaponNameA(i));
+					ShowPlayerDialog(playerid, DialogId_Admin(16), DIALOG_STYLE_INPUT, ""C_BLUE"무기", cstr, "확인", "뒤로");
 				}
 		}
 		case 1:
 		{
 			SetPlayerSkin(MpListData[playerid][0], selecteditem);
-			format(str, sizeof(str), "%s님의 스킨을 변경했습니다.", GetPlayerNameA(MpListData[playerid][0]));
-			SendClientMessage(playerid, COLOR_WHITE, str);
+			format(cstr, sizeof(cstr), "%s님의 스킨을 변경했습니다.", GetPlayerNameA(MpListData[playerid][0]));
+			SendClientMessage(playerid, COLOR_WHITE, cstr);
 			SendClientMessage(MpListData[playerid][0], COLOR_WHITE, "관리자가 당신의 스킨을 변경했습니다.");
 		}
 	}
