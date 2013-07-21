@@ -197,8 +197,8 @@ stock SetPlayerFactionID(playerid, factionid)
 	new memberscount = GetFactionVarInt(factionid, "MembersCount");
 	if(memberscount >= MAX_FACTION_MEMBERS)
 	{
-		format(cstr, sizeof(cstr), "%s%s%s의 최대 인원(%d명)이 초과했습니다.", C_RED, GetFactionVarString(factionid, "FactionName"), C_WHITE, MAX_FACTION_MEMBERS);
-		SendClientMessage(playerid, COLOR_WHITE, cstr);
+		format(str, sizeof(str), "%s%s%s의 최대 인원(%d명)이 초과했습니다.", C_RED, GetFactionVarString(factionid, "FactionName"), C_WHITE, MAX_FACTION_MEMBERS);
+		SendClientMessage(playerid, COLOR_WHITE, str);
 	}
 	else if(memberscount)
 	{
@@ -208,8 +208,8 @@ stock SetPlayerFactionID(playerid, factionid)
 	}
 	if(!returns)
 	{
-		format(cstr, sizeof(cstr), "%s%s%s 가입에 실패했습니다.", C_RED, GetFactionVarString(factionid, "FactionName"), C_WHITE);
-		SendClientMessage(playerid, COLOR_WHITE, cstr);
+		format(str, sizeof(str), "%s%s%s 가입에 실패했습니다.", C_RED, GetFactionVarString(factionid, "FactionName"), C_WHITE);
+		SendClientMessage(playerid, COLOR_WHITE, str);
 	}
 	return returns;
 }

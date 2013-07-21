@@ -98,11 +98,8 @@
 
 //-----< Defines
 #define MAX_WEAPONS			 	47
-#define MAX_DIALOGS			 	500
-#define MAX_TEXT_IO				128
-//-----< Hook Defines >---------------------------------------------------------
-#undef MAX_PLAYERS
-#define MAX_PLAYERS				200
+#define MAX_DIALOGS			 	1000
+#define MAX_DIALOG_LISTITEMS	500
 //-----< Chars >----------------------------------------------------------------
 #define chNullString			""
 #define chEmpty				 	" "
@@ -173,8 +170,8 @@
 
 
 //-----< Variables
-new DialogData[MAX_PLAYERS][10];
-new MpListData[MAX_PLAYERS][10];
+new DialogData[MAX_PLAYERS][100];
+new MpListData[MAX_PLAYERS][100];
 enum eAttachedObjectInfo
 {
 	aoModel,
@@ -187,7 +184,7 @@ enum eAttachedObjectInfo
 enum eClientMessageInfo
 {
 	cmColor,
-	cmMessage[128]
+	cmMessage[512]
 }
 enum eAnimationInfo
 {
@@ -221,8 +218,7 @@ new AttachedObjectInfo[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][eAttachedObject
 	InteriorInfo[MAX_PLAYERS],
 	Float:HealthInfo[MAX_PLAYERS],
 	Float:ArmourInfo[MAX_PLAYERS],
-	bool:Controllable[MAX_PLAYERS],
-	cstr[MAX_TEXT_IO];
+	bool:Controllable[MAX_PLAYERS];
 
 
 
@@ -468,7 +464,7 @@ stock SendClientMessage_(playerid, color, const message[])
 	}
 	new index = ClientMessages[playerid];
 	ClientMessageInfo[playerid][index][cmColor] = color;
-	strmid(ClientMessageInfo[playerid][index][cmMessage], message, 0, MAX_TEXT_IO, MAX_TEXT_IO);
+	strmid(ClientMessageInfo[playerid][index][cmMessage], message, 0, 512, 512);
 	ClientMessages[playerid]++;
 	return SendClientMessage(playerid, color, message);
 }

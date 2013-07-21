@@ -99,6 +99,7 @@ public pConnectHandler_Property(playerid)
 //-----< pKeyStateChangeHandler >-----------------------------------------------
 public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 {
+	new str[256];
 	if(newkeys == KEY_SECONDARY_ATTACK)
 		for(new i = 0, t = GetMaxProperties(); i < t; i++)
 			if(IsValidPropertyID(i))
@@ -125,10 +126,10 @@ public pKeyStateChangeHandler_Property(playerid, newkeys, oldkeys)
 					{
 						TogglePropertyEnable(i, true);
 						WarnedPropertyTimer[playerid][i] = SetTimerEx("CancelPropertyWarn", 5000, false, "dd", playerid, i);
-						format(cstr, sizeof(cstr), "* %s(%d)´ÔÀÌ ºó Áý %d¹øÀ¸·Î ÀÔÀåÇÏ¼Ì½À´Ï´Ù.", GetPlayerNameA(playerid), playerid, i);
+						format(str, sizeof(str), "* %s(%d)´ÔÀÌ ºó Áý %d¹øÀ¸·Î ÀÔÀåÇÏ¼Ì½À´Ï´Ù.", GetPlayerNameA(playerid), playerid, i);
 						for(new j = 0, u = GetMaxPlayers(); j < u; j++)
 							if(GetPVarInt_(j, "pAgentMode"))
-								SendClientMessage(j, COLOR_ORANGE, cstr);
+								SendClientMessage(j, COLOR_ORANGE, str);
 					}
 				}
 				else if(isex)
