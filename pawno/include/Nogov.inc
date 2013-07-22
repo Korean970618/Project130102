@@ -98,7 +98,7 @@
 
 //-----< Defines
 #define MAX_WEAPONS			 	47
-#define MAX_DIALOGS			 	500
+#define MAX_DIALOGS			 	25
 #define MAX_TEXT_IO				128
 //-----< Hook Defines >---------------------------------------------------------
 #undef MAX_PLAYERS
@@ -203,6 +203,7 @@ enum eAnimationInfo
 }
 enum eDialogInfo
 {
+	dID,
 	dStyle,
 	dCaption[64],
 	dInfo[2048],
@@ -274,12 +275,13 @@ public OnPlayerConnect(playerid)
 	
 	for(new i = 0; i < MAX_DIALOGS; i++)
 	{
+		DialogInfo[playerid][i][dID] = -1;
 		DialogInfo[playerid][i][dStyle] = 0;
 		strcpy(DialogInfo[playerid][i][dCaption], chNullString);
 		strcpy(DialogInfo[playerid][i][dInfo], chNullString);
 		strcpy(DialogInfo[playerid][i][dButton1], chNullString);
 		strcpy(DialogInfo[playerid][i][dButton2], chNullString);
-		DialogInfo[playerid][i][dBeforeDialog] = 0;
+		DialogInfo[playerid][i][dBeforeDialog] = -1;
 	}
 	LastDialog[playerid] = 0;
 	
@@ -365,14 +367,25 @@ stock ShowPlayerDialog_(playerid, dialogid, style, caption[], info[], button1[],
 	
 	if(OnDialogRequest(playerid, dialogid, LastDialog[playerid]))
 	{
-		DialogInfo[playerid][dialogid][dStyle] = style;
-		strcpy(DialogInfo[playerid][dialogid][dCaption], caption);
-		strcpy(DialogInfo[playerid][dialogid][dInfo], info);
-		strcpy(DialogInfo[playerid][dialogid][dButton1], button1);
-		strcpy(DialogInfo[playerid][dialogid][dButton2], button2);
-		DialogInfo[playerid][dialogid][dBeforeDialog] = LastDialog[playerid];
+		new index = -1;
+		for(new i = 0; i < MAX_DIALOGS; i++)
+			if(DialogInfo[playerid][i][dID] == -1)
+			{
+				index = i;
+				break;
+			}
+		if(index == -1)
+			if(LastDialog[playerid] == MAX_DIALOGS-1) index = 0;
+			else index = LastDialog[playerid]+1;
+		DialogInfo[playerid][index][dID] = dialogid;
+		DialogInfo[playerid][index][dStyle] = style;
+		strcpy(DialogInfo[playerid][index][dCaption], caption);
+		strcpy(DialogInfo[playerid][index][dInfo], info);
+		strcpy(DialogInfo[playerid][index][dButton1], button1);
+		strcpy(DialogInfo[playerid][index][dButton2], button2);
+		DialogInfo[playerid][index][dBeforeDialog] = LastDialog[playerid];
 		
-		LastDialog[playerid] = dialogid;
+		LastDialog[playerid] = index;
 		return _ShowPlayerDialog(playerid, dialogid, style, caption_, info_, button1, button2);
 	}
 	return 0;
@@ -1230,9 +1243,9 @@ stock GetWeaponHand(weaponid)
 stock ShowLastDialog(playerid)
 {
 	new id = DialogInfo[playerid][LastDialog[playerid]][dBeforeDialog];
-	if(!strlen(DialogInfo[LastDialog[playerid]][dCaption])) return 0;
+	if(id == -1 || DialogInfo[playerid][id][dID] == -1) return 0;
 	
-	_ShowPlayerDialog(playerid, id, DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
+	_ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	LastDialog[playerid] = id;
 	return 1;
 }
@@ -1240,8 +1253,8 @@ stock ShowLastDialog(playerid)
 stock ReshowDialog(playerid, id=-1)
 {
 	if(id == -1) id = LastDialog[playerid];
-	if(!strlen(DialogInfo[id][dCaption])) return 0;
-	_ShowPlayerDialog(playerid, id, DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
+	if(DialogInfo[playerid][id][dID] == -1) return 0;
+	_ShowPlayerDialog(playerid, DialogInfo[playerid][id][dID], DialogInfo[playerid][id][dStyle], DialogInfo[playerid][id][dCaption], DialogInfo[playerid][id][dInfo], DialogInfo[playerid][id][dButton1], DialogInfo[playerid][id][dButton2]);
 	return 1;
 }
 //-----< TimeConvert >----------------------------------------------------------
