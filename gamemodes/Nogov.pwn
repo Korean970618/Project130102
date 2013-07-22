@@ -40,7 +40,7 @@
 //-----< Pre-Defines
 #define SCRIPT_NAME				"Nogov"
 #define SCRIPT_VERSION			"Alpha"
-#define SERVER_HOSTNAME			"[Nogov] GTA자료실 운영 서바이벌 게임"
+#define SERVER_HOSTNAME			"&Nogov"
 #define SERVER_MAPNAME			"San Fierro"
 
 
