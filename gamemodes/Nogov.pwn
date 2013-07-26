@@ -193,7 +193,7 @@ public OnGameModeInit()
 	AddHandler("Player",			gInitHandler, pConnectHandler, pDisconnectHandler, aConnectHandler, pRequestClassHandler, pRequestSpawnHandler, aConnectHandler, pUpdateHandler, pDeathHandler, pKeyStateChangeHandler, pSpawnHandler, pCommandTextHandler, dRequestHandler, dResponseHandler, pTimerTickHandler, pTakeDamageHandler);
 	AddHandler("Property",			gInitHandler, pConnectHandler, dResponseHandler, pKeyStateChangeHandler);
 	AddHandler("Vehicle",			gInitHandler);
-	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pUpdateHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler, pTimerTickHandler);
+	AddHandler("Item",			  	gInitHandler, pSpawnHandler, pConnectHandler, pUpdateHandler, pKeyStateChangeHandler, pCommandTextHandler, dResponseHandler, pEditDynamicObjectHandler, pEditAttachedObjectHandler, pTimerTickHandler);
 	AddHandler("Fly",				gInitHandler, pConnectHandler, pUpdateHandler);
 	AddHandler("Position",			gInitHandler, pConnectHandler, pUpdateHandler, pTimerTickHandler);
 	AddHandler("MpList",			pConnectHandler, pClickTDHandler, pClickPlayerTDHandler);
@@ -336,7 +336,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
 			format(funcstr, sizeof(funcstr), "%s_%s", "pCommandTextHandler", CallbacksList[i][CBName]);
 			if(CallLocalFunction(funcstr, "ds", playerid, FixBlankString(cmdtext))) return 1;
 		}
-	SendClientMessage(playerid, COLOR_WHITE, "[SERVER] Á¸ÀçÇÏÁö ¾Ê´Â ¸í·É¾îÀÔ´Ï´Ù.");
+	SendClientMessage(playerid, COLOR_WHITE, "[SERVER] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½É¾ï¿½ï¿½Ô´Ï´ï¿½.");
 	return 1;
 }
 //-----< OnPlayerEnterVehicle >-------------------------------------------------

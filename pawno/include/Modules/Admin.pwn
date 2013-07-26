@@ -67,7 +67,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		destid;
 	cmd = strtok(cmdtext, idx);
 
-	if(!GetPVarInt(playerid, "pAgent")) return 0;
+	if(!GetPVarInt(playerid, "pAgent")) { }
 	else if(!strcmp(cmd, "/에이전트", true) || !strcmp(cmd, "/agent", true))
 	{
 		if(GetPVarInt(playerid, "pAgentMode"))
@@ -89,8 +89,8 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		return 1;
 	}
 
-	if(GetPVarInt(playerid, "pAdmin") < 1
-	&& !IsGrantedCommand(playerid, cmd)) return 0;
+	if(!GetPVarInt(playerid, "pAdmin")
+	&& !IsGrantedCommand(playerid, cmd)) { }
 	else if(!strcmp(cmd, "/관리자도움말", true) || !strcmp(cmd, "/adminhelp", true) || !strcmp(cmd, "/ah", true))
 	{
 		new help[2048];
@@ -105,7 +105,7 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		/출두, /소환, /마크, /마크로, /텔레포트, /로산, /샌피, /라벤, /건물로\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 서버 -"C_WHITE"\n\
-		/건물생성, /건물설정, /아이템생성, /아이템제거\n\
+		/건물생성, /건물설정, /아이템생성, /아이템제거, /아이템모델속성편집\n\
 		\n");
 		strcat(help, ""C_PASTEL_YELLOW"- 디버그 -"C_WHITE"\n\
 		/부착오브젝트, /음악, /카메라정보, /가속도, /애님인덱스, /스페셜액션, /오브젝트선택\n\
@@ -643,6 +643,16 @@ public OnPlayerAdminCommandText(playerid, cmdtext[])
 		DestroyItem(itemid);
 		return 1;
 	}
+	else if(!strcmp(cmd, "/아이템모델속성편집", true))
+	{
+		switch(GetItemModelModifierModel(playerid))
+		{
+			case -2: ShowItemModelList(playerid, DialogId_Admin(10), ""C_YELLOW"> 생성하기");
+			case -1: ShowItemModelList(playerid, DialogId_Admin(10), ""C_YELLOW"> 생성중인 아이템모델");
+			default: ShowItemModelList(playerid, DialogId_Admin(10), ""C_YELLOW"> 편집중인 아이템모델");
+		}
+		return 1;
+	}
 	//
 	// 디버그
 	//
@@ -966,6 +976,14 @@ public dResponseHandler_Admin(playerid, dialogid, response, listitem, inputtext[
 			}
 			else ShowPlayerDialog(playerid, DialogId_Admin(3), DIALOG_STYLE_LIST, "부착오브젝트", "목록\n편집\n제거", "확인", "취소");
 		}
+		case 10:
+			if(response && listitem)
+			{
+				if(inputtext[0] == '>')
+					ShowItemModelModifier(playerid);
+				else 
+					ShowItemModelModifier(playerid, strval(inputtext));
+			}
 		case 16:
 		{
 			if(response)

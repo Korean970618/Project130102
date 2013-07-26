@@ -35,6 +35,9 @@
 	GetItemModelName(modelid)
 	GetItemModelDBID(modelid)
 	UseItemModel(playerid, modelid, ...)
+	ShowItemModelModifier(playerid, modelid=-1)
+	ResetItemModelModifier(playerid)
+	GetItemModelModifierModel(playerid)
   
 	CreateItemDataTable()
 	SaveItemDataById(itemid)
@@ -74,8 +77,6 @@
 	GetPlayerNearestItem(playerid, Float:distance=1.0)
 	GetItemSaveTypeCode(savetype[])
 	FindPlayerItemBySaveType(playerid, savetype[])
-	ShowItemModelModifier(playerid, modelid=-1)
-	ResetItemModelModifier(playerid)
 	
 	IsValidItemModelID(modelid)
 	GetMaxItemModels()
@@ -532,42 +533,75 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 					}
 					case 1..2:
 					{
-						new left[32], both[32];
+						new left[32], both[32],
+							lines = 10;
 						strcpy(left, FindPlayerItemBySaveType(playerid, "왼손"));
 						strcpy(both, FindPlayerItemBySaveType(playerid, "양손"));
 						if(strlen(left))
 						{
 							format(str, sizeof(str), "왼손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", left);
-							ShowPlayerDialog(playerid, DialogId_Item(14), DIALOG_STYLE_MSGBOX, "아이템 모델 속성 편집", str, "확인", chNullString);
+							ShowPlayerDialog(playerid, DialogId_Item(14), DIALOG_STYLE_MSGBOX, "아이템모델 속성 편집", str, "확인", chNullString);
 						}
 						else if(strlen(both))
 						{
 							format(str, sizeof(str), "양손에 "C_GREEN"%s"C_WHITE"이(가) 있습니다.", left);
-							ShowPlayerDialog(playerid, DialogId_Item(14), DIALOG_STYLE_MSGBOX, "아이템 모델 속성 편집", str, "확인", chNullString);
+							ShowPlayerDialog(playerid, DialogId_Item(14), DIALOG_STYLE_MSGBOX, "아이템모델 속성 편집", str, "확인", chNullString);
 						}
-						else if(listitem-8 == 1)
+						else if(listitem-lines == 1)
 							SetPlayerAttachedObject(playerid, 0, ItemModelModifier[playerid][imModel], 5,
-								ItemModelModifier[playerid][imOffset1][0], ItemModelModifier[playerid][imOffset1][1], ItemModelModifier[playerid][imOffset1][2],
-								ItemModelModifier[playerid][imRot1][0], ItemModelModifier[playerid][imRot1][1], ItemModelModifier[playerid][imRot1][2],
-								ItemModelModifier[playerid][imScale1][0], ItemModelModifier[playerid][imScale1][1], ItemModelModifier[playerid][imScale1][2]);
+								ItemModelModifier[playerid][imOffset1][0],	ItemModelModifier[playerid][imOffset1][1],	ItemModelModifier[playerid][imOffset1][2],
+								ItemModelModifier[playerid][imRot1][0],		ItemModelModifier[playerid][imRot1][1],		ItemModelModifier[playerid][imRot1][2],
+								ItemModelModifier[playerid][imScale1][0],	ItemModelModifier[playerid][imScale1][1],	ItemModelModifier[playerid][imScale1][2]);
 						else
 						{
 							SetPlayerAttachedObject(playerid, 0, ItemModelModifier[playerid][imModel], 5,
-								ItemModelModifier[playerid][imOffset2][0], ItemModelModifier[playerid][imOffset2][1], ItemModelModifier[playerid][imOffset2][2],
-								ItemModelModifier[playerid][imRot2][0], ItemModelModifier[playerid][imRot2][1], ItemModelModifier[playerid][imRot2][2],
-								ItemModelModifier[playerid][imScale2][0], ItemModelModifier[playerid][imScale2][1], ItemModelModifier[playerid][imScale2][2]);
+								ItemModelModifier[playerid][imOffset2][0],	ItemModelModifier[playerid][imOffset2][1],	ItemModelModifier[playerid][imOffset2][2],
+								ItemModelModifier[playerid][imRot2][0],		ItemModelModifier[playerid][imRot2][1],		ItemModelModifier[playerid][imRot2][2],
+								ItemModelModifier[playerid][imScale2][0],	ItemModelModifier[playerid][imScale2][1],	ItemModelModifier[playerid][imScale2][2]);
 							SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 						}
-						ItemModelModifierInfo[playerid][immHand] = listitem - 8;
+						ItemModelModifierInfo[playerid][immHand] = listitem - lines;
 						EditAttachedObject(playerid, 0);
 					}
 					case 3:
 					{
 						format(str, sizeof(str), "아이템모델 "C_GREEN"%s"C_WHITE"을(를) 삭제합니다.\n계속하시겠습니까?", ItemModelInfo[modelid][imName]);
-						ShowPlayerDialog(playerid, DialogId_Item(15), DIALOG_STYLE_MSGBOX, "아이템 모델 속성 편집", str, "예", "아니오");
+						ShowPlayerDialog(playerid, DialogId_Item(15), DIALOG_STYLE_MSGBOX, "아이템모델 속성 편집", str, "예", "아니오");
 					}
 					case 4:
 					{
+						if(ItemModelModifierInfo[playerid][immModel] == -1)
+						{
+							CreateItemModel(ItemModelModifier[playerid][imName], ItemModelModifier[playerid][imModel], ItemModelModifier[playerid][imDropPos], ItemModelModifier[playerid][imWeight], ItemModelModifier[playerid][imInfo],
+								ItemModelModifier[playerid][imOffset1], ItemModelModifier[playerid][imRot1], ItemModelModifier[playerid][imScale1], ItemModelModifier[playerid][imOffset2], ItemModelModifier[playerid][imRot2], ItemModelModifier[playerid][imScale2],
+								ItemModelModifier[playerid][imMaxHealth], ItemModelModifier[playerid][imHand], ItemModelModifier[playerid][imEffect], ItemModelModifier[playerid][imEffectAmount]);
+						}
+						else
+						{
+							strcpy(ItemModelInfo[modelid][imName],		ItemModelModifier[playerid][imName]);
+							ItemModelInfo[modelid][imModel]				= ItemModelModifier[playerid][imModel];
+							for(new i; i < 6; i++)
+								ItemModelInfo[modelid][imDropPos][i]	= ItemModelModifier[playerid][imDropPos][i];
+							ItemModelInfo[modelid][imWeight]			= ItemModelModifier[playerid][imWeight];
+							strcpy(ItemModelInfo[modelid][imInfo],		ItemModelModifier[playerid][imInfo]);
+							for(new i; i < 3; i++)
+							{
+								ItemModelInfo[modelid][imOffset1][i]	= ItemModelModifier[playerid][imOffset1][i];
+								ItemModelInfo[modelid][imRot1][i]		= ItemModelModifier[playerid][imRot1][i];
+								ItemModelInfo[modelid][imScale1][i]		= ItemModelModifier[playerid][imScale1][i];
+								ItemModelInfo[modelid][imOffset2][i]	= ItemModelModifier[playerid][imOffset2][i];
+								ItemModelInfo[modelid][imRot2][i]		= ItemModelModifier[playerid][imRot2][i];
+								ItemModelInfo[modelid][imScale2][i]		= ItemModelModifier[playerid][imScale2][i];
+							}
+							ItemModelInfo[modelid][imMaxHealth]			= ItemModelModifier[playerid][imMaxHealth];
+							ItemModelInfo[modelid][imHand]				= ItemModelModifier[playerid][imHand];
+							strcpy(ItemModelInfo[modelid][imEffect],	ItemModelModifier[playerid][imEffect]);
+							ItemModelInfo[modelid][imEffectAmount]		= ItemModelModifier[playerid][imEffectAmount];
+							SaveItemModelDataById(modelid);
+						}
+						
+						ResetItemModelModifier(playerid);
+						OnPlayerCommandText(playerid, "/아이템모델속성편집");
 					}
 				}
 			}
@@ -575,17 +609,44 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 		{
 			if(response)
 			{
-				new optionid = ItemModelModifierInfo[playerid][immOption];
+				new optionid = ItemModelModifierInfo[playerid][immOption],
+					receive[9][16];
 				switch(optionid)
 				{
 					case 0: strcpy(ItemModelModifier[playerid][imName],		inputtext);
 					case 1: ItemModelModifier[playerid][imModel]			= strval(inputtext);
-					case 2: ItemModelModifier[playerid][imWeight]			= strval(inputtext);
-					case 3: strcpy(ItemModelModifier[playerid][imInfo],		chNullString);
-					case 4: ItemModelModifier[playerid][imMaxHealth]		= 0;
-					case 5: ItemModelModifier[playerid][imHand]				= 0;
-					case 6: strcpy(ItemModelModifier[playerid][imEffect],	chNullString);
-					case 7: ItemModelModifier[playerid][imEffectAmount]		= 0;
+					case 2:
+					{
+						split(inputtext, receive, ',');
+						for(new i = 0; i < 6; i++)
+							ItemModelModifier[playerid][imDropPos][i]		= floatstr(receive[i]);
+					}
+					case 3: ItemModelModifier[playerid][imWeight]			= strval(inputtext);
+					case 4: strcpy(ItemModelModifier[playerid][imInfo],		chNullString);
+					case 5:
+					{
+						split(inputtext, receive, ',');
+						for(new i = 0; i < 3; i++)
+							ItemModelModifier[playerid][imOffset1][i]		= floatstr(receive[i]);
+						for(new i = 3; i < 6; i++)
+							ItemModelModifier[playerid][imRot1][i]			= floatstr(receive[i]);
+						for(new i = 6; i < 9; i++)
+							ItemModelModifier[playerid][imScale1][i]		= floatstr(receive[i]);
+					}
+					case 6:
+					{
+						split(inputtext, receive, ',');
+						for(new i = 0; i < 3; i++)
+							ItemModelModifier[playerid][imOffset2][i]		= floatstr(receive[i]);
+						for(new i = 3; i < 6; i++)
+							ItemModelModifier[playerid][imRot2][i]			= floatstr(receive[i]);
+						for(new i = 6; i < 9; i++)
+							ItemModelModifier[playerid][imScale2][i]		= floatstr(receive[i]);
+					}
+					case 7: ItemModelModifier[playerid][imMaxHealth]		= 0;
+					case 8: ItemModelModifier[playerid][imHand]				= 0;
+					case 9: strcpy(ItemModelModifier[playerid][imEffect],	chNullString);
+					case 10: ItemModelModifier[playerid][imEffectAmount]		= 0;
 				}
 				ShowItemModelModifier(playerid);
 			}
@@ -598,9 +659,9 @@ public dResponseHandler_Item(playerid, dialogid, response, listitem, inputtext[]
 			{
 				new modelid = ItemModelModifierInfo[playerid][immModel];
 				if(!IsValidItemModelID(modelid))
-					return ShowPlayerDialog(playerid, DialogId_Item(16), DIALOG_STYLE_MSGBOX, "아이템 모델 속성 편집", "생성되지 않은 아이템입니다.", "확인", chNullString);
+					return ShowPlayerDialog(playerid, DialogId_Item(16), DIALOG_STYLE_MSGBOX, "아이템모델 속성 편집", "생성되지 않은 아이템입니다.", "확인", chNullString);
 				format(str, sizeof(str), "아이템모델 "C_GREEN"%s"C_WHITE"을(를) 삭제했습니다.", ItemModelInfo[modelid][imName]);
-				ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "아이템 모델 속성 편집", str, "확인", chNullString);
+				ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "아이템모델 속성 편집", str, "확인", chNullString);
 				DestroyItemModel(modelid);
 				ResetItemModelModifier(playerid);
 			}
@@ -729,18 +790,18 @@ stock SaveItemModelDataById(modelid)
 	format(str, sizeof(str), "%s,Weight=%d", str, ItemModelInfo[modelid][imWeight]);
 	format(str, sizeof(str), "%s,Info='%s'", str, escape(ItemModelInfo[modelid][imInfo]));
 	format(str, sizeof(str), "%s,Position1='%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str,
-		ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imScale1][0]
-		ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imScale1][1]
+		ItemModelInfo[modelid][imOffset1][0], ItemModelInfo[modelid][imRot1][0], ItemModelInfo[modelid][imScale1][0],
+		ItemModelInfo[modelid][imOffset1][1], ItemModelInfo[modelid][imRot1][1], ItemModelInfo[modelid][imScale1][1],
 		ItemModelInfo[modelid][imOffset1][2], ItemModelInfo[modelid][imRot1][2], ItemModelInfo[modelid][imScale1][2]);
 	format(str, sizeof(str), "%s,Position2='%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str,
-		ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imScale2][0]
-		ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imScale2][1]
+		ItemModelInfo[modelid][imOffset2][0], ItemModelInfo[modelid][imRot2][0], ItemModelInfo[modelid][imScale2][0],
+		ItemModelInfo[modelid][imOffset2][1], ItemModelInfo[modelid][imRot2][1], ItemModelInfo[modelid][imScale2][1],
 		ItemModelInfo[modelid][imOffset2][2], ItemModelInfo[modelid][imRot2][2], ItemModelInfo[modelid][imScale2][2]);
 	format(str, sizeof(str), "%s,MaxHealth=%d", str, ItemModelInfo[modelid][imMaxHealth]);
 	format(str, sizeof(str), "%s,Hand=%d", str, ItemModelInfo[modelid][imHand]);
 	format(str, sizeof(str), "%s,Effect='%s'", str, escape(ItemModelInfo[modelid][imEffect]));
 	format(str, sizeof(str), "%s,EffectAmount=%d", str, ItemModelInfo[modelid][imEffectAmount]);
-	format(str, sizeof(str), "%s WHERE ID=%d", str, ItemmodelInfo[modelid][imID]);
+	format(str, sizeof(str), "%s WHERE ID=%d", str, ItemModelInfo[modelid][imID]);
 	mysql_query(str);
 }
 //-----< SaveItemModelData >----------------------------------------------------
@@ -847,34 +908,50 @@ stock UnloadItemModelDataById(modelid)
 	return 1;
 }
 //-----< CreateItemModel >------------------------------------------------------
-stock CreateItemModel(name[], model, Float:droppos[6], weight, info[], Float:offset1[3], Float:rot1[3], Float:scale1[3], Float:offset2[3], Float:rot2[3], Float:scale2[3], maxhealth, hand, effect[], effectamount)
+/*	imID,
+	imName[32],
+	imModel,
+	Float:imDropPos[6],
+	imWeight,
+	imInfo[256],
+	Float:imOffset1[3],
+	Float:imRot1[3],
+	Float:imScale1[3],
+	Float:imOffset2[3],
+	Float:imRot2[3],
+	Float:imScale2[3],
+	imMaxHealth,
+	imHand,
+	imEffect[32],
+	imEffectAmount*/
+stock CreateItemModel(name[], model, Float:droppos[], weight, info[], Float:offset1[], Float:rot1[], Float:scale1[], Float:offset2[], Float:rot2[], Float:scale2[], maxhealth, hand, effect[], effectamount)
 {
 	new str[2][1024], query[2048];
 	
 	strcpy(str[0], "INSERT INTO itemmodeldata (");
-	format(str[1], sizeof(str[1]), "VALUES (");
+	format(str[1], 1024, "VALUES (");
 	strcat(str[0], " Name");
-	format(str[1], sizeof(str[1]), "%s '%s'", str, escape(name));
+	format(str[1], 1024, "%s '%s'", str, escape(name));
 	strcat(str[0], ",Model");
-	format(str[1], sizeof(str[1]), "%s,%d", str, model);
+	format(str[1], 1024, "%s,%d", str, model);
 	strcat(str[0], ",DropPos");
-	format(str[1], sizeof(str[1]), "%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str, droppos[0], droppos[1], droppos[2], droppos[3], droppos[4], droppos[5]);
+	format(str[1], 1024, "%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str, droppos[0], droppos[1], droppos[2], droppos[3], droppos[4], droppos[5]);
 	strcat(str[0], ",Weight");
-	format(str[1], sizeof(str[1]), "%s,%d", str, weight);
+	format(str[1], 1024, "%s,%d", str, weight);
 	strcat(str[0], ",Info");
-	format(str[1], sizeof(str[1]), "%s,'%s'", str, escape(info));
+	format(str[1], 1024, "%s,'%s'", str, escape(info));
 	strcat(str[0], ",Position1");
-	format(str[1], sizeof(str[1]), "%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str, offset1[0], offset1[1], offset1[2], rot1[0], rot1[1], rot1[2], scale1[0], scale1[1], scale1[2]);
+	format(str[1], 1024, "%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str, offset1[0], offset1[1], offset1[2], rot1[0], rot1[1], rot1[2], scale1[0], scale1[1], scale1[2]);
 	strcat(str[0], ",Position2");
-	format(str[1], sizeof(str[1]), "%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str, offset2[0], offset2[1], offset2[2], rot2[0], rot2[1], rot2[2], scale2[0], scale2[1], scale2[2]);
+	format(str[1], 1024, "%s,'%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f'", str, offset2[0], offset2[1], offset2[2], rot2[0], rot2[1], rot2[2], scale2[0], scale2[1], scale2[2]);
 	strcat(str[0], ",MaxHealth");
-	format(str[1], sizeof(str[1]), "%s,%d", str, maxhealth);
+	format(str[1], 1024, "%s,%d", str, maxhealth);
 	strcat(str[0], ",Hand");
-	format(str[1], sizeof(str[1]), "%s,%d", str, hand);
+	format(str[1], 1024, "%s,%d", str, hand);
 	strcat(str[0], ",Effect");
-	format(str[1], sizeof(str[1]), "%s,'%s'", str, effect);
+	format(str[1], 1024, "%s,'%s'", str, effect);
 	strcat(str[0], ",EffectAmount");
-	format(str[1], sizeof(str[1]), "%s,%d", str, effectamount);
+	format(str[1], 1024, "%s,%d", str, effectamount);
 	
 	format(query, sizeof(query), "%s) %s)", str[0], str[1]);
 	mysql_query(query);
@@ -955,6 +1032,134 @@ stock UseItemModel(playerid, modelid, ...)
 	else return 0;
 	return 1;
 }
+//-----< ShowItemModelModifier >------------------------------------------------
+stock ShowItemModelModifier(playerid, modelid=-1)
+{
+	new str[1024],
+		tabsize = 8;
+	if(ItemModelModifierInfo[playerid][immModel] != modelid)
+	{
+		ItemModelModifierInfo[playerid][immModel]		= modelid;
+		strcpy(ItemModelModifier[playerid][imName],		ItemModelInfo[modelid][imName]);
+		ItemModelModifier[playerid][imModel]			= ItemModelInfo[modelid][imModel];
+		ItemModelModifier[playerid][imWeight]			= ItemModelInfo[modelid][imWeight];
+		strcpy(ItemModelModifier[playerid][imInfo],		ItemModelInfo[modelid][imInfo]);
+		ItemModelModifier[playerid][imMaxHealth]		= ItemModelInfo[modelid][imMaxHealth];
+		ItemModelModifier[playerid][imHand]				= ItemModelInfo[modelid][imHand];
+		strcpy(ItemModelModifier[playerid][imEffect],	ItemModelInfo[modelid][imEffect]);
+		ItemModelModifier[playerid][imEffectAmount]		= ItemModelInfo[modelid][imEffectAmount];
+	}
+	
+	if(ItemModelModifierInfo[playerid][immObject] != INVALID_OBJECT_ID)
+	{
+		CancelEdit(playerid);
+		DestroyDynamicObject(ItemModelModifierInfo[playerid][immObject]);
+		ItemModelModifierInfo[playerid][immObject] = INVALID_OBJECT_ID;
+	}
+	if(ItemModelModifierInfo[playerid][immHand])
+	{
+		CancelEdit(playerid);
+		RemovePlayerAttachedObject(playerid, 0);
+		ItemModelModifierInfo[playerid][immHand] = 0;
+	}
+	
+	strcpy(str, C_LIGHTGREEN);
+	strtab(str, "이름", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, ItemModelModifier[playerid][imName]);
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "모델번호", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, valstr_(ItemModelModifier[playerid][imModel]));
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "드랍좌표", tabsize);
+	strcat(str, " "C_WHITE);
+	format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%.4f,%.4f",
+		ItemModelModifier[playerid][imDropPos][0], ItemModelModifier[playerid][imDropPos][1], ItemModelModifier[playerid][imDropPos][2],
+		ItemModelModifier[playerid][imDropPos][3], ItemModelModifier[playerid][imDropPos][4], ItemModelModifier[playerid][imDropPos][5]);
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "무게", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, valstr_(ItemModelModifier[playerid][imWeight]));
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "정보", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, ItemModelModifier[playerid][imInfo]);
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "한손부착", tabsize);
+	strcat(str, " "C_WHITE);
+	format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f",
+		ItemModelModifier[playerid][imOffset1][0], 	ItemModelModifier[playerid][imOffset1][1],	ItemModelModifier[playerid][imOffset1][2],
+		ItemModelModifier[playerid][imRot1][0],		ItemModelModifier[playerid][imRot1][1],		ItemModelModifier[playerid][imRot1][2],
+		ItemModelModifier[playerid][imScale1][0],	ItemModelModifier[playerid][imScale1][1],	ItemModelModifier[playerid][imScale1][2]);
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "양손부착", tabsize);
+	strcat(str, " "C_WHITE);
+	format(str, sizeof(str), "%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f",
+		ItemModelModifier[playerid][imOffset2][0], 	ItemModelModifier[playerid][imOffset2][1],	ItemModelModifier[playerid][imOffset2][2],
+		ItemModelModifier[playerid][imRot2][0],		ItemModelModifier[playerid][imRot2][1],		ItemModelModifier[playerid][imRot2][2],
+		ItemModelModifier[playerid][imScale2][0],	ItemModelModifier[playerid][imScale2][1],	ItemModelModifier[playerid][imScale2][2]);
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "최대체력", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, valstr_(ItemModelModifier[playerid][imMaxHealth]));
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "손제한", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, valstr_(ItemModelModifier[playerid][imHand]));
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "효과", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, ItemModelModifier[playerid][imEffect]);
+	strcat(str, "\n"C_LIGHTGREEN);
+	strtab(str, "효과량", tabsize);
+	strcat(str, " "C_WHITE);
+	strcat(str, valstr_(ItemModelModifier[playerid][imEffectAmount]));
+	strcat(str, C_YELLOW);
+	strcat(str, "\n> 드랍좌표 설정");
+	strcat(str, "\n> 한손 부착좌표 설정");
+	strcat(str, "\n> 양손 부착좌표 설정");
+	strcat(str, "\n> 삭제");
+	strcat(str, "\n> 저장");
+	
+	ItemModelModifier[playerid][imID] = 1;
+	ShowPlayerDialog(playerid, DialogId_Item(12), DIALOG_STYLE_LIST, "아이템모델 속성 편집", str, "확인", "뒤로");
+	return 1;
+}
+//-----< ResetItemModelModifier >-----------------------------------------------
+stock ResetItemModelModifier(playerid)
+{
+	ItemModelModifier[playerid][imID]				= 0;
+	strcpy(ItemModelModifier[playerid][imName],		chNullString);
+	ItemModelModifier[playerid][imModel]			= 0;
+	for(new i; i < 6; i++)
+		ItemModelModifier[playerid][imDropPos][i]	= 0.0;
+	ItemModelModifier[playerid][imWeight]			= 0;
+	strcpy(ItemModelModifier[playerid][imInfo],		chNullString);
+	for(new i; i < 3; i++)
+	{
+		ItemModelModifier[playerid][imOffset1][i]	= 0.0;
+		ItemModelModifier[playerid][imRot1][i]		= 0.0;
+		ItemModelModifier[playerid][imScale1][i]	= 1.0;
+		ItemModelModifier[playerid][imOffset2][i]	= 0.0;
+		ItemModelModifier[playerid][imRot2][i]		= 0.0;
+		ItemModelModifier[playerid][imScale2][i]	= 1.0;
+	}
+	ItemModelModifier[playerid][imMaxHealth]		= 0;
+	ItemModelModifier[playerid][imHand]				= 0;
+	strcpy(ItemModelModifier[playerid][imEffect],	chNullString);
+	ItemModelModifier[playerid][imEffectAmount]		= 0;
+	
+	ItemModelModifierInfo[playerid][immModel]		= -2;
+	ItemModelModifierInfo[playerid][immOption]		= 0;
+	ItemModelModifierInfo[playerid][immObject]		= INVALID_OBJECT_ID;
+	ItemModelModifierInfo[playerid][immHand]		= 0;
+	
+	return 1;
+}
+//-----< GetItemModelModifierModel >--------------------------------------------
+stock GetItemModelModifierModel(playerid)
+	return ItemModelModifierInfo[playerid][immModel];
 //-----<  >---------------------------------------------------------------------
 //-----< CreateItemDataTable >--------------------------------------------------
 stock CreateItemDataTable()
@@ -1565,7 +1770,7 @@ stock ShowItemModelList(playerid, dialogid, params[]="")
 		strcat(str, "\n");
 		strcat(str, params);
 	}
-	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "아이템 목록", str, "확인", "뒤로");
+	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "아이템모델 목록", str, "확인", "뒤로");
 	return 1;
 }
 //-----< GetPlayerNearestItem >-------------------------------------------------
@@ -1605,95 +1810,6 @@ stock FindPlayerItemBySaveType(playerid, savetype[])
 			break;
 		}
 	return text;
-}
-//-----< ShowItemModelModifier >------------------------------------------------
-stock ShowItemModelModifier(playerid, modelid=-1)
-{
-	new str[1024],
-		tabsize = 8;
-	if(modelid != -1)
-	{
-		ItemModelModifierInfo[playerid][immModel]		= modelid;
-		strcpy(ItemModelModifier[playerid][imName],		ItemModelInfo[modelid][imName]);
-		ItemModelModifier[playerid][imModel]			= ItemModelInfo[modelid][imModel];
-		ItemModelModifier[playerid][imWeight]			= ItemModelInfo[modelid][imWeight];
-		strcpy(ItemModelModifier[playerid][imInfo],		ItemModelInfo[modelid][imInfo]);
-		ItemModelModifier[playerid][imMaxHealth]		= ItemModelInfo[modelid][imMaxHealth];
-		ItemModelModifier[playerid][imHand]				= ItemModelInfo[modelid][imHand];
-		strcpy(ItemModelModifier[playerid][imEffect],	ItemModelInfo[modelid][imEffect]);
-		ItemModelModifier[playerid][imEffectAmount]		= ItemModelInfo[modelid][imEffectAmount];
-	}
-	strcpy(str, C_LIGHTGREEN);
-	strtab(str, "이름", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, ItemModelModifier[playerid][imName]);
-	strcat(str, "\n"C_LIGHTGREEN);
-	strtab(str, "모델번호", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, valstr_(ItemModelModifier[playerid][imModel]));
-	strcat(str, "\n"C_LIGHTGREEN);
-	strtab(str, "무게", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, valstr_(ItemModelModifier[playerid][imWeight]));
-	strcat(str, "\n"C_LIGHTGREEN);
-	strtab(str, "정보", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, ItemModelModifier[playerid][imInfo]);
-	strcat(str, "\n"C_LIGHTGREEN);
-	strtab(str, "최대체력", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, valstr_(ItemModelModifier[playerid][imMaxHealth]));
-	strcat(str, "\n"C_WHITE);
-	strtab(str, "손제한", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, valstr_(ItemModelModifier[playerid][imHand]));
-	strcat(str, "\n"C_LIGHTGREEN);
-	strtab(str, "효과", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, ItemModelModifier[playerid][imEffect]);
-	strcat(str, "\n"C_LIGHTGREEN);
-	strtab(str, "효과량", tabsize);
-	strcat(str, " "C_WHITE);
-	strcat(str, valstr_(ItemModelModifier[playerid][imEffectAmount]));
-	strcat(str, C_YELLOW);
-	strcat(str, "\n> 드랍좌표 설정");
-	strcat(str, "\n> 한손 부착좌표 설정");
-	strcat(str, "\n> 양손 부착좌표 설정");
-	strcat(str, "\n> 삭제");
-	strcat(str, "\n> 저장");
-	ShowPlayerDialog(playerid, DialogId_Item(12), DIALOG_STYLE_LIST, "아이템 모델 속성 편집", str, "확인", "뒤로");
-	return 1;
-}
-//-----< ResetItemModelModifier >-----------------------------------------------
-stock ResetItemModelModifier(playerid)
-{
-	ItemModelModifier[playerid][imID]				= 0;
-	strcpy(ItemModelModifier[playerid][imName],		chNullString);
-	ItemModelModifier[playerid][imModel]			= 0;
-	for(new i; i < 6; i++)
-		ItemModelModifier[playerid][imDropPos][i]	= 0.0;
-	ItemModelModifier[playerid][imWeight]			= 0;
-	strcpy(ItemModelModifier[playerid][imInfo],		chNullString);
-	for(new i; i < 3; i++)
-	{
-		ItemModelModifier[playerid][imOffset1][i]	= 0.0;
-		ItemModelModifier[playerid][imRot1][i]		= 0.0;
-		ItemModelModifier[playerid][imScale1][i]	= 1.0;
-		ItemModelModifier[playerid][imOffset2][i]	= 0.0;
-		ItemModelModifier[playerid][imRot2][i]		= 0.0;
-		ItemModelModifier[playerid][imScale2][i]	= 1.0;
-	}
-	ItemModelModifier[playerid][imMaxHealth]		= 0;
-	ItemModelModifier[playerid][imHand]				= 0;
-	strcpy(ItemModelModifier[playerid][imEffect],	chNullString);
-	ItemModelModifier[playerid][imEffectAmount]		= 0;
-	
-	ItemModelModifierInfo[playerid][immModel]		= 0;
-	ItemModelModifierInfo[playerid][immOption]		= 0;
-	ItemModelModifierInfo[playerid][immObject]		= INVALID_OBJECT_ID;
-	ItemModelModifierInfo[playerid][immHand]		= 0;
-	
-	return 1;
 }
 //-----<  >---------------------------------------------------------------------
 //-----< IsValidItemModelID >---------------------------------------------------
